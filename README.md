@@ -7,7 +7,7 @@ adicionais e receber notificações sobre o status do serviço. Como também, fo
 Esse projeto nasceu de uma necessidade real de uma oficina mecânica que funcionava de forma desorganizada, operando com uso de anotaçoes manuais, gerando erros de priorização, perda de histórico e ineficiência no fluxo de orçamentos. 
 Nossa solução visa digitializar todo esse processo.
 
-### Funcionalidades principais:
+## Funcionalidades principais:
 - Identificação do cliente por CPF/CNPJ 
 - Cadastro de veículo (placa, marca, modelo, ano)
 - Inclusão dos serviços solicitados (exemplo: troca de óleo, alinhamento)
@@ -53,4 +53,6 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
     </td>
   </tr>
 </table>
----
+
+## Licence
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
