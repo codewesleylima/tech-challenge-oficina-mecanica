@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: oficina-db
+
+    environment:
+      POSTGRES_DB: ${DB_NAME:-oficina_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+    networks:
+      - oficina-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: oficina-backend
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_APPLICATION_NAME: oficina-sistema
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-oficina_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-postgres}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      JWT_SECRET: ${JWT_SECRET:-chave-dev-minimo-256-bits-dev-dev-dev-dev-dev-dev-dev}
+      JWT_EXPIRATION: 3600
+      LOGGING_LEVEL_ROOT: ${LOGGING_LEVEL:-INFO}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - oficina-network
+
+  docs:
+    build:
+      context: ./docs
+      dockerfile: Dockerfile
+
+    container_name: oficina-docs
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./docs/docs:/app/docs
+      - ./docs/docusaurus.config.js:/app/docusaurus.config.js
+      - ./docs/sidebars.js:/app/sidebars.js
+      - /app/node_modules
+
+    networks:
+      - oficina-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  oficina-network:
+    driver: bridge
