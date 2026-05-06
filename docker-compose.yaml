@@ -56,7 +56,7 @@ services:
 
   docs:
     build:
-      context: ./docs
+      context: ./docs/docusauros
       dockerfile: Dockerfile
 
     container_name: oficina-docs
@@ -65,9 +65,9 @@ services:
       - "3000:3000"
 
     volumes:
-      - ./docs/docs:/app/docs
-      - ./docs/docusaurus.config.js:/app/docusaurus.config.js
-      - ./docs/sidebars.js:/app/sidebars.js
+      - ./docs/docusauros/docs:/app/docs
+      - ./docs/docusauros/docusaurus.config.js:/app/docusaurus.config.js
+      - ./docs/docusauros/sidebars.js:/app/sidebars.js
       - /app/node_modules
 
     networks:

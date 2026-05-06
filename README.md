@@ -1,23 +1,28 @@
 # Oficina Mecânica - Gestão de Serviços
 
-Este projeto tem como principal objetivo fornecer um sistema de gestão de serviços automotivos que 
-permite ao cliente acompanhar em tempo real o andamento da manutenção do seu veículo, autorizar reparos
-adicionais e receber notificações sobre o status do serviço. Como também, fornecer aos mecânicos uma interface para atualizar o status dos serviços, registrar reparos adicionais e comunicar-se com os clientes de forma eficiente.
+This project have how main objective to provide a automotive service management system that allows the
+for the client to follow in real time the progress of the maintenance of his vehicle, authorize additional repairs
+and receive notifications about the status of the service. As well as, provide to the mechanics an interface to
+update the status of the services, register additional repairs and communicate with the clients efficiently.
 
-Esse projeto nasceu de uma necessidade real de uma oficina mecânica que funcionava de forma desorganizada, operando com uso de anotaçoes manuais, gerando erros de priorização, perda de histórico e ineficiência no fluxo de orçamentos. 
-Nossa solução visa digitializar todo esse processo.
+This project born from a real need of auto repair shopt that was working in a disorganized way, operating with manual notes,
+generating errors of prioritization, loss of history and inefficiency in the flow of budgets. 
+Our solution aims to digitalize all this process.
 
-### Funcionalidades principais:
-- Identificação do cliente por CPF/CNPJ 
-- Cadastro de veículo (placa, marca, modelo, ano)
-- Inclusão dos serviços solicitados (exemplo: troca de óleo, alinhamento)
-- Possibilidade de incluir peças e insumos necessários 
-- Orçamento gerado automaticamente com base nos serviços e peças 
-- Envio do orçamento ao cliente para aprovação
+## Principal Features
+- Client identification by CPF/CNPJ
+- Vehicle registration (license plate, brand, model, year)
+- Inclusion of requested services (example: oil change, alignment)
+- Possibility to include necessary parts and supplies
+- Budget generated automatically based on services and parts
+- Sending the budget to the client for approval
+- Real-time updates on service progress
+- Communication channel between mechanics and clients
+- Notifications for clients about service status
 
-## Colaboradores
+## Team Members:
 
-Agradecemos às seguintes pessoas que contribuíram para este projeto:
+Thank you to the following people who contributed to this project:
 
 <table>
   <tr>
@@ -53,4 +58,6 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
     </td>
   </tr>
 </table>
----
+
+## Licence
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
