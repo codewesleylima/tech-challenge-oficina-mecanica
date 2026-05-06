@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm ci
 
-COPY ../docs .
+COPY . .
 
 EXPOSE 3000
 
