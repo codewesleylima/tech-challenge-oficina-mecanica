@@ -15,8 +15,12 @@ RUN chmod +x ./gradlew && \
 
 # Runtime image: slim JRE
 FROM eclipse-temurin:21-jre
-ARG JAR_FILE=/work/build/libs/*.jar
+WORKDIR /app
+
+# Run as non-root user (least privilege)
+RUN useradd --system --no-create-home --uid 1001 spring
 COPY --from=builder /work/build/libs/*.jar /app/app.jar
+USER spring
 
 ENV JAVA_OPTS="-Xms256m -Xmx512m"
 ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS
