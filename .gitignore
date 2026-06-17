@@ -39,3 +39,7 @@ out/
 
 agentico/
 docs/docusauros/
+
+### Local-only reference / backups (never commit)
+*.pdf
+*.bundle
