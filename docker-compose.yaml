@@ -45,6 +45,13 @@ services:
       JWT_EXPIRATION: 3600
       LOGGING_LEVEL_ROOT: ${LOGGING_LEVEL:-INFO}
 
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
     depends_on:
       postgres:
         condition: service_healthy

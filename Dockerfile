@@ -17,8 +17,10 @@ RUN chmod +x ./gradlew && \
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Run as non-root user (least privilege)
-RUN useradd --system --no-create-home --uid 1001 spring
+# curl is needed by the container healthcheck; run as non-root (least privilege)
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/* && \
+    useradd --system --no-create-home --uid 1001 spring
 COPY --from=builder /work/build/libs/*.jar /app/app.jar
 USER spring
 
