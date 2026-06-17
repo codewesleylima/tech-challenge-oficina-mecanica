@@ -54,24 +54,6 @@ services:
     networks:
       - oficina-network
 
-  docs:
-    build:
-      context: ./docs/docusauros
-      dockerfile: Dockerfile
-
-    container_name: oficina-docs
-
-    ports:
-      - "3000:3000"
-
-    volumes:
-      - ./docs/docusauros/docs:/app/docs
-      - ./docs/docusauros/docusaurus.config.js:/app/docusaurus.config.js
-      - ./docs/docusauros/sidebars.js:/app/sidebars.js
-      - /app/node_modules
-
-    networks:
-      - oficina-network
 
 volumes:
   postgres_data:
