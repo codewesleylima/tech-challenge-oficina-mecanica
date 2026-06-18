@@ -28,7 +28,7 @@ Thank you to the following people who contributed to this project:
   <tr>
     <td align="center">
       <a href="https://www.linkedin.com/in/wesslima/" title="Wesley Lima">
-        <img src="https://media.licdn.com/dms/image/v2/D4D03AQH8pgDMsT7zMw/profile-displayphoto-crop_800_800/B4DZs03OodH8AM-/0/1766118457145?e=1782345600&v=beta&t=3C2ESREl3BAd2Xz5e1nKgze9aXJYSTXC07nKGUXkYW0" width="100px;" alt="Foto do Wesley Lima"/><br>
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQGxzuIy-ANfNA/profile-displayphoto-crop_800_800/B4DZ7HT8V.GkAI-/0/1781460357892?e=1783555200&v=beta&t=iV0RLtZj1z9zgOntL3X6Y0CzY05dJeIL8VivX5fr3RA" width="100px;" alt="Foto do Wesley Lima"/><br>
         <sub>
           <b>Wesley Lima</b>
         </sub>
