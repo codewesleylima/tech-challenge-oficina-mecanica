@@ -3,9 +3,11 @@ package com.safiap.techchallengeoficinamecanica.modules.shared.infrastructure.ev
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.DomainEvent;
 import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class SpringDomainEventPublisher implements DomainEventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
