@@ -37,3 +37,9 @@ out/
 .vscode/
 .env
 
+agentico/
+docs/docusauros/
+
+### Local-only reference / backups (never commit)
+*.pdf
+*.bundle
