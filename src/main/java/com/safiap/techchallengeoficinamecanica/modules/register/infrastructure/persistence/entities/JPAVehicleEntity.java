@@ -18,15 +18,14 @@ public class JPAVehicleEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    @Column(nullable = false)
+    @JoinColumn(name = "customer_id", nullable = false)
     private UUID customerId;
     @Column(nullable = false)
-    private String CarLicensePlate;
+    private String carLicensePlate;
     @Column(nullable = false)
-    private String Model;
+    private String model;
     @Column(nullable = false)
-    private String Manufacturer;
+    private String manufacturer;
     @Column(nullable = false)
     private Integer kilometers;
     @Column(nullable = false)
@@ -34,9 +33,19 @@ public class JPAVehicleEntity {
 
     public JPAVehicleEntity(UUID customerId,String carLicensePlate, String model, String manufacturer, Integer kilometers, Year year) {
         this.customerId = customerId;
-        this.CarLicensePlate = carLicensePlate;
-        this.Model = model;
-        this.Manufacturer = manufacturer;
+        this.carLicensePlate = carLicensePlate;
+        this.model = model;
+        this.manufacturer = manufacturer;
+        this.kilometers = kilometers;
+        this.year = year;
+    }
+
+    public JPAVehicleEntity(UUID vehicleId,UUID customerId,String carLicensePlate, String model, String manufacturer, Integer kilometers, Year year) {
+        this.id = vehicleId;
+        this.customerId = customerId;
+        this.carLicensePlate = carLicensePlate;
+        this.model = model;
+        this.manufacturer = manufacturer;
         this.kilometers = kilometers;
         this.year = year;
     }

@@ -30,4 +30,12 @@ public class JPACustomerEntity {
         this.phone = phone;
         this.cpf = cpf;
     }
+
+    public JPACustomerEntity(UUID customerId, String name, String email, String phone, String cpf) {
+        this.id = customerId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.cpf = cpf;
+    }
 }

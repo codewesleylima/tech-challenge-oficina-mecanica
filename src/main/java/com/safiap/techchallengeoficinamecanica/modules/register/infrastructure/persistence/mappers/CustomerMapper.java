@@ -10,6 +10,7 @@ public class CustomerMapper {
 
     public static JPACustomerEntity toJPA(Customer customer) {
         return new JPACustomerEntity(
+                customer.getCustomerId(),
                 customer.getName(),
                 customer.getEmail().value(),
                 customer.getPhone().value(),
@@ -18,7 +19,8 @@ public class CustomerMapper {
     }
 
     public static Customer toEntity(JPACustomerEntity customerEntity) {
-        return Customer.createCustomer(
+        return Customer.buildCustomer(
+                customerEntity.getId(),
                 customerEntity.getName(),
                 new Email(customerEntity.getEmail()),
                 new Phone(customerEntity.getPhone()),
