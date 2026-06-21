@@ -50,7 +50,7 @@ public class Vehicle extends AggregateRoot {
         Objects.requireNonNull(kilometers,    " kilometers is null");
         Objects.requireNonNull(year, " year is null");
 
-        Vehicle vehicle = new Vehicle(
+        return new Vehicle(
                 UUID.randomUUID(),
                 customerId,
                 carLicensePlate,
@@ -59,9 +59,37 @@ public class Vehicle extends AggregateRoot {
                 kilometers,
                 year
         ) ;
-
-        return vehicle;
     }
+
+
+    public static Vehicle buildVehicle(  UUID vehicleId,
+                                         UUID customerId,
+                                         CarLicensePlate carLicensePlate,
+                                         String model,
+                                         String manufacturer,
+                                         Kilometers kilometers,
+                                         Year year) {
+
+        Objects.requireNonNull(vehicleId, " vehicleId is null");
+        Objects.requireNonNull(customerId, " customerId is null");
+        Objects.requireNonNull(carLicensePlate, " carLicensePlate is null");
+        Objects.requireNonNull(model,  " model is null");
+        Objects.requireNonNull(manufacturer,   " manufacturer is null");
+        Objects.requireNonNull(kilometers,    " kilometers is null");
+        Objects.requireNonNull(year, " year is null");
+
+        return new Vehicle(
+                vehicleId,
+                customerId,
+                carLicensePlate,
+                model,
+                manufacturer,
+                kilometers,
+                year
+        ) ;
+    }
+
+
 
     public UUID getVehicleId() {
         return vehicleId;

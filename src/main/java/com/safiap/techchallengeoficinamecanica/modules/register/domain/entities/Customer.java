@@ -31,7 +31,8 @@ public class Customer extends AggregateRoot {
         this.cpf = cpf;
     }
 
-    public static Customer createCustomer(String name,
+    public static Customer createCustomer(
+                                  String name,
                                   Email email,
                                   Phone phone,
                                   CPF cpf) {
@@ -48,6 +49,31 @@ public class Customer extends AggregateRoot {
                 phone,
                 cpf
         );
+    }
+
+    public static Customer buildCustomer( UUID customerId,
+                                  String name,
+                                  Email email,
+                                  Phone phone,
+                                  CPF cpf) {
+
+        Objects.requireNonNull(customerId, " customerId is null");
+        Objects.requireNonNull(name, " name is null");
+        Objects.requireNonNull(email, " email is null");
+        Objects.requireNonNull(phone, " phone is null");
+        Objects.requireNonNull(cpf, " cpf is null");
+
+        return new Customer(
+                customerId,
+                name,
+                email,
+                phone,
+                cpf
+        );
+    }
+
+    public UUID getCustomerId() {
+        return customerId;
     }
 
     public String getName() {
