@@ -6,8 +6,9 @@ import com.safiap.techchallengeoficinamecanica.modules.auth.application.response
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.entities.User;
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.repositories.UserRepository;
 import io.swagger.v3.oas.annotations.servers.Server;
+import org.springframework.stereotype.Service;
 
-@Server
+@Service
 public class RegisterUserUseCase {
 
 
