@@ -5,7 +5,7 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainE
 public record Kilometers(Integer value) {
 
     public Kilometers {
-        if (value == null || value <= 0) {
+        if (value == null || value < 0 ) {
             throw  new DomainException("Invalid value");
         }
     };
