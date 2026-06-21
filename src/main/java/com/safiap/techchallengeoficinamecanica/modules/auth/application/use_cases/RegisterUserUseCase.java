@@ -2,6 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cas
 
 
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.AddUserCommand;
+import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserCreateResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserTokenResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.entities.User;
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.repositories.UserRepository;
@@ -19,9 +20,13 @@ public class RegisterUserUseCase {
         this.userRepository = userRepository;
     }
 
-    public UserTokenResponse execute(AddUserCommand command){
-        userRepository.saveUser(User.createUser(command.email(), command.password()));
-        //TODO
-        return new UserTokenResponse("",0l, "");
+    public UserCreateResponse execute(AddUserCommand command){
+        User user = User.createUser(command.email(), command.password());
+        userRepository.saveUser(user);
+        return new UserCreateResponse(
+                user.getId(),
+                user.getEmail().value(),
+                user.getRole()
+        );
     }
 }

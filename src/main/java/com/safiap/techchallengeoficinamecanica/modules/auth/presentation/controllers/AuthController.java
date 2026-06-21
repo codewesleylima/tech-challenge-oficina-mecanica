@@ -1,6 +1,7 @@
 package com.safiap.techchallengeoficinamecanica.modules.auth.presentation.controllers;
 
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.AddUserCommand;
+import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserCreateResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserTokenResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cases.RegisterUserUseCase;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class AuthController {
         this.registerUserUseCase = registerUserUseCase;
     }
     @PostMapping("/register")
-    public ResponseEntity<UserTokenResponse> register(@RequestBody AddUserCommand command){
+    public ResponseEntity<UserCreateResponse> register(@RequestBody AddUserCommand command){
         return ResponseEntity.status(201).body(registerUserUseCase.execute(command));
     }
 }
