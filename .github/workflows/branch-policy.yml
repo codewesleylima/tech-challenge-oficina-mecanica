@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [develop, hom, main]
     types: [opened, reopened, synchronize]
+  pull_request_review:
+    types: [submitted, dismissed]
 
 permissions:
   pull-requests: write
@@ -15,18 +17,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Enforce branch routing policy
+      - name: Enforce branch routing and review policy
         uses: actions/github-script@v7
         with:
           script: |
-            const source = context.payload.pull_request.head.ref;
-            const target = context.payload.pull_request.base.ref;
-            const prNumber = context.payload.pull_request.number;
+            const pr = context.payload.pull_request
+              ?? (await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.payload.review.pull_request.number,
+                })).data;
 
-            let violation = null;
+            const source    = pr.head.ref;
+            const target    = pr.base.ref;
+            const prNumber  = pr.number;
+
+            // ── 1. Routing validation ────────────────────────────────────────
+            let routingViolation = null;
 
             if (target === 'develop' && !source.startsWith('feature/')) {
-              violation = [
+              routingViolation = [
                 `PRs para \`develop\` só são aceitos de branches que começam com \`feature/\`.`,
                 ``,
                 `**Branch de origem:** \`${source}\``,
@@ -36,7 +46,7 @@ jobs:
             }
 
             if (target === 'hom' && source !== 'develop') {
-              violation = [
+              routingViolation = [
                 `PRs para \`hom\` só são aceitos vindos de \`develop\`.`,
                 ``,
                 `**Branch de origem:** \`${source}\``,
@@ -44,14 +54,14 @@ jobs:
             }
 
             if (target === 'main' && source !== 'hom') {
-              violation = [
+              routingViolation = [
                 `PRs para \`main\` só são aceitos vindos de \`hom\`.`,
                 ``,
                 `**Branch de origem:** \`${source}\``,
               ].join('\n');
             }
 
-            if (violation) {
+            if (routingViolation) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -59,7 +69,7 @@ jobs:
                 body: [
                   `## ❌ Política de branches violada`,
                   ``,
-                  violation,
+                  routingViolation,
                   ``,
                   `---`,
                   `**Fluxo obrigatório:**`,
@@ -76,5 +86,35 @@ jobs:
                 state: 'closed',
               });
 
-              core.setFailed(`[BLOCKED] ${source} → ${target} violates branch policy.`);
+              core.setFailed(`[BLOCKED] ${source} → ${target} violates branch routing policy.`);
+              return;
             }
+
+            // ── 2. Review validation ─────────────────────────────────────────
+            const reviews = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            const approvals = reviews.data.filter(r => r.state === 'APPROVED');
+
+            if (approvals.length === 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: [
+                  `## ⚠️ Review obrigatório`,
+                  ``,
+                  `Este PR ainda não possui nenhuma aprovação.`,
+                  ``,
+                  `É necessário ao menos **1 aprovação** de um colaborador antes do merge.`,
+                ].join('\n'),
+              });
+
+              core.setFailed(`[BLOCKED] PR #${prNumber} requires at least 1 approving review before merge.`);
+              return;
+            }
+
+            core.info(`Branch policy OK — ${source} → ${target} | Approvals: ${approvals.length}`);
