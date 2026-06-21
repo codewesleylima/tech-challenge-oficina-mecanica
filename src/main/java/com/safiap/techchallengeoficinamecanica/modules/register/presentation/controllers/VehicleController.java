@@ -3,6 +3,8 @@ package com.safiap.techchallengeoficinamecanica.modules.register.presentation.co
 import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.AddVehicleCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.vehicle.AddVehicleResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.AddVehicleUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Kilometers;
+import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.vehicle.AddVehicleDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,14 +24,14 @@ public class VehicleController {
 
     @PostMapping
     public ResponseEntity<AddVehicleResponse> addVehicle(
-            @RequestBody AddVehicleCommand request) {
+            @RequestBody AddVehicleDTO request) {
 
         AddVehicleCommand command = new AddVehicleCommand(
                 request.customerId(),
                 request.carLicensePlate(),
                 request.model(),
                 request.manufacturer(),
-                request.Kilometers(),
+                request.kilometers(),
                 request.year()
         );
 

@@ -9,6 +9,7 @@ public class VehicleMapper {
 
     public static JPAVehicleEntity toJPA(Vehicle vehicle) {
         return new JPAVehicleEntity(
+                 vehicle.getVehicleId(),
                  vehicle.getCustomerId(),
                  vehicle.getCarLicensePlate().plate(),
                  vehicle.getModel(),
@@ -19,7 +20,8 @@ public class VehicleMapper {
     }
 
     public static Vehicle toEntity(JPAVehicleEntity vehicleEntity) {
-        return Vehicle.createVehicle(
+        return Vehicle.buildVehicle(
+                vehicleEntity.getId(),
                 vehicleEntity.getCustomerId(),
                 new CarLicensePlate(vehicleEntity.getCarLicensePlate()),
                 vehicleEntity.getModel(),
