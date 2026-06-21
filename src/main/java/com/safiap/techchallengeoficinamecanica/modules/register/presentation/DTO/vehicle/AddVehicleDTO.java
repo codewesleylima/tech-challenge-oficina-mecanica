@@ -3,7 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.register.presentation.DT
 import java.time.Year;
 import java.util.UUID;
 
-public record addVehicleDTO (
+public record AddVehicleDTO (
             UUID customerId,
             String carLicensePlate,
             String model,
