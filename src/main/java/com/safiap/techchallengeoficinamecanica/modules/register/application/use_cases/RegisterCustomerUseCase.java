@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.resp
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,6 +27,10 @@ public class RegisterCustomerUseCase {
                 new Phone(request.phone()),
                 new CPF(request.cpf())
         );
+
+        customerRepository.findByCpf(customer.getCpf()).ifPresent(customerObj -> {
+            throw new DomainException("already exists CPF "+customerObj.getCpf());
+        });
 
         customerRepository.save(customer);
 
