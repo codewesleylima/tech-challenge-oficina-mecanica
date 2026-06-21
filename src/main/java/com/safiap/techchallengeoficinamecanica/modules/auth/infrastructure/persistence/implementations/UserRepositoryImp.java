@@ -18,7 +18,6 @@ public class UserRepositoryImp implements UserRepository {
         this.jpaUserRepository = jpaUserRepository;
     }
 
-
     @Override
     public void saveUser(User user) {
         jpaUserRepository.save(UserMapper.toJpa(user));

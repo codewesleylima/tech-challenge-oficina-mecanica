@@ -3,10 +3,9 @@ package com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cas
 
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.AddUserCommand;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserCreateResponse;
-import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserTokenResponse;
+import com.safiap.techchallengeoficinamecanica.modules.auth.application.service.PasswordHasher;
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.entities.User;
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.repositories.UserRepository;
-import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,14 +13,16 @@ public class RegisterUserUseCase {
 
 
     private final UserRepository userRepository;
+    private final PasswordHasher passwordHasher;
 
 
-    public RegisterUserUseCase(UserRepository userRepository) {
+    public RegisterUserUseCase(UserRepository userRepository, PasswordHasher passwordHasher) {
         this.userRepository = userRepository;
+        this.passwordHasher = passwordHasher;
     }
 
     public UserCreateResponse execute(AddUserCommand command){
-        User user = User.createUser(command.email(), command.password());
+        User user = User.createUser(command.email(), passwordHasher.hash(command.password()));
         userRepository.saveUser(user);
         return new UserCreateResponse(
                 user.getId(),

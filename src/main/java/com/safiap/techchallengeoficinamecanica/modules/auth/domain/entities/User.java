@@ -22,9 +22,6 @@ public class User {
     public static User createUser(String email, String passwordHash) {
         return new User(UUID.randomUUID(), email, passwordHash, Role.ROLE_USER);
     }
-    public static User createEmployeeUser(String email, String passwordHash) {
-        return new User(UUID.randomUUID(), email, passwordHash, Role.ROLE_EMPLOYEE);
-    }
 
     public UUID getId() {
         return id;
