@@ -1,124 +1,123 @@
 # Oficina Mecânica - Gestão de Serviços
 
-This project have how main objective to provide a automotive service management system that allows the
-for the client to follow in real time the progress of the maintenance of his vehicle, authorize additional repairs
-and receive notifications about the status of the service. As well as, provide to the mechanics an interface to
-update the status of the services, register additional repairs and communicate with the clients efficiently.
+Este projeto tem como objetivo principal fornecer um sistema de gestão de serviços automotivos que permite
+ao cliente acompanhar em tempo real o progresso da manutenção do seu veículo, autorizar reparos adicionais
+e receber notificações sobre o status do atendimento. Além disso, oferece aos mecânicos uma interface para
+atualizar o status dos serviços, registrar reparos adicionais e se comunicar com os clientes de forma eficiente.
 
-This project born from a real need of auto repair shopt that was working in a disorganized way, operating with manual notes,
-generating errors of prioritization, loss of history and inefficiency in the flow of budgets. 
-Our solution aims to digitalize all this process.
+Este projeto nasceu de uma necessidade real de uma oficina mecânica que trabalhava de forma desorganizada, operando com anotações manuais,
+gerando erros de priorização, perda de histórico e ineficiência no fluxo de orçamentos.
+Nossa solução visa digitalizar todo esse processo.
 
-## Principal Features
-- Client identification by CPF/CNPJ
-- Vehicle registration (license plate, brand, model, year)
-- Inclusion of requested services (example: oil change, alignment)
-- Possibility to include necessary parts and supplies
-- Budget generated automatically based on services and parts
-- Sending the budget to the client for approval
-- Real-time updates on service progress
-- Communication channel between mechanics and clients
-- Notifications for clients about service status
+## Funcionalidades Principais
+- Identificação do cliente por CPF/CNPJ
+- Cadastro de veículo (placa, marca, modelo, ano)
+- Inclusão de serviços solicitados (exemplo: troca de óleo, alinhamento)
+- Possibilidade de incluir peças e insumos necessários
+- Orçamento gerado automaticamente com base nos serviços e peças
+- Envio do orçamento ao cliente para aprovação
+- Atualizações em tempo real sobre o andamento do serviço
+- Canal de comunicação entre mecânicos e clientes
+- Notificações para os clientes sobre o status do atendimento
 
-## Tech Stack
-- **Java 21** + **Spring Boot 3.2** (REST API, port `8080`)
-- **PostgreSQL 15** (relational database, port `5432`)
+## Tecnologias Utilizadas
+- **Java 21** + **Spring Boot 3.2** (API REST, porta `8080`)
+- **PostgreSQL 15** (banco de dados relacional, porta `5432`)
 - **Gradle** (build via wrapper `./gradlew`)
-- **Docker** + **Docker Compose** (local orchestration)
+- **Docker** + **Docker Compose** (orquestração local)
 
-## Requirements
-- [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2
-- (Optional, only to run without containers) JDK 21
+## Pré-requisitos
+- [Docker](https://docs.docker.com/get-docker/) e Docker Compose v2
+- (Opcional, apenas para executar sem containers) JDK 21
 
-## Configuration
-The application reads its database credentials and settings from environment
-variables. A template is provided in `.env.example` — **never commit your real
-`.env`** (it is already git-ignored).
+## Configuração
+A aplicação lê as credenciais do banco de dados e demais configurações a partir de variáveis de ambiente.
+Um template está disponível em `.env.example` — **nunca commite o seu `.env` real** (ele já está no `.gitignore`).
 
 ```bash
 cp .env.example .env      # Windows PowerShell: copy .env.example .env
 ```
 
-Then edit `.env` and set a real value for `DB_PASSWORD` (and `JWT_SECRET` for
-non-dev environments).
+Em seguida, edite o `.env` e defina um valor real para `DB_PASSWORD` (e `JWT_SECRET` para
+ambientes fora do desenvolvimento).
 
-| Variable | Default | Description |
+| Variável | Padrão | Descrição |
 |---|---|---|
-| `DB_NAME` | `oficina_db` | PostgreSQL database name |
-| `DB_USER` | `oficina` | PostgreSQL user |
-| `DB_PASSWORD` | — | PostgreSQL password (set your own) |
-| `DB_PORT` | `5432` | Host port mapped to PostgreSQL |
-| `SPRING_PROFILE` | `dev` | Active Spring profile |
-| `SPRING_JPA_HIBERNATE_DDL_AUTO` | `none` | Hibernate DDL strategy |
-| `JWT_SECRET` | dev default | JWT signing secret (override outside dev) |
-| `JWT_EXPIRATION` | `3600` | JWT expiration in seconds |
+| `DB_NAME` | `oficina_db` | Nome do banco de dados PostgreSQL |
+| `DB_USER` | `oficina` | Usuário do PostgreSQL |
+| `DB_PASSWORD` | — | Senha do PostgreSQL (defina a sua) |
+| `DB_PORT` | `5432` | Porta do host mapeada para o PostgreSQL |
+| `SPRING_PROFILE` | `dev` | Perfil ativo do Spring |
+| `SPRING_JPA_HIBERNATE_DDL_AUTO` | `none` | Estratégia DDL do Hibernate |
+| `JWT_SECRET` | padrão dev | Segredo de assinatura JWT (substitua fora do dev) |
+| `JWT_EXPIRATION` | `3600` | Expiração do JWT em segundos |
 
-## Running with Docker Compose
-Docker Compose starts two services: `oficina-db` (PostgreSQL) and
-`oficina-backend` (the API). The backend only starts after PostgreSQL reports
-healthy, and connects to it over the internal `oficina-network`.
+## Executando com Docker Compose
+O Docker Compose sobe dois serviços: `oficina-db` (PostgreSQL) e
+`oficina-backend` (a API). O backend só inicia após o PostgreSQL reportar
+saúde, e se conecta a ele pela rede interna `oficina-network`.
 
 ```bash
-# Build images and start everything in the background
+# Constrói as imagens e sobe tudo em segundo plano
 docker compose up --build -d
 
-# Check the status of the containers
+# Verifica o status dos containers
 docker compose ps
 ```
 
-When healthy, the API is available at `http://localhost:8080`.
+Quando saudável, a API estará disponível em `http://localhost:8080`.
 
-### Database connection
-Inside the Compose network the backend reaches the database by service name:
+### Conexão com o banco de dados
+Dentro da rede do Compose, o backend acessa o banco pelo nome do serviço:
 
 ```
 jdbc:postgresql://postgres:5432/oficina_db
 ```
 
-From your host machine (e.g. a SQL client or `psql`) use `localhost`:
+Da sua máquina local (ex: um cliente SQL ou `psql`) use `localhost`:
 
 ```
 host=localhost  port=5432  db=oficina_db  user=oficina
 ```
 
-These values come from the `SPRING_DATASOURCE_*` variables injected into the
-backend container and can be overridden via your `.env`.
+Esses valores vêm das variáveis `SPRING_DATASOURCE_*` injetadas no
+container do backend e podem ser sobrescritos via `.env`.
 
-### Verifying the connection
+### Verificando a conexão
 ```bash
-# Database is accepting connections
+# Verificar se o banco está aceitando conexões
 docker compose exec postgres pg_isready -U oficina -d oficina_db
 
-# Backend health (includes the database check)
+# Saúde do backend (inclui verificação do banco)
 curl -fsS http://localhost:8080/actuator/health     # -> {"status":"UP"}
 
-# Open a psql session inside the database container
+# Abrir uma sessão psql dentro do container do banco
 docker compose exec postgres psql -U oficina -d oficina_db
 ```
 
-### Stopping
+### Encerrando
 ```bash
-docker compose down          # stop and remove containers (keeps data volume)
-docker compose down -v       # also remove the PostgreSQL data volume (wipes data)
+docker compose down          # para e remove os containers (mantém o volume de dados)
+docker compose down -v       # também remove o volume de dados do PostgreSQL (apaga os dados)
 ```
 
-## Running the API without containers (optional)
-With a PostgreSQL instance reachable, point the datasource via environment
-variables and start the app with the Gradle wrapper:
+## Executando a API sem containers (opcional)
+Com uma instância do PostgreSQL acessível, aponte o datasource via variáveis de ambiente
+e inicie a aplicação com o Gradle wrapper:
 
 ```bash
 export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/oficina_db
 export SPRING_DATASOURCE_USERNAME=oficina
-export SPRING_DATASOURCE_PASSWORD=your_password
+export SPRING_DATASOURCE_PASSWORD=sua_senha
 ./gradlew bootRun
 ```
 
-API documentation (Swagger UI) is available at
-`http://localhost:8080/swagger-ui.html` once the application is running.
+A documentação da API (Swagger UI) estará disponível em
+`http://localhost:8080/swagger-ui.html` após a aplicação iniciar.
 
-## Team Members:
+## Membros da Equipe
 
-Thank you to the following people who contributed to this project:
+Agradecemos às seguintes pessoas que contribuíram para este projeto:
 
 <table>
   <tr>
@@ -155,5 +154,5 @@ Thank you to the following people who contributed to this project:
   </tr>
 </table>
 
-## Licence
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Licença
+Este projeto está licenciado sob a Licença MIT — consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
