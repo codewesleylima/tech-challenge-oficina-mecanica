@@ -3,7 +3,11 @@ name: Branch Policy Enforcement
 on:
   pull_request:
     branches: [develop, hom, main]
-    types: [opened, synchronize, reopened, edited]
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   validate:
@@ -11,45 +15,66 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check branch naming and routing rules
-        run: |
-          SOURCE="${{ github.head_ref }}"
-          TARGET="${{ github.base_ref }}"
+      - name: Enforce branch routing policy
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const source = context.payload.pull_request.head.ref;
+            const target = context.payload.pull_request.base.ref;
+            const prNumber = context.payload.pull_request.number;
 
-          echo "Source branch : $SOURCE"
-          echo "Target branch : $TARGET"
+            let violation = null;
 
-          # Rule 1 — PRs to develop must come from feature/* only
-          if [[ "$TARGET" == "develop" ]]; then
-            if [[ ! "$SOURCE" =~ ^feature/ ]]; then
-              echo ""
-              echo "BLOCKED: PRs to 'develop' must come from a branch starting with 'feature/'"
-              echo "  Source : $SOURCE"
-              echo "  Rename your branch to 'feature/<description>' and reopen the PR."
-              exit 1
-            fi
-          fi
+            if (target === 'develop' && !source.startsWith('feature/')) {
+              violation = [
+                `PRs para \`develop\` só são aceitos de branches que começam com \`feature/\`.`,
+                ``,
+                `**Branch de origem:** \`${source}\``,
+                ``,
+                `Renomeie sua branch para \`feature/<descrição>\` e abra um novo PR.`,
+              ].join('\n');
+            }
 
-          # Rule 2 — PRs to hom must come from develop only
-          if [[ "$TARGET" == "hom" ]]; then
-            if [[ "$SOURCE" != "develop" ]]; then
-              echo ""
-              echo "BLOCKED: PRs to 'hom' must come from 'develop' only"
-              echo "  Source : $SOURCE"
-              exit 1
-            fi
-          fi
+            if (target === 'hom' && source !== 'develop') {
+              violation = [
+                `PRs para \`hom\` só são aceitos vindos de \`develop\`.`,
+                ``,
+                `**Branch de origem:** \`${source}\``,
+              ].join('\n');
+            }
 
-          # Rule 3 — PRs to main must come from hom only
-          if [[ "$TARGET" == "main" ]]; then
-            if [[ "$SOURCE" != "hom" ]]; then
-              echo ""
-              echo "BLOCKED: PRs to 'main' must come from 'hom' only"
-              echo "  Source : $SOURCE"
-              exit 1
-            fi
-          fi
+            if (target === 'main' && source !== 'hom') {
+              violation = [
+                `PRs para \`main\` só são aceitos vindos de \`hom\`.`,
+                ``,
+                `**Branch de origem:** \`${source}\``,
+              ].join('\n');
+            }
 
-          echo ""
-          echo "Branch policy OK"
-          echo "  $SOURCE -> $TARGET"
+            if (violation) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: [
+                  `## ❌ Política de branches violada`,
+                  ``,
+                  violation,
+                  ``,
+                  `---`,
+                  `**Fluxo obrigatório:**`,
+                  `\`\`\``,
+                  `feature/* → develop → hom → main`,
+                  `\`\`\``,
+                ].join('\n'),
+              });
+
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                state: 'closed',
+              });
+
+              core.setFailed(`[BLOCKED] ${source} → ${target} violates branch policy.`);
+            }
