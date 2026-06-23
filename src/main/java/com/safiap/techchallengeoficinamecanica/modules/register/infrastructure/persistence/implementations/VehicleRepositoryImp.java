@@ -1,0 +1,40 @@
+package com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.implementations;
+
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Vehicle;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.VehicleRepository;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CarLicensePlate;
+import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.mappers.VehicleMapper;
+import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.repositories.JPAVehicleRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public class VehicleRepositoryImp implements VehicleRepository {
+
+    private final JPAVehicleRepository jpaVehicleRepository;
+
+    public VehicleRepositoryImp(JPAVehicleRepository jpaVehicleRepository) {
+        this.jpaVehicleRepository = jpaVehicleRepository;
+    }
+
+    @Override
+    public void save(Vehicle vehicle) {
+        jpaVehicleRepository.save(VehicleMapper.toJPA(vehicle));
+    }
+
+    @Override
+    public Optional<Vehicle> findByVehicleId(UUID vehicleId) {
+        return jpaVehicleRepository
+                .findById(vehicleId)
+                .map(VehicleMapper::toEntity);
+    }
+
+    @Override
+    public Optional<Vehicle> findByCarLicensePlate(CarLicensePlate carLicensePlate) {
+        return jpaVehicleRepository
+                .findByCarLicensePlate(carLicensePlate.plate())
+                .map(VehicleMapper::toEntity);
+    }
+}
