@@ -20,4 +20,5 @@ public record Email(String value) {
         if (!EMAIL_PATTERN.matcher(value).matches()) {
             throw new DomainException("Invalid email format.");
         }
+    }
 }
