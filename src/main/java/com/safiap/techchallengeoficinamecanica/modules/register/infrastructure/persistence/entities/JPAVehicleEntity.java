@@ -17,8 +17,7 @@ public class JPAVehicleEntity {
     @GeneratedValue(strategy= GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @Column (nullable = false)
     private UUID customerId;
     @Column(nullable = false)
     private String carLicensePlate;
