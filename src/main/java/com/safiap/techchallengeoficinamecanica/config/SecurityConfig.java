@@ -85,7 +85,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        JWK jwk = new OctetSequenceKey.Builder(jwtSecret.getBytes())
+        JWK jwk = new OctetSequenceKey.Builder(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8))
                 .algorithm(JWSAlgorithm.HS256)
                 .keyUse(KeyUse.SIGNATURE)
                 .keyID("jwt-hs256")
