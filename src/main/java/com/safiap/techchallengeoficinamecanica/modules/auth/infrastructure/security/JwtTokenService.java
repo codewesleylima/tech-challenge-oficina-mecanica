@@ -37,7 +37,10 @@ public class JwtTokenService implements TokenService {
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
-        return new UserTokenResponse(encoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue(),
-                Date.from(expiresAt).getTime(), "Bearer");
+        return new UserTokenResponse(
+                encoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue(),
+                expiresAt.toEpochMilli(),
+                "Bearer"
+        );
     }
 }
