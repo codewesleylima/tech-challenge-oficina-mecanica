@@ -17,7 +17,7 @@ public class JPAVehicleEntity {
     @GeneratedValue(strategy= GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column (nullable = false)
     private UUID customerId;
     @Column(nullable = false)
     private String carLicensePlate;
