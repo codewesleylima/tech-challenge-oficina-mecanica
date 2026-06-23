@@ -2,7 +2,6 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.enti
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRoot;
-import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -31,7 +30,7 @@ public class ServiceOrder extends AggregateRoot {
 
     public static ServiceOrder open(UUID customerId, UUID vehicleId, String problemDescription) {
         return new ServiceOrder(UUID.randomUUID(), customerId, vehicleId,
-                problemDescription, ServiceOrderStatus.OPEN, LocalDateTime.now(), null);
+                problemDescription, ServiceOrderStatus.RECEIVED, LocalDateTime.now(), null);
     }
 
     public static ServiceOrder build(UUID serviceOrderId, UUID customerId, UUID vehicleId,
@@ -39,13 +38,6 @@ public class ServiceOrder extends AggregateRoot {
                                      LocalDateTime openedAt, LocalDateTime concludedAt) {
         return new ServiceOrder(serviceOrderId, customerId, vehicleId,
                 problemDescription, status, openedAt, concludedAt);
-    }
-
-    public void cancel() {
-        if (this.status == ServiceOrderStatus.CONCLUDED || this.status == ServiceOrderStatus.CANCELLED) {
-            throw new DomainException("Service order cannot be cancelled in its current status");
-        }
-        this.status = ServiceOrderStatus.CANCELLED;
     }
 
     public UUID getServiceOrderId() { return serviceOrderId; }
