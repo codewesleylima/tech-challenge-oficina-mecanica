@@ -8,7 +8,6 @@ import com.safiap.techchallengeoficinamecanica.modules.auth.infrastructure.persi
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-
 @Repository
 public class UserRepositoryImp implements UserRepository {
 
