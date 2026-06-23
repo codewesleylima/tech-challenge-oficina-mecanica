@@ -22,7 +22,7 @@ public class VehicleController {
         this.addVehicleUseCase = addVehicleUseCase;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<AddVehicleResponse> addVehicle(
             @RequestBody AddVehicleDTO request) {
 
