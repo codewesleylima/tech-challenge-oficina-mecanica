@@ -23,7 +23,7 @@ public class CustomerController {
         this.registerCustomerUseCase = registerCustomerUseCase;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<RegisterCustomerResponse> registerCustomer(
             @RequestBody RegisterCustomerDTO request) {
 
