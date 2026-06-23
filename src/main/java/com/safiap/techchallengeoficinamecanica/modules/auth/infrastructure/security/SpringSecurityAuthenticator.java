@@ -29,7 +29,7 @@ public class SpringSecurityAuthenticator implements Authenticator {
                     new UsernamePasswordAuthenticationToken(email, rawPassword)
             );
         } catch (AuthenticationException e) {
-            throw new AuthException(e.getMessage());
+            throw new AuthException("Invalid credentials");
         }
 
         List<String> roles = auth.getAuthorities().stream()
