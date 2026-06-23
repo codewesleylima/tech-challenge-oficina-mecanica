@@ -6,6 +6,8 @@ import com.safiap.techchallengeoficinamecanica.modules.auth.application.response
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserTokenResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cases.LoginUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cases.RegisterUserUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.UserLoginDto;
+import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.AddUserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +24,12 @@ public class AuthController {
         this.loginUseCase = loginUseCase;
     }
     @PostMapping("/register")
-    public ResponseEntity<UserCreateResponse> register(@RequestBody AddUserCommand command){
-        return ResponseEntity.status(201).body(registerUserUseCase.execute(command));
+    public ResponseEntity<UserCreateResponse> register(@RequestBody AddUserDto dto){
+        return ResponseEntity.status(201).body(registerUserUseCase.execute(new AddUserCommand(dto.email(),dto.password())));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserTokenResponse> login(@RequestBody UserLoginCommand command){
-        return ResponseEntity.ok(loginUseCase.execute(command));
+    public ResponseEntity<UserTokenResponse> login(@RequestBody UserLoginDto dto){
+        return ResponseEntity.ok(loginUseCase.execute(new UserLoginCommand(dto.email(), dto.password())));
     }
 }
