@@ -6,7 +6,6 @@ import com.safiap.techchallengeoficinamecanica.modules.auth.infrastructure.persi
 import com.safiap.techchallengeoficinamecanica.modules.auth.infrastructure.persistence.repositories.JpaUserRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
 
 @Repository
 public class UserRepositoryImp implements UserRepository {
