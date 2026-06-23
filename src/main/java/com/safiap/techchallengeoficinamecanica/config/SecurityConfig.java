@@ -38,7 +38,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
 
 
-    @Value("${JWT_SECRET:chave-dev-minimo-256-bits-dev-dev-dev-dev-dev-dev-dev}")
+    @Value("${JWT_SECRET}")
     private String jwtSecret;
 
     @Bean
@@ -46,8 +46,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
