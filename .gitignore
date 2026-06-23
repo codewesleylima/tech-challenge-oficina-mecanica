@@ -43,4 +43,3 @@ docs/docusauros/
 ### Local-only reference / backups (never commit)
 *.pdf
 *.bundle
-application-local.properties
