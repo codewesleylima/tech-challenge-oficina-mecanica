@@ -1,11 +1,10 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects;
 
 public enum ServiceOrderStatus {
-    OPEN,
-    DIAGNOSIS,
-    AWAITING_AUTHORIZATION,
-    AUTHORIZED,
+    RECEIVED,
+    IN_DIAGNOSIS,
+    AWAITING_APPROVAL,
     IN_EXECUTION,
-    CONCLUDED,
-    CANCELLED
+    FINALIZED,
+    DELIVERED
 }
