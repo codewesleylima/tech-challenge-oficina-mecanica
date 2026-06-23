@@ -6,7 +6,7 @@ import com.safiap.techchallengeoficinamecanica.modules.auth.application.response
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.service.PasswordHasher;
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.entities.User;
 import com.safiap.techchallengeoficinamecanica.modules.auth.domain.repositories.UserRepository;
-import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +26,7 @@ public class RegisterUserUseCase {
         User user = User.createUser(command.email(), passwordHasher.hash(command.password()));
 
         userRepository.findByEmail(user.getEmail()).ifPresent(existingUser -> {
-            throw new DomainException("already exists email " + existingUser.getEmail().value());
+            throw new ConflictException("Email already registered.");
         });
 
         userRepository.saveUser(user);
