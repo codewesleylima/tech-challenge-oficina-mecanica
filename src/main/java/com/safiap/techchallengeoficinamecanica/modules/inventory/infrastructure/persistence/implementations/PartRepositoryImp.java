@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.
 import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.repositories.JpaPartRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,5 +36,14 @@ public class PartRepositoryImp implements PartRepository {
         return jpaPartRepository
                 .findById(id)
                 .map(PartMapper::toEntity);
+    }
+
+    @Override
+    public List<Part> findAll() {
+        return jpaPartRepository
+                .findAll()
+                .stream()
+                .map(PartMapper::toEntity)
+                .toList();
     }
 }

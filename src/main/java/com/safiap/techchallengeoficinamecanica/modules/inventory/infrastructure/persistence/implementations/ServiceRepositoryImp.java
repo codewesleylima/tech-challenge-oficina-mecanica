@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.
 import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.repositories.JpaServiceRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,5 +36,14 @@ public class ServiceRepositoryImp implements ServiceRepository {
         return jpaServiceRepository
                 .findById(id)
                 .map(ServiceMapper::toEntity);
+    }
+
+    @Override
+    public List<Service> findAll() {
+        return jpaServiceRepository
+                .findAll()
+                .stream()
+                .map(ServiceMapper::toEntity)
+                .toList();
     }
 }
