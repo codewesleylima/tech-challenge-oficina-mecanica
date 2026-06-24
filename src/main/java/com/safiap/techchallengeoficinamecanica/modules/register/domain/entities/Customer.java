@@ -4,6 +4,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_obj
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRoot;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -29,6 +30,34 @@ public class Customer extends AggregateRoot {
         this.email = email;
         this.phone = phone;
         this.cpf = cpf;
+    }
+
+
+    public UUID getCustomerId() {
+        return customerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Email getEmail() {
+        return email;
+    }
+
+    public Phone getPhone() {
+        return phone;
+    }
+
+    public CPF getCpf() {
+        return cpf;
+    }
+
+    private void changeName (String newName) {
+        if (newName == null || newName.isBlank()) {
+            throw new DomainException("Name cannot be null or empty.");
+        }
+        this.name = newName;
     }
 
     public static Customer createCustomer(
@@ -72,23 +101,28 @@ public class Customer extends AggregateRoot {
         );
     }
 
-    public UUID getCustomerId() {
-        return customerId;
+    public void updateCustomer(String Name, String Email, String Phone, String CPF) {
+        changeName(Name);
+        this.email = new Email(Email);
+        this.phone = new Phone(Phone);
+        this.cpf = new CPF(CPF);
     }
 
-    public String getName() {
-        return name;
+    public void partialUpdateCustomer(String Name, String Email, String Phone, String CPF) {
+        if (Name != null) {
+            changeName(Name);
+        }
+        if (Email != null) {
+            this.email = new Email(Email);
+        }
+        if (Phone != null) {
+            this.phone = new Phone(Phone);
+        }
+        if (CPF != null) {
+            this.cpf = new CPF(CPF);
+        }
+
     }
 
-    public Email getEmail() {
-        return email;
-    }
 
-    public Phone getPhone() {
-        return phone;
-    }
-
-    public CPF getCpf() {
-        return cpf;
-    }
 }
