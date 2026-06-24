@@ -2,6 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure
 
 import com.safiap.techchallengeoficinamecanica.modules.inventory.domain.entities.Service;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.domain.repositories.ServiceRepository;
+import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.entities.JpaServiceEntity;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.mappers.ServiceMapper;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.repositories.JpaServiceRepository;
 import org.springframework.stereotype.Repository;
@@ -19,8 +20,14 @@ public class ServiceRepositoryImp implements ServiceRepository {
     }
 
     @Override
-    public void save(Service service) {
-        jpaServiceRepository.save(ServiceMapper.toJPA(service));
+    public  Optional<Service> save(Service service) {
+        JpaServiceEntity jpaEntity = jpaServiceRepository.save(ServiceMapper.toJPA(service));
+        return Optional.of(ServiceMapper.toEntity(jpaEntity));
+    }
+
+    @Override
+    public void delete(UUID id) {
+        jpaServiceRepository.deleteById(id);
     }
 
     @Override

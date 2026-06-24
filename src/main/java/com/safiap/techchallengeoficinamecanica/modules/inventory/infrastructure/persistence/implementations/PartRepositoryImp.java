@@ -2,6 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure
 
 import com.safiap.techchallengeoficinamecanica.modules.inventory.domain.entities.Part;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.domain.repositories.PartRepository;
+import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.entities.JpaPartEntity;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.mappers.PartMapper;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.infrastructure.persistence.repositories.JpaPartRepository;
 import org.springframework.stereotype.Repository;
@@ -19,8 +20,14 @@ public class PartRepositoryImp implements PartRepository {
     }
 
     @Override
-    public void save(Part part) {
-        jpaPartRepository.save(PartMapper.toJPA(part));
+    public Optional<Part> save(Part part) {
+        JpaPartEntity saved = jpaPartRepository.save(PartMapper.toJPA(part));
+        return Optional.of(PartMapper.toEntity(saved));
+    }
+
+    @Override
+    public void delete(UUID partId) {
+        jpaPartRepository.deleteById(partId);
     }
 
     @Override

@@ -46,6 +46,15 @@ public class Part extends AggregateRoot {
         this.quantity = this.quantity.add(amount);
     }
 
+    public void update(String name, String description, Money price) {
+        description = description == null ? null : description.trim();
+        validate(this.id, name, description, price, quantity);
+        this.name = name.trim();
+        this.description = description;
+        this.price = price;
+
+    }
+
     private void validate(UUID id, String name, String description, Money price, Quantity quantity) {
         Objects.requireNonNull(id, " id is null");
         Objects.requireNonNull(name, " name is null");

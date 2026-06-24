@@ -8,5 +8,7 @@ import java.util.UUID;
 public interface ServiceRepository {
 
     Optional<Service> findById(UUID id);
-    void save(Service service);
+    Optional<Service> save(Service service);
+    void delete(UUID id);
+
 }

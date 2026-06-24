@@ -8,6 +8,7 @@ import java.util.UUID;
 public interface PartRepository {
 
     Optional<Part> findById(UUID id);
-    void save(Part part);
+    Optional<Part>  save(Part part);
+    void delete(UUID partId);
 
 }
