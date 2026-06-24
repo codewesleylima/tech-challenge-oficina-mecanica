@@ -6,17 +6,21 @@ import com.safiap.techchallengeoficinamecanica.modules.inventory.application.res
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.responses.part.GetPartResponse;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.responses.part.RegisterPartResponse;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.AlterPartUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.DecreasePartStockUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.DeletePartUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.GetPartByIdUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.IncreasePartStockUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.ListPartsUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.RegisterPartUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.part.AlterPartDTO;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.part.RegisterPartDTO;
+import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.part.StockMovementDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,17 +41,23 @@ public class PartController {
     private final DeletePartUseCase deletePartUseCase;
     private final GetPartByIdUseCase getPartByIdUseCase;
     private final ListPartsUseCase listPartsUseCase;
+    private final IncreasePartStockUseCase increasePartStockUseCase;
+    private final DecreasePartStockUseCase decreasePartStockUseCase;
 
     public PartController(RegisterPartUseCase registerPartUseCase,
                           AlterPartUseCase alterPartUseCase,
                           DeletePartUseCase deletePartUseCase,
                           GetPartByIdUseCase getPartByIdUseCase,
-                          ListPartsUseCase listPartsUseCase) {
+                          ListPartsUseCase listPartsUseCase,
+                          IncreasePartStockUseCase increasePartStockUseCase,
+                          DecreasePartStockUseCase decreasePartStockUseCase) {
         this.registerPartUseCase = registerPartUseCase;
         this.alterPartUseCase = alterPartUseCase;
         this.deletePartUseCase = deletePartUseCase;
         this.getPartByIdUseCase = getPartByIdUseCase;
         this.listPartsUseCase = listPartsUseCase;
+        this.increasePartStockUseCase = increasePartStockUseCase;
+        this.decreasePartStockUseCase = decreasePartStockUseCase;
     }
 
     @PostMapping
@@ -88,6 +98,22 @@ public class PartController {
         );
 
         return ResponseEntity.ok(alterPartUseCase.execute(command, id));
+    }
+
+    @PatchMapping("/{id}/stock/increase")
+    public ResponseEntity<AlterPartResponse> increaseStock(
+            @PathVariable UUID id,
+            @RequestBody StockMovementDTO request) {
+
+        return ResponseEntity.ok(increasePartStockUseCase.execute(id, request.amount()));
+    }
+
+    @PatchMapping("/{id}/stock/decrease")
+    public ResponseEntity<AlterPartResponse> decreaseStock(
+            @PathVariable UUID id,
+            @RequestBody StockMovementDTO request) {
+
+        return ResponseEntity.ok(decreasePartStockUseCase.execute(id, request.amount()));
     }
 
     @DeleteMapping("/{id}")
