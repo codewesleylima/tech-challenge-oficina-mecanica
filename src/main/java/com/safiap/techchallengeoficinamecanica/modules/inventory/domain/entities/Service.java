@@ -35,6 +35,14 @@ public class Service extends AggregateRoot {
         return new Service(id, name, description, price);
     }
 
+    public void update(String name, String description, Money price) {
+        description = description == null ? null : description.trim();
+        validate(this.id, name, description, price);
+        this.name = name.trim();
+        this.description = description;
+        this.price = price;
+    }
+
     private void validate(UUID id, String name, String description, Money price) {
         Objects.requireNonNull(id, " id is null");
         Objects.requireNonNull(name, " name is null");
