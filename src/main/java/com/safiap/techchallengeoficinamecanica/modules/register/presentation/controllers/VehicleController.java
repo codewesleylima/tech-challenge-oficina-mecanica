@@ -1,9 +1,8 @@
 package com.safiap.techchallengeoficinamecanica.modules.register.presentation.controllers;
 
-import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.AddVehicleCommand;
+import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.vehicle.AddVehicleCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.vehicle.AddVehicleResponse;
-import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.AddVehicleUseCase;
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Kilometers;
+import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.vehicle.AddVehicleUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.vehicle.AddVehicleDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
