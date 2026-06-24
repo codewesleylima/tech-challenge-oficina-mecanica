@@ -8,6 +8,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.p
 import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.repositories.JPACustomerRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,5 +38,15 @@ public class CustomerRepositoryImp implements CustomerRepository {
         return jpacustomerRepository
                 .findByCpf(cpf.cpf())
                 .map(CustomerMapper::toEntity);
+    }
+
+    @Override
+    public void delete(Customer customer) {
+        jpacustomerRepository.delete(CustomerMapper.toJPA(customer));
+    }
+
+    @Override
+    public List<Customer> findAll() {
+        return jpacustomerRepository.findAll().stream().map(CustomerMapper::toEntity).toList();
     }
 }
