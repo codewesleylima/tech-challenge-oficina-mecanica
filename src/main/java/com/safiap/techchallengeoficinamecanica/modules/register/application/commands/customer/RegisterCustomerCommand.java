@@ -1,4 +1,4 @@
-package com.safiap.techchallengeoficinamecanica.modules.register.application.commands;
+package com.safiap.techchallengeoficinamecanica.modules.register.application.commands.customer;
 
 
 public record RegisterCustomerCommand(
