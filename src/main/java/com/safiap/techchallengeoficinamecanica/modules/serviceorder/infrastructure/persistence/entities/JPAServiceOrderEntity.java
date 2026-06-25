@@ -1,5 +1,6 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.entities;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,9 +36,11 @@ public class JPAServiceOrderEntity {
 
     private LocalDateTime concludedAt;
 
+    private int priority=1;
+
     public JPAServiceOrderEntity(UUID id, UUID customerId, UUID vehicleId,
                                  String problemDescription, ServiceOrderStatus status,
-                                 LocalDateTime openedAt, LocalDateTime concludedAt) {
+                                 LocalDateTime openedAt, LocalDateTime concludedAt, ServiceOrderPriority priority) {
         this.id = id;
         this.customerId = customerId;
         this.vehicleId = vehicleId;
@@ -45,5 +48,6 @@ public class JPAServiceOrderEntity {
         this.status = status;
         this.openedAt = openedAt;
         this.concludedAt = concludedAt;
+        this.priority=priority.getValue();
     }
 }
