@@ -60,7 +60,7 @@ public class VehicleController {
 
     };
 
-    @PutMapping("/{id}/alter")
+    @PutMapping("/alter/{id}")
     public ResponseEntity<AlterVehicleResponse> alterVehicle(
             @PathVariable UUID id,
             @RequestBody AlterVehicleDTO request) {
@@ -70,7 +70,7 @@ public class VehicleController {
                 request.customerId(),
                 request.carLicensePlate(),
                 request.model(),
-                request.manufactures(),
+                request.manufacturer(),
                 request.kilometers(),
                 request.year()
         );
@@ -93,7 +93,7 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.OK).body(getVehicleByIdUseCase.execute(id));
     }
 
-    @GetMapping("/{plate}")
+    @GetMapping("/plate/{plate}")
     public ResponseEntity<GetVehicleResponse> findVehicleByCarLicensePlate(
             @PathVariable String plate
     ) {

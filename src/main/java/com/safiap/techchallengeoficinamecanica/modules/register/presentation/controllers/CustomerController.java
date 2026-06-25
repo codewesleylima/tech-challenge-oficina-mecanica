@@ -55,7 +55,7 @@ public class CustomerController {
 
     };
 
-    @PutMapping("/{id}/alter")
+    @PutMapping("/alter/{id}")
     public ResponseEntity<AlterCustomerResponse> alterCustomer(
             @PathVariable UUID id,
             @RequestBody AlterCustomerDTO request) {
@@ -84,7 +84,7 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.OK).body(getCustomerByIdUseCase.execute(id));
     }
 
-    @GetMapping("/{cpf}")
+    @GetMapping("/cpf/{cpf}")
     public ResponseEntity<GetCustomerResponse> findCustomerByCPF(
             @PathVariable String cpf
     ) {

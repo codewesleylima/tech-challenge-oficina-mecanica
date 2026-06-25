@@ -7,7 +7,7 @@ public record AlterVehicleDTO(
         UUID customerId,
         String carLicensePlate,
         String model,
-        String manufactures,
+        String manufacturer,
         Integer kilometers,
         Year year
 ) {

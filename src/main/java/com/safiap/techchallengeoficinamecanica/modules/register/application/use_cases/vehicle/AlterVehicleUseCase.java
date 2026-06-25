@@ -26,7 +26,7 @@ public class AlterVehicleUseCase {
         vehicle.alterVehicle(
                 new CarLicensePlate(command.carLicensePlate()),
                 command.model(),
-                command.manufactures(),
+                command.manufacturer(),
                 new Kilometers(command.kilometers()),
                 command.year()
         );
