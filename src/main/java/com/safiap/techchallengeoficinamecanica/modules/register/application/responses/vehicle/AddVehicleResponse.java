@@ -2,5 +2,5 @@ package com.safiap.techchallengeoficinamecanica.modules.register.application.res
 
 import java.util.UUID;
 
-public record AddVehicleResponse(UUID vehicleId, String Plate, UUID customerId) {
+public record AddVehicleResponse(UUID vehicleId, String plate, UUID customerId) {
 }
