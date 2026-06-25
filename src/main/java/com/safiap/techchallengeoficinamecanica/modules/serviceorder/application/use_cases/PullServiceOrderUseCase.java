@@ -18,16 +18,7 @@ public class PullServiceOrderUseCase {
 
     public ServiceOrderResponse execute(){
         return serviceOrderRepository.pullNextOrderService(ServiceOrderStatus.RECEIVED)
-                .map(serviceOrder->new ServiceOrderResponse(
-                        serviceOrder.getServiceOrderId(),
-                        serviceOrder.getCustomerId(),
-                        serviceOrder.getVehicleId(),
-                        serviceOrder.getProblemDescription(),
-                        serviceOrder.getStatus(),
-                        serviceOrder.getOpenedAt(),
-                        serviceOrder.getConcludedAt(),
-                        serviceOrder.getPriority().name()
-                ))
+                .map(ServiceOrderResponse::from)
                 .orElseThrow(()->new ConflictException("there is no pending service orders"));
     }
 }

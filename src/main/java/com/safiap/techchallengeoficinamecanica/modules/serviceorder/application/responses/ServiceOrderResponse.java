@@ -1,5 +1,6 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 
 import java.time.LocalDateTime;
@@ -15,4 +16,16 @@ public record ServiceOrderResponse(
         LocalDateTime concludedAt,
         String priority
 ) {
+    public static ServiceOrderResponse from(ServiceOrder serviceOrder) {
+        return new ServiceOrderResponse(
+                serviceOrder.getServiceOrderId(),
+                serviceOrder.getCustomerId(),
+                serviceOrder.getVehicleId(),
+                serviceOrder.getProblemDescription(),
+                serviceOrder.getStatus(),
+                serviceOrder.getOpenedAt(),
+                serviceOrder.getConcludedAt(),
+                serviceOrder.getPriority().name()
+        );
+    }
 }

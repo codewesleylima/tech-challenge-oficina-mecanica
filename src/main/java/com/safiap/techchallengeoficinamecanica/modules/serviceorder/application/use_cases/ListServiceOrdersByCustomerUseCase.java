@@ -18,16 +18,7 @@ public class ListServiceOrdersByCustomerUseCase {
 
     public List<ServiceOrderResponse> execute(UUID customerId) {
         return serviceOrderRepository.findByCustomerId(customerId).stream()
-                .map(serviceOrder -> new ServiceOrderResponse(
-                        serviceOrder.getServiceOrderId(),
-                        serviceOrder.getCustomerId(),
-                        serviceOrder.getVehicleId(),
-                        serviceOrder.getProblemDescription(),
-                        serviceOrder.getStatus(),
-                        serviceOrder.getOpenedAt(),
-                        serviceOrder.getConcludedAt(),
-                        serviceOrder.getPriority().name()
-                ))
+                .map(ServiceOrderResponse::from)
                 .toList();
     }
 }

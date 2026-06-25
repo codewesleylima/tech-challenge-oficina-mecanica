@@ -11,7 +11,7 @@ public enum ServiceOrderPriority {
     NORMAL(2),
     LOW(1);
 
-    private int value;
+    private final int value;
 
     ServiceOrderPriority(int value) {
         this.value = value;
@@ -19,6 +19,15 @@ public enum ServiceOrderPriority {
     public int getValue() {
         return value;
     }
+
+    public ServiceOrderPriority increase() {
+        return this == URGENT ? this : fromValue(value + 1);
+    }
+
+    public ServiceOrderPriority decrease() {
+        return this == LOW ? this : fromValue(value - 1);
+    }
+
     public static ServiceOrderPriority fromValue(int value) {
         return Arrays.stream(ServiceOrderPriority.values()).filter(x -> x.getValue() == value).findFirst().orElseThrow(()->new NotFoundException("Service priority not defined: "+value));
     }

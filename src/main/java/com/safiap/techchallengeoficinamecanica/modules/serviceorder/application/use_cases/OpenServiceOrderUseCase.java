@@ -41,15 +41,6 @@ public class OpenServiceOrderUseCase {
 
         serviceOrderRepository.save(serviceOrder);
 
-        return new ServiceOrderResponse(
-                serviceOrder.getServiceOrderId(),
-                serviceOrder.getCustomerId(),
-                serviceOrder.getVehicleId(),
-                serviceOrder.getProblemDescription(),
-                serviceOrder.getStatus(),
-                serviceOrder.getOpenedAt(),
-                serviceOrder.getConcludedAt(),
-                serviceOrder.getPriority().name()
-        );
+        return ServiceOrderResponse.from(serviceOrder);
     }
 }

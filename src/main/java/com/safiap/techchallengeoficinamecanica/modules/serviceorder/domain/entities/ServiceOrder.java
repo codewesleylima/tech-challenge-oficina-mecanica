@@ -43,6 +43,14 @@ public class ServiceOrder extends AggregateRoot {
                 problemDescription, status, openedAt, concludedAt, priority);
     }
 
+    public void increasePriority() {
+        this.priority = this.priority.increase();
+    }
+
+    public void decreasePriority() {
+        this.priority = this.priority.decrease();
+    }
+
     public UUID getServiceOrderId() { return serviceOrderId; }
     public UUID getCustomerId() { return customerId; }
     public UUID getVehicleId() { return vehicleId; }
