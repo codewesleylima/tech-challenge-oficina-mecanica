@@ -2,9 +2,11 @@ package com.safiap.techchallengeoficinamecanica.modules.register.application.use
 
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.GetCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class GetAllCustomersUseCase {
 
     private final CustomerRepository customerRepository;

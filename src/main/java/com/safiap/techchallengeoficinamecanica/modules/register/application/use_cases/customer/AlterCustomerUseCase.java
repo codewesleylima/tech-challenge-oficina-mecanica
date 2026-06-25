@@ -4,6 +4,9 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.comm
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.AlterCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Customer;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +24,17 @@ public class AlterCustomerUseCase {
         Customer customer = customerRepository.findByCustomerId(command.id())
                 .orElseThrow( () -> new DomainException("Customer not found."));
 
-        customer.updateCustomer(
+        customer.alterCustomer(
                 command.Name(),
-                command.Email(),
-                command.Phone(),
-                command.Cpf()
+                new Email(command.Email()),
+                new Phone(command.Phone()),
+                new CPF(command.Cpf())
         );
 
         customerRepository.save(customer);
 
         return new AlterCustomerResponse(
+                customer.getCustomerId(),
                 customer.getName(),
                 customer.getEmail().value(),
                 customer.getPhone().value(),

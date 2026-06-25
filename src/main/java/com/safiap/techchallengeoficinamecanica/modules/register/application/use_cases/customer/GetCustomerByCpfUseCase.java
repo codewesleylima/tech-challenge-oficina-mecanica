@@ -4,7 +4,9 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.resp
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GetCustomerByCpfUseCase {
 
     private final CustomerRepository customerRepository;
