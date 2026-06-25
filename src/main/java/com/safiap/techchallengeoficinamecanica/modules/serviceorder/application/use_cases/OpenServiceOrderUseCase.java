@@ -6,7 +6,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
-import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +28,10 @@ public class OpenServiceOrderUseCase {
     @Transactional
     public ServiceOrderResponse execute(OpenServiceOrderCommand command) {
         customerRepository.findByCustomerId(command.customerId())
-                .orElseThrow(() -> new DomainException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
 
         vehicleRepository.findByVehicleId(command.vehicleId())
-                .orElseThrow(() -> new DomainException("Vehicle not found"));
+                .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
         ServiceOrder serviceOrder = ServiceOrder.open(
                 command.customerId(),
