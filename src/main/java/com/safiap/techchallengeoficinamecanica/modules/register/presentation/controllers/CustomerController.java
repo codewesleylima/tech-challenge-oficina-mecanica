@@ -1,19 +1,17 @@
 package com.safiap.techchallengeoficinamecanica.modules.register.presentation.controllers;
 
 
-import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.customer.PartialAlterCustomerCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.customer.RegisterCustomerCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.customer.AlterCustomerCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.GetCustomerResponse;
-import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.PartialAlterCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.RegisterCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.AlterCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.customer.*;
-import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.PartialAlterCustomerDTO;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.RegisterCustomerDTO;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.AlterCustomerDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,24 +19,22 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/customers")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class CustomerController {
 
     private final RegisterCustomerUseCase registerCustomerUseCase;
     private final AlterCustomerUseCase alterCustomerUseCase;
-    private final PartialAlterCustomerUseCase partialAlterCustomerUseCase;
     private final GetAllCustomersUseCase getAllCustomersUseCase;
     private final GetCustomerByIdUseCase  getCustomerByIdUseCase;
     private final GetCustomerByCpfUseCase getCustomerByCpfUseCase;
 
     public CustomerController(RegisterCustomerUseCase registerCustomerUseCase,
                               AlterCustomerUseCase alterCustomerUseCase,
-                              PartialAlterCustomerUseCase partialAlterCustomerUseCase,
                               GetAllCustomersUseCase getAllCustomersUseCase,
                               GetCustomerByIdUseCase getCustomerByIdUseCase,
                               GetCustomerByCpfUseCase getCustomerByCpfUseCase) {
         this.registerCustomerUseCase = registerCustomerUseCase;
         this.alterCustomerUseCase = alterCustomerUseCase;
-        this.partialAlterCustomerUseCase = partialAlterCustomerUseCase;
         this.getAllCustomersUseCase = getAllCustomersUseCase;
         this.getCustomerByIdUseCase = getCustomerByIdUseCase;
         this.getCustomerByCpfUseCase = getCustomerByCpfUseCase;
@@ -59,8 +55,8 @@ public class CustomerController {
 
     };
 
-    @PutMapping("/{id}/update")
-    public ResponseEntity<AlterCustomerResponse> registerCustomer(
+    @PutMapping("/{id}/alter")
+    public ResponseEntity<AlterCustomerResponse> alterCustomer(
             @PathVariable UUID id,
             @RequestBody AlterCustomerDTO request) {
 
@@ -73,23 +69,6 @@ public class CustomerController {
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(alterCustomerUseCase.execute(command));
-
-    };
-
-    @PatchMapping("/{id}/update")
-    public ResponseEntity<PartialAlterCustomerResponse> registerCustomer(
-            @PathVariable UUID id,
-            @RequestBody PartialAlterCustomerDTO request) {
-
-        PartialAlterCustomerCommand command = new PartialAlterCustomerCommand(
-                id,
-                request.Name(),
-                request.Email(),
-                request.Phone(),
-                request.CPF()
-        );
-
-        return ResponseEntity.status(HttpStatus.OK).body(partialAlterCustomerUseCase.execute(command));
 
     };
 
