@@ -101,27 +101,11 @@ public class Customer extends AggregateRoot {
         );
     }
 
-    public void updateCustomer(String Name, String Email, String Phone, String CPF) {
+    public void alterCustomer(String Name, Email Email, Phone Phone, CPF CPF) {
         changeName(Name);
-        this.email = new Email(Email);
-        this.phone = new Phone(Phone);
-        this.cpf = new CPF(CPF);
-    }
-
-    public void partialUpdateCustomer(String Name, String Email, String Phone, String CPF) {
-        if (Name != null) {
-            changeName(Name);
-        }
-        if (Email != null) {
-            this.email = new Email(Email);
-        }
-        if (Phone != null) {
-            this.phone = new Phone(Phone);
-        }
-        if (CPF != null) {
-            this.cpf = new CPF(CPF);
-        }
-
+        this.email = Email;
+        this.phone = Phone;
+        this.cpf = CPF;
     }
 
 
