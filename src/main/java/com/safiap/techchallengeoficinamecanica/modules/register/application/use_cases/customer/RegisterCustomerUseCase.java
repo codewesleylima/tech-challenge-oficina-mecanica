@@ -34,7 +34,7 @@ public class RegisterCustomerUseCase {
 
         customerRepository.save(customer);
 
-        return new RegisterCustomerResponse(customer.getName());
+        return new RegisterCustomerResponse(customer.getName(), customer.getCustomerId());
 
     }
 
