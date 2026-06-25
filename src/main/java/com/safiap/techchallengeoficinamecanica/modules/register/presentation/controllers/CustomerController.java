@@ -4,7 +4,6 @@ package com.safiap.techchallengeoficinamecanica.modules.register.presentation.co
 import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.RegisterCustomerCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.RegisterCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.RegisterCustomerUseCase;
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.RegisterCustomerDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +27,10 @@ public class CustomerController {
             @RequestBody RegisterCustomerDTO request) {
 
         RegisterCustomerCommand command = new RegisterCustomerCommand(
-                request.Name(),
-                request.Email(),
-                request.Phone(),
-                request.CPF()
+                request.name(),
+                request.email(),
+                request.phone(),
+                request.cpf()
         );
 
         RegisterCustomerResponse response = registerCustomerUseCase.execute(command);
