@@ -48,7 +48,8 @@ public class OpenServiceOrderUseCase {
                 serviceOrder.getProblemDescription(),
                 serviceOrder.getStatus(),
                 serviceOrder.getOpenedAt(),
-                serviceOrder.getConcludedAt()
+                serviceOrder.getConcludedAt(),
+                serviceOrder.getPriority().name()
         );
     }
 }

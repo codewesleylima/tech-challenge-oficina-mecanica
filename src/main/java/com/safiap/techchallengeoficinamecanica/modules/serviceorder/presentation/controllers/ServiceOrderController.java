@@ -5,6 +5,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.GetServiceOrderByIdUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.ListServiceOrdersByCustomerUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.OpenServiceOrderUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.PullServiceOrderUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,15 @@ public class ServiceOrderController {
     private final OpenServiceOrderUseCase openServiceOrderUseCase;
     private final GetServiceOrderByIdUseCase getServiceOrderByIdUseCase;
     private final ListServiceOrdersByCustomerUseCase listServiceOrdersByCustomerUseCase;
+    private final PullServiceOrderUseCase pullServiceOrderUseCase;
 
     public ServiceOrderController(OpenServiceOrderUseCase openServiceOrderUseCase,
                                   GetServiceOrderByIdUseCase getServiceOrderByIdUseCase,
-                                  ListServiceOrdersByCustomerUseCase listServiceOrdersByCustomerUseCase) {
+                                  ListServiceOrdersByCustomerUseCase listServiceOrdersByCustomerUseCase, PullServiceOrderUseCase pullServiceOrderUseCase) {
         this.openServiceOrderUseCase = openServiceOrderUseCase;
         this.getServiceOrderByIdUseCase = getServiceOrderByIdUseCase;
         this.listServiceOrdersByCustomerUseCase = listServiceOrdersByCustomerUseCase;
+        this.pullServiceOrderUseCase = pullServiceOrderUseCase;
     }
 
     @PostMapping
@@ -48,7 +51,10 @@ public class ServiceOrderController {
     public ResponseEntity<ServiceOrderResponse> getById(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(getServiceOrderByIdUseCase.execute(serviceOrderId));
     }
-
+    @GetMapping("/pullNext")
+    public ResponseEntity<ServiceOrderResponse> pullNext() {
+        return ResponseEntity.ok(pullServiceOrderUseCase.execute());
+    }
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<ServiceOrderResponse>> listByCustomer(@PathVariable UUID customerId) {
         return ResponseEntity.ok(listServiceOrdersByCustomerUseCase.execute(customerId));

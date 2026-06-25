@@ -12,6 +12,7 @@ public record ServiceOrderResponse(
         String problemDescription,
         ServiceOrderStatus status,
         LocalDateTime openedAt,
-        LocalDateTime concludedAt
+        LocalDateTime concludedAt,
+        String priority
 ) {
 }
