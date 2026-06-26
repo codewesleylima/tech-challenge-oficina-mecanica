@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class FinalizarOsUseCase {
+public class FinalizeServiceOrderUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
 
-    public FinalizarOsUseCase(ServiceOrderRepository serviceOrderRepository) {
+    public FinalizeServiceOrderUseCase(ServiceOrderRepository serviceOrderRepository) {
         this.serviceOrderRepository = serviceOrderRepository;
     }
 
