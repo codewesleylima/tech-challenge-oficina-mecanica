@@ -1,0 +1,15 @@
+meta {
+  name: Deliver Service Order
+  type: http
+  seq: 14
+}
+
+patch {
+  url: {{baseUrl}}/service-orders/{{serviceOrderId}}/deliver
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
