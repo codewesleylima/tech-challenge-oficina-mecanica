@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class ExecutarOrdemServicoUseCase {
+public class StartServiceOrderExecutionUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
 
-    public ExecutarOrdemServicoUseCase(ServiceOrderRepository serviceOrderRepository) {
+    public StartServiceOrderExecutionUseCase(ServiceOrderRepository serviceOrderRepository) {
         this.serviceOrderRepository = serviceOrderRepository;
     }
 
