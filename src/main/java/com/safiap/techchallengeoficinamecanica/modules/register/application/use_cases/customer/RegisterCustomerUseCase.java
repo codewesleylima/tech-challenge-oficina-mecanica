@@ -9,6 +9,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_obj
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegisterCustomerUseCase {
@@ -19,6 +20,7 @@ public class RegisterCustomerUseCase {
         this.customerRepository = customerRepository;
     }
 
+    @Transactional
     public RegisterCustomerResponse execute(RegisterCustomerCommand request) {
 
         Customer customer = Customer.createCustomer(

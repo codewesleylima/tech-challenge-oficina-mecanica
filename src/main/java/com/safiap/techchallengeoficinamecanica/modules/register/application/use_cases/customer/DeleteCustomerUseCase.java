@@ -4,6 +4,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class DeleteCustomerUseCase {
         this.customerRepository = customerRepository;
     }
 
+    @Transactional
     public void execute(UUID id){
 
         Customer customer = customerRepository.findByCustomerId(id).orElseThrow(() -> new DomainException("Customer with id: " + id + " not found"));

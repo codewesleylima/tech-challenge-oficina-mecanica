@@ -8,6 +8,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_obj
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Kilometers;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AlterVehicleUseCase {
@@ -18,6 +19,7 @@ public class AlterVehicleUseCase {
         this.vehicleRepository = vehicleRepository;
     }
 
+    @Transactional
     public AlterVehicleResponse execute(AlterVehicleCommand command) {
 
         Vehicle vehicle = vehicleRepository.findByVehicleId(command.vehicleId())

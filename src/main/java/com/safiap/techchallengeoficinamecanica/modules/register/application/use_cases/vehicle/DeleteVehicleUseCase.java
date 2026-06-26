@@ -4,6 +4,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.VehicleRepository;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ public class DeleteVehicleUseCase {
         this.vehicleRepository = vehicleRepository;
     }
 
+    @Transactional
     public void execute(UUID id){
 
         Vehicle vehicle = vehicleRepository.findByVehicleId(id).orElseThrow(() -> new DomainException("Vehicle with id: " + id + " not found"));
