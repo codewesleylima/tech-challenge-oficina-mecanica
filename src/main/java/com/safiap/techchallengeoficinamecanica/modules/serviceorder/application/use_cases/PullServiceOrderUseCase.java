@@ -2,23 +2,23 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
-
 @Service
-public class ListServiceOrdersByCustomerUseCase {
+public class PullServiceOrderUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
 
-    public ListServiceOrdersByCustomerUseCase(ServiceOrderRepository serviceOrderRepository) {
+    public PullServiceOrderUseCase(ServiceOrderRepository serviceOrderRepository) {
         this.serviceOrderRepository = serviceOrderRepository;
     }
 
-    public List<ServiceOrderResponse> execute(UUID customerId) {
-        return serviceOrderRepository.findByCustomerId(customerId).stream()
+
+    public ServiceOrderResponse execute(){
+        return serviceOrderRepository.pullNextOrderService(ServiceOrderStatus.RECEIVED)
                 .map(ServiceOrderResponse::from)
-                .toList();
+                .orElseThrow(()->new ConflictException("there is no pending service orders"));
     }
 }

@@ -13,4 +13,5 @@ public interface ServiceOrderRepository {
     List<ServiceOrder> findByCustomerId(UUID customerId);
     List<ServiceOrder> findByVehicleId(UUID vehicleId);
     List<ServiceOrder> findByStatus(ServiceOrderStatus status);
+    Optional<ServiceOrder> pullNextOrderService(ServiceOrderStatus status);
 }
