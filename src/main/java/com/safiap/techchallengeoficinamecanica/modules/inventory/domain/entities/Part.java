@@ -5,7 +5,6 @@ import com.safiap.techchallengeoficinamecanica.modules.inventory.domain.value_ob
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRoot;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class Part extends AggregateRoot {
@@ -56,19 +55,16 @@ public class Part extends AggregateRoot {
     }
 
     private void validate(UUID id, String name, String description, Money price, Quantity quantity) {
-        Objects.requireNonNull(id, " id is null");
-        Objects.requireNonNull(name, " name is null");
-        if (name.isBlank()) {
-            throw new DomainException("name is blank");
-        }
+        DomainException.requireNonNull(id, " id is null");
+        DomainException.requireNotBlank(name, "name is blank");
         if (description != null && description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new DomainException("description must have at most " + MAX_DESCRIPTION_LENGTH + " characters");
         }
-        Objects.requireNonNull(price, " price is null");
+        DomainException.requireNonNull(price, " price is null");
         if (price.isZero()) {
             throw new DomainException("price must be greater than zero");
         }
-        Objects.requireNonNull(quantity, " quantity is null");
+        DomainException.requireNonNull(quantity, " quantity is null");
     }
 
     public UUID getId() {
