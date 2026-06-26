@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class FinalizarOrcamentoUseCase {
+public class FinalizeBudgetUseCase {
 
     private final BudgetRepository budgetRepository;
 
-    public FinalizarOrcamentoUseCase(BudgetRepository budgetRepository) {
+    public FinalizeBudgetUseCase(BudgetRepository budgetRepository) {
         this.budgetRepository = budgetRepository;
     }
 
