@@ -1,0 +1,15 @@
+meta {
+  name: Finalize Diagnosis
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/service-orders/{{serviceOrderId}}/finalize-diagnosis
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
