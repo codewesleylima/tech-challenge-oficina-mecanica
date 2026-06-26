@@ -2,7 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentatio
 
 import java.time.LocalDateTime;
 
-public record RegistraTempoServicoDTO(
+public record RecordServiceTimeDTO(
         LocalDateTime startTime,
         LocalDateTime endTime,
         String notes
