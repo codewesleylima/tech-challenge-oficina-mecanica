@@ -1,0 +1,15 @@
+meta {
+  name: Open Budget
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/service-orders/{{serviceOrderId}}/budget
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
