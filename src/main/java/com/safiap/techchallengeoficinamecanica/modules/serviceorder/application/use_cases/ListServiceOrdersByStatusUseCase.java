@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ListaOsPorStatusUseCase {
+public class ListServiceOrdersByStatusUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
 
-    public ListaOsPorStatusUseCase(ServiceOrderRepository serviceOrderRepository) {
+    public ListServiceOrdersByStatusUseCase(ServiceOrderRepository serviceOrderRepository) {
         this.serviceOrderRepository = serviceOrderRepository;
     }
 
