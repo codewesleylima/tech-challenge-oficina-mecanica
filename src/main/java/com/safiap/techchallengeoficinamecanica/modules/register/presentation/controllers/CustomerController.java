@@ -27,17 +27,20 @@ public class CustomerController {
     private final GetAllCustomersUseCase getAllCustomersUseCase;
     private final GetCustomerByIdUseCase  getCustomerByIdUseCase;
     private final GetCustomerByCpfUseCase getCustomerByCpfUseCase;
+    private final DeleteCustomerUseCase deleteCustomerUseCase;
 
     public CustomerController(RegisterCustomerUseCase registerCustomerUseCase,
                               AlterCustomerUseCase alterCustomerUseCase,
                               GetAllCustomersUseCase getAllCustomersUseCase,
                               GetCustomerByIdUseCase getCustomerByIdUseCase,
-                              GetCustomerByCpfUseCase getCustomerByCpfUseCase) {
+                              GetCustomerByCpfUseCase getCustomerByCpfUseCase,
+                              DeleteCustomerUseCase deleteCustomerUseCase) {
         this.registerCustomerUseCase = registerCustomerUseCase;
         this.alterCustomerUseCase = alterCustomerUseCase;
         this.getAllCustomersUseCase = getAllCustomersUseCase;
         this.getCustomerByIdUseCase = getCustomerByIdUseCase;
         this.getCustomerByCpfUseCase = getCustomerByCpfUseCase;
+        this.deleteCustomerUseCase = deleteCustomerUseCase;
     }
 
     @PostMapping("/register")
@@ -89,6 +92,14 @@ public class CustomerController {
             @PathVariable String cpf
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(getCustomerByCpfUseCase.execute(cpf));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomerById(
+            @PathVariable UUID id
+    ) {
+        deleteCustomerUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 
 

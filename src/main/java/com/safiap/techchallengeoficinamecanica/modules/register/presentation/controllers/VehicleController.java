@@ -26,19 +26,22 @@ public class VehicleController {
     private final GetAllVehiclesByCustomerIdUseCase getAllVehiclesByCustomerIdUseCase;
     private final GetVehicleByIdUseCase getVehicleByIdUseCase;
     private final GetVehicleByCarLicensePlateUseCase getVehicleByCarLicensePlateUseCase;
+    private final DeleteVehicleUseCase deleteVehicleUseCase;
 
     public VehicleController(
             AddVehicleUseCase addVehicleUseCase,
             AlterVehicleUseCase alterVehicleUseCase,
             GetAllVehiclesByCustomerIdUseCase getAllVehiclesByCustomerIdUseCase,
             GetVehicleByIdUseCase getVehicleByIdUseCase,
-            GetVehicleByCarLicensePlateUseCase getVehicleByCarLicensePlateUseCase
+            GetVehicleByCarLicensePlateUseCase getVehicleByCarLicensePlateUseCase,
+            DeleteVehicleUseCase deleteVehicleUseCase
     ) {
         this.addVehicleUseCase = addVehicleUseCase;
         this.alterVehicleUseCase = alterVehicleUseCase;
         this.getAllVehiclesByCustomerIdUseCase = getAllVehiclesByCustomerIdUseCase;
         this.getVehicleByIdUseCase = getVehicleByIdUseCase;
         this.getVehicleByCarLicensePlateUseCase = getVehicleByCarLicensePlateUseCase;
+        this.deleteVehicleUseCase = deleteVehicleUseCase;
     }
 
     @PostMapping("/register")
@@ -100,4 +103,11 @@ public class VehicleController {
         return ResponseEntity.status(HttpStatus.OK).body(getVehicleByCarLicensePlateUseCase.execute(plate));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVehicleById(
+            @PathVariable UUID id
+    ) {
+        deleteVehicleUseCase.execute(id);
+        return ResponseEntity.noContent().build();
+    }
 }
