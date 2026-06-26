@@ -1,0 +1,29 @@
+meta {
+  name: Open Service Order
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/service-orders
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "customerId": "{{customerId}}",
+    "vehicleId": "{{vehicleId}}",
+    "problemDescription": "Barulho no motor ao acelerar"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("serviceOrderId", res.body.serviceOrderId);
+  }
+}
