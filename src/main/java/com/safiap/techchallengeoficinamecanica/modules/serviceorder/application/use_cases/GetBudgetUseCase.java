@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class CalcularOrcamentoUseCase {
+public class GetBudgetUseCase {
 
     private final BudgetRepository budgetRepository;
 
-    public CalcularOrcamentoUseCase(BudgetRepository budgetRepository) {
+    public GetBudgetUseCase(BudgetRepository budgetRepository) {
         this.budgetRepository = budgetRepository;
     }
 
