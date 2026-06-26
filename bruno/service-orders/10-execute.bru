@@ -1,0 +1,15 @@
+meta {
+  name: Execute Service Order (Approve Budget)
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/service-orders/{{serviceOrderId}}/execute
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
