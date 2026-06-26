@@ -3,7 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentatio
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record AdicionarPecaInsumoDTO(
+public record AddPartDTO(
         UUID itemId,
         String description,
         int quantity,
