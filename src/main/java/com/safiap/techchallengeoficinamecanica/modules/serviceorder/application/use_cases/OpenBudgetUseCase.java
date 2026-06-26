@@ -13,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class IniciarOrcamentoUseCase {
+public class OpenBudgetUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final BudgetRepository budgetRepository;
 
-    public IniciarOrcamentoUseCase(ServiceOrderRepository serviceOrderRepository,
-                                   BudgetRepository budgetRepository) {
+    public OpenBudgetUseCase(ServiceOrderRepository serviceOrderRepository,
+                             BudgetRepository budgetRepository) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.budgetRepository = budgetRepository;
     }
