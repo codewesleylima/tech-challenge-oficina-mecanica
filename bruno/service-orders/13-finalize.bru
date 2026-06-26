@@ -1,0 +1,15 @@
+meta {
+  name: Finalize Service Order
+  type: http
+  seq: 13
+}
+
+patch {
+  url: {{baseUrl}}/service-orders/{{serviceOrderId}}/finalize
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
