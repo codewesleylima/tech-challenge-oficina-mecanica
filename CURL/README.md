@@ -5,18 +5,85 @@
 1. Abra o Insomnia
 2. `Application` → `Import` → `From File`
 3. Selecione `CURL/oficina-mecanica.json`
-4. Selecione o environment **local** e preencha `token`, `customerId`, `vehicleId`, `serviceOrderId` conforme for testando
+4. Selecione o environment **local** e preencha as variáveis conforme for testando
 
-## Fluxo de uso
+---
 
-1. **Auth** → Register → Login (copie o token para o environment)
-2. **Customers** → Register Customer (copie o `customerId`)
-3. **Vehicles** → Register Vehicle (copie o `vehicleId`)
-4. **Service Orders** → 01 a 14 em ordem (copie o `serviceOrderId` após o 01)
-5. **Budget** → 01 a 05 entre os steps 08 e 09 da OS
+## Fluxo de uso — endpoint por endpoint
 
-## Observações
+### 1. Auth → Register
+Cria o usuário no sistema. Necessário antes de qualquer outra chamada.
 
-- O step 09 (Finalize Diagnosis) exige que o orçamento esteja finalizado com ao menos 1 item antes de ser chamado
-- Caso o cliente rejeite o orçamento (step 11), o fluxo retorna para IN_DIAGNOSIS e o ciclo do Budget deve ser refeito
-- As variáveis de environment são atualizadas manualmente após cada resposta
+### 2. Auth → Login
+Autentica o usuário. Copie o `token` retornado e cole na variável `token` do environment.
+
+### 3. Customers → Register Customer
+Cadastra um cliente. Copie o `id` retornado e cole na variável `customerId` do environment.
+
+### 4. Vehicles → Register Vehicle
+Cadastra um veículo vinculado ao cliente criado no passo anterior. Copie o `id` retornado e cole na variável `vehicleId` do environment.
+
+### 5. Service Orders → 01 - Open Service Order
+Abre uma nova ordem de serviço. Copie o `id` retornado e cole na variável `serviceOrderId` do environment.
+Status inicial: **RECEIVED**
+
+### 6. Service Orders → 02 - Get Service Order
+Consulta os dados e o status atual da OS.
+
+### 7. Service Orders → 03 - List By Customer
+Lista todas as ordens de serviço do cliente.
+
+### 8. Service Orders → 04 - List By Status
+Lista as ordens de serviço filtrando por status. Altere o query param `status` conforme necessário.
+
+### 9. Service Orders → 05 - Pull Next (Queue)
+Retorna a próxima OS da fila de acordo com a prioridade.
+
+### 10. Service Orders → 06 - Increase Priority
+Aumenta a prioridade da OS na fila.
+
+### 11. Service Orders → 07 - Decrease Priority
+Diminui a prioridade da OS na fila.
+
+### 12. Service Orders → 08 - Start Diagnosis
+Inicia o diagnóstico da OS.
+Status: **RECEIVED → IN_DIAGNOSIS**
+
+### 13. Budget → 01 - Open Budget
+Abre o orçamento da OS. Deve ser chamado com a OS em **IN_DIAGNOSIS**.
+
+### 14. Budget → 03 - Add Part
+Adiciona uma peça ao orçamento.
+
+### 15. Budget → 04 - Add Service
+Adiciona um serviço ao orçamento.
+
+### 16. Budget → 02 - Get Budget
+Consulta o orçamento com os itens adicionados e o total calculado.
+
+### 17. Budget → 05 - Finalize Budget
+Finaliza o orçamento. Requer ao menos 1 item cadastrado.
+
+### 18. Service Orders → 09 - Finalize Diagnosis
+Finaliza o diagnóstico e envia para aprovação do cliente. Requer orçamento finalizado com itens.
+Status: **IN_DIAGNOSIS → AWAITING_APPROVAL**
+
+### 19. Service Orders → 10 - Execute Order _(cliente aprova)_
+Aprova o orçamento e inicia a execução.
+Status: **AWAITING_APPROVAL → IN_EXECUTION**
+
+> **Caminho alternativo — cliente rejeita:**
+> Chame `11 - Reject Budget` no lugar do passo 19.
+> Status: **AWAITING_APPROVAL → IN_DIAGNOSIS**
+> Retorne ao passo 13 para revisar o orçamento.
+
+### 20. Service Orders → 12 - Record Service Time
+Registra o tempo de trabalho realizado. Pode ser chamado múltiplas vezes. Requer status **IN_EXECUTION**.
+
+### 21. Service Orders → 13 - Finalize Order
+Finaliza a execução da OS.
+Status: **IN_EXECUTION → FINALIZED**
+
+### 22. Service Orders → 14 - Deliver
+Registra a entrega do veículo ao cliente.
+Status: **FINALIZED → DELIVERED**
