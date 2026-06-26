@@ -3,7 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record AdicionarServicoCommand(
+public record AddServiceCommand(
         UUID serviceOrderId,
         UUID itemId,
         String description,
