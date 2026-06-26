@@ -1,13 +1,13 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.controllers;
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.OpenServiceOrderCommand;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.RegistraTempoServicoCommand;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.RecordServiceTimeCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceTimeRecordResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderDTO;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.RegistraTempoServicoDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.RecordServiceTimeDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,46 +22,46 @@ public class ServiceOrderController {
     private final OpenServiceOrderUseCase openServiceOrderUseCase;
     private final GetServiceOrderByIdUseCase getServiceOrderByIdUseCase;
     private final ListServiceOrdersByCustomerUseCase listServiceOrdersByCustomerUseCase;
+    private final ListServiceOrdersByStatusUseCase listServiceOrdersByStatusUseCase;
     private final PullServiceOrderUseCase pullServiceOrderUseCase;
     private final IncreaseServiceOrderPriorityUseCase increaseServiceOrderPriorityUseCase;
     private final DecreaseServiceOrderPriorityUseCase decreaseServiceOrderPriorityUseCase;
-    private final IniciarDiagnosticoUseCase iniciarDiagnosticoUseCase;
-    private final FinalizarDiagnosticoUseCase finalizarDiagnosticoUseCase;
-    private final ExecutarOrdemServicoUseCase executarOrdemServicoUseCase;
-    private final RejeitarOrcamentoUseCase rejeitarOrcamentoUseCase;
-    private final RegistraTempoServicoUseCase registraTempoServicoUseCase;
-    private final FinalizarOsUseCase finalizarOsUseCase;
-    private final EntregarOrdemServicoUseCase entregarOrdemServicoUseCase;
-    private final ListaOsPorStatusUseCase listaOsPorStatusUseCase;
+    private final StartDiagnosisUseCase startDiagnosisUseCase;
+    private final FinalizeDiagnosisUseCase finalizeDiagnosisUseCase;
+    private final StartServiceOrderExecutionUseCase startServiceOrderExecutionUseCase;
+    private final RejectBudgetUseCase rejectBudgetUseCase;
+    private final RecordServiceTimeUseCase recordServiceTimeUseCase;
+    private final FinalizeServiceOrderUseCase finalizeServiceOrderUseCase;
+    private final DeliverServiceOrderUseCase deliverServiceOrderUseCase;
 
     public ServiceOrderController(OpenServiceOrderUseCase openServiceOrderUseCase,
                                   GetServiceOrderByIdUseCase getServiceOrderByIdUseCase,
                                   ListServiceOrdersByCustomerUseCase listServiceOrdersByCustomerUseCase,
+                                  ListServiceOrdersByStatusUseCase listServiceOrdersByStatusUseCase,
                                   PullServiceOrderUseCase pullServiceOrderUseCase,
                                   IncreaseServiceOrderPriorityUseCase increaseServiceOrderPriorityUseCase,
                                   DecreaseServiceOrderPriorityUseCase decreaseServiceOrderPriorityUseCase,
-                                  IniciarDiagnosticoUseCase iniciarDiagnosticoUseCase,
-                                  FinalizarDiagnosticoUseCase finalizarDiagnosticoUseCase,
-                                  ExecutarOrdemServicoUseCase executarOrdemServicoUseCase,
-                                  RejeitarOrcamentoUseCase rejeitarOrcamentoUseCase,
-                                  RegistraTempoServicoUseCase registraTempoServicoUseCase,
-                                  FinalizarOsUseCase finalizarOsUseCase,
-                                  EntregarOrdemServicoUseCase entregarOrdemServicoUseCase,
-                                  ListaOsPorStatusUseCase listaOsPorStatusUseCase) {
+                                  StartDiagnosisUseCase startDiagnosisUseCase,
+                                  FinalizeDiagnosisUseCase finalizeDiagnosisUseCase,
+                                  StartServiceOrderExecutionUseCase startServiceOrderExecutionUseCase,
+                                  RejectBudgetUseCase rejectBudgetUseCase,
+                                  RecordServiceTimeUseCase recordServiceTimeUseCase,
+                                  FinalizeServiceOrderUseCase finalizeServiceOrderUseCase,
+                                  DeliverServiceOrderUseCase deliverServiceOrderUseCase) {
         this.openServiceOrderUseCase = openServiceOrderUseCase;
         this.getServiceOrderByIdUseCase = getServiceOrderByIdUseCase;
         this.listServiceOrdersByCustomerUseCase = listServiceOrdersByCustomerUseCase;
+        this.listServiceOrdersByStatusUseCase = listServiceOrdersByStatusUseCase;
         this.pullServiceOrderUseCase = pullServiceOrderUseCase;
         this.increaseServiceOrderPriorityUseCase = increaseServiceOrderPriorityUseCase;
         this.decreaseServiceOrderPriorityUseCase = decreaseServiceOrderPriorityUseCase;
-        this.iniciarDiagnosticoUseCase = iniciarDiagnosticoUseCase;
-        this.finalizarDiagnosticoUseCase = finalizarDiagnosticoUseCase;
-        this.executarOrdemServicoUseCase = executarOrdemServicoUseCase;
-        this.rejeitarOrcamentoUseCase = rejeitarOrcamentoUseCase;
-        this.registraTempoServicoUseCase = registraTempoServicoUseCase;
-        this.finalizarOsUseCase = finalizarOsUseCase;
-        this.entregarOrdemServicoUseCase = entregarOrdemServicoUseCase;
-        this.listaOsPorStatusUseCase = listaOsPorStatusUseCase;
+        this.startDiagnosisUseCase = startDiagnosisUseCase;
+        this.finalizeDiagnosisUseCase = finalizeDiagnosisUseCase;
+        this.startServiceOrderExecutionUseCase = startServiceOrderExecutionUseCase;
+        this.rejectBudgetUseCase = rejectBudgetUseCase;
+        this.recordServiceTimeUseCase = recordServiceTimeUseCase;
+        this.finalizeServiceOrderUseCase = finalizeServiceOrderUseCase;
+        this.deliverServiceOrderUseCase = deliverServiceOrderUseCase;
     }
 
     @PostMapping
@@ -88,7 +88,7 @@ public class ServiceOrderController {
 
     @GetMapping
     public ResponseEntity<List<ServiceOrderResponse>> listByStatus(@RequestParam ServiceOrderStatus status) {
-        return ResponseEntity.ok(listaOsPorStatusUseCase.execute(status));
+        return ResponseEntity.ok(listServiceOrdersByStatusUseCase.execute(status));
     }
 
     @PatchMapping("/{serviceOrderId}/priority/increase")
@@ -103,39 +103,39 @@ public class ServiceOrderController {
 
     @PatchMapping("/{serviceOrderId}/start-diagnosis")
     public ResponseEntity<ServiceOrderResponse> startDiagnosis(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(iniciarDiagnosticoUseCase.execute(serviceOrderId));
+        return ResponseEntity.ok(startDiagnosisUseCase.execute(serviceOrderId));
     }
 
     @PatchMapping("/{serviceOrderId}/finalize-diagnosis")
     public ResponseEntity<ServiceOrderResponse> finalizeDiagnosis(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(finalizarDiagnosticoUseCase.execute(serviceOrderId));
+        return ResponseEntity.ok(finalizeDiagnosisUseCase.execute(serviceOrderId));
     }
 
     @PatchMapping("/{serviceOrderId}/execute")
     public ResponseEntity<ServiceOrderResponse> executeOrder(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(executarOrdemServicoUseCase.execute(serviceOrderId));
+        return ResponseEntity.ok(startServiceOrderExecutionUseCase.execute(serviceOrderId));
     }
 
     @PatchMapping("/{serviceOrderId}/reject-budget")
     public ResponseEntity<ServiceOrderResponse> rejectBudget(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(rejeitarOrcamentoUseCase.execute(serviceOrderId));
+        return ResponseEntity.ok(rejectBudgetUseCase.execute(serviceOrderId));
     }
 
     @PostMapping("/{serviceOrderId}/time-records")
-    public ResponseEntity<ServiceTimeRecordResponse> registraTempoServico(
-            @PathVariable UUID serviceOrderId, @RequestBody RegistraTempoServicoDTO request) {
-        RegistraTempoServicoCommand command = new RegistraTempoServicoCommand(
+    public ResponseEntity<ServiceTimeRecordResponse> recordServiceTime(
+            @PathVariable UUID serviceOrderId, @RequestBody RecordServiceTimeDTO request) {
+        RecordServiceTimeCommand command = new RecordServiceTimeCommand(
                 serviceOrderId, request.startTime(), request.endTime(), request.notes());
-        return ResponseEntity.status(HttpStatus.CREATED).body(registraTempoServicoUseCase.execute(command));
+        return ResponseEntity.status(HttpStatus.CREATED).body(recordServiceTimeUseCase.execute(command));
     }
 
     @PatchMapping("/{serviceOrderId}/finalize")
     public ResponseEntity<ServiceOrderResponse> finalizeOrder(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(finalizarOsUseCase.execute(serviceOrderId));
+        return ResponseEntity.ok(finalizeServiceOrderUseCase.execute(serviceOrderId));
     }
 
     @PatchMapping("/{serviceOrderId}/deliver")
     public ResponseEntity<ServiceOrderResponse> deliver(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(entregarOrdemServicoUseCase.execute(serviceOrderId));
+        return ResponseEntity.ok(deliverServiceOrderUseCase.execute(serviceOrderId));
     }
 }
