@@ -3,7 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record RegistraTempoServicoCommand(
+public record RecordServiceTimeCommand(
         UUID serviceOrderId,
         LocalDateTime startTime,
         LocalDateTime endTime,
