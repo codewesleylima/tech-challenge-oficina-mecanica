@@ -4,6 +4,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class FinalizarDiagnosticoUseCase {
+public class FinalizeDiagnosisUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final BudgetRepository budgetRepository;
 
-    public FinalizarDiagnosticoUseCase(ServiceOrderRepository serviceOrderRepository,
-                                        BudgetRepository budgetRepository) {
+    public FinalizeDiagnosisUseCase(ServiceOrderRepository serviceOrderRepository,
+                                    BudgetRepository budgetRepository) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.budgetRepository = budgetRepository;
     }
@@ -29,7 +30,7 @@ public class FinalizarDiagnosticoUseCase {
                 .orElseThrow(() -> new NotFoundException("Service order not found: " + serviceOrderId));
 
         budgetRepository.findByServiceOrderId(serviceOrderId)
-                .filter(b -> !b.getItems().isEmpty())
+                .filter(b -> b.getStatus() == BudgetStatus.FINALIZED && !b.getItems().isEmpty())
                 .orElseThrow(() -> new ConflictException("A finalized budget with items is required before closing diagnosis"));
 
         serviceOrder.finalizeDiagnosis();
