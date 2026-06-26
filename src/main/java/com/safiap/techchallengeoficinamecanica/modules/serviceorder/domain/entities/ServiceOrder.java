@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.enti
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRoot;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -49,6 +50,43 @@ public class ServiceOrder extends AggregateRoot {
 
     public void decreasePriority() {
         this.priority = this.priority.decrease();
+    }
+
+    public void startDiagnosis() {
+        if (this.status != ServiceOrderStatus.RECEIVED)
+            throw new ConflictException("Service order must be in RECEIVED status to start diagnosis");
+        this.status = ServiceOrderStatus.IN_DIAGNOSIS;
+    }
+
+    public void finalizeDiagnosis() {
+        if (this.status != ServiceOrderStatus.IN_DIAGNOSIS)
+            throw new ConflictException("Service order must be in IN_DIAGNOSIS status to finalize diagnosis");
+        this.status = ServiceOrderStatus.AWAITING_APPROVAL;
+    }
+
+    public void startExecution() {
+        if (this.status != ServiceOrderStatus.AWAITING_APPROVAL)
+            throw new ConflictException("Service order must be in AWAITING_APPROVAL status to start execution");
+        this.status = ServiceOrderStatus.IN_EXECUTION;
+    }
+
+    public void rejectBudget() {
+        if (this.status != ServiceOrderStatus.AWAITING_APPROVAL)
+            throw new ConflictException("Service order must be in AWAITING_APPROVAL status to reject budget");
+        this.status = ServiceOrderStatus.IN_DIAGNOSIS;
+    }
+
+    public void finalizeOrder() {
+        if (this.status != ServiceOrderStatus.IN_EXECUTION)
+            throw new ConflictException("Service order must be in IN_EXECUTION status to finalize");
+        this.status = ServiceOrderStatus.FINALIZED;
+        this.concludedAt = LocalDateTime.now();
+    }
+
+    public void deliver() {
+        if (this.status != ServiceOrderStatus.FINALIZED)
+            throw new ConflictException("Service order must be in FINALIZED status to deliver");
+        this.status = ServiceOrderStatus.DELIVERED;
     }
 
     public UUID getServiceOrderId() { return serviceOrderId; }
