@@ -4,8 +4,8 @@ import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_obj
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRoot;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class Customer extends AggregateRoot {
@@ -37,10 +37,10 @@ public class Customer extends AggregateRoot {
                                   Phone phone,
                                   CPF cpf) {
 
-        Objects.requireNonNull(name, " name is null");
-        Objects.requireNonNull(email, " email is null");
-        Objects.requireNonNull(phone, " phone is null");
-        Objects.requireNonNull(cpf, " cpf is null");
+        DomainException.requireNotBlank(name, " name is blank");
+        DomainException.requireNonNull(email, " email is null");
+        DomainException.requireNonNull(phone, " phone is null");
+        DomainException.requireNonNull(cpf, " cpf is null");
 
         return new Customer(
                 UUID.randomUUID(),
@@ -57,11 +57,11 @@ public class Customer extends AggregateRoot {
                                   Phone phone,
                                   CPF cpf) {
 
-        Objects.requireNonNull(customerId, " customerId is null");
-        Objects.requireNonNull(name, " name is null");
-        Objects.requireNonNull(email, " email is null");
-        Objects.requireNonNull(phone, " phone is null");
-        Objects.requireNonNull(cpf, " cpf is null");
+        DomainException.requireNonNull(customerId, " customerId is null");
+        DomainException.requireNotBlank(name, " name is blank");
+        DomainException.requireNonNull(email, " email is null");
+        DomainException.requireNonNull(phone, " phone is null");
+        DomainException.requireNonNull(cpf, " cpf is null");
 
         return new Customer(
                 customerId,
