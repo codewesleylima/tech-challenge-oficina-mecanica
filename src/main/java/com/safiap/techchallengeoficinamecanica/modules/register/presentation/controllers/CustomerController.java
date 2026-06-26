@@ -5,8 +5,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.comm
 import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.customer.AlterCustomerCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.GetCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.RegisterCustomerResponse;
-import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.AlterCustomerResponse;
-import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.customer.*;
+import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.RegisterCustomerUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.RegisterCustomerDTO;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.AlterCustomerDTO;
 import org.springframework.http.HttpStatus;
@@ -48,10 +47,10 @@ public class CustomerController {
             @RequestBody RegisterCustomerDTO request) {
 
         RegisterCustomerCommand command = new RegisterCustomerCommand(
-                request.Name(),
-                request.Email(),
-                request.Phone(),
-                request.CPF()
+                request.name(),
+                request.email(),
+                request.phone(),
+                request.cpf()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registerCustomerUseCase.execute(command));

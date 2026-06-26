@@ -49,4 +49,10 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
         return jpaServiceOrderRepository.findByStatus(status)
                 .stream().map(ServiceOrderMapper::toEntity).collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<ServiceOrder> pullNextOrderService(ServiceOrderStatus status) {
+        return jpaServiceOrderRepository.findFirstByStatusOrderByPriorityDescOpenedAtAsc(status).
+                map(ServiceOrderMapper::toEntity);
+    }
 }

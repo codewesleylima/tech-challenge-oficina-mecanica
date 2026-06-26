@@ -1,6 +1,7 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.mappers;
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.entities.JPAServiceOrderEntity;
 
 public class ServiceOrderMapper {
@@ -13,7 +14,8 @@ public class ServiceOrderMapper {
                 serviceOrder.getProblemDescription(),
                 serviceOrder.getStatus(),
                 serviceOrder.getOpenedAt(),
-                serviceOrder.getConcludedAt()
+                serviceOrder.getConcludedAt(),
+                serviceOrder.getPriority()
         );
     }
 
@@ -25,7 +27,8 @@ public class ServiceOrderMapper {
                 entity.getProblemDescription(),
                 entity.getStatus(),
                 entity.getOpenedAt(),
-                entity.getConcludedAt()
+                entity.getConcludedAt(),
+                ServiceOrderPriority.fromValue(entity.getPriority())
         );
     }
 }
