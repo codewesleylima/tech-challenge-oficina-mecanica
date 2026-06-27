@@ -6,6 +6,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceTimeRecordResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.FinalizeDiagnosisDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.RecordServiceTimeDTO;
 import org.springframework.http.HttpStatus;
@@ -107,8 +108,9 @@ public class ServiceOrderController {
     }
 
     @PatchMapping("/{serviceOrderId}/finalize-diagnosis")
-    public ResponseEntity<ServiceOrderResponse> finalizeDiagnosis(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(finalizeDiagnosisUseCase.execute(serviceOrderId));
+    public ResponseEntity<ServiceOrderResponse> finalizeDiagnosis(
+            @PathVariable UUID serviceOrderId, @RequestBody FinalizeDiagnosisDTO request) {
+        return ResponseEntity.ok(finalizeDiagnosisUseCase.execute(serviceOrderId, request.diagnosis()));
     }
 
     @PatchMapping("/{serviceOrderId}/execute")
