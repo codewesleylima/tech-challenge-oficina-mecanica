@@ -5,6 +5,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -19,6 +20,7 @@ class ServiceOrderTest {
     }
 
     @Test
+    @DisplayName("teste abre a ordem de serviço com status RECEIVED e prioridade LOW")
     void opensWithReceivedStatusAndLowPriority() {
         ServiceOrder order = newOrder();
         assertThat(order.getStatus()).isEqualTo(ServiceOrderStatus.RECEIVED);
@@ -29,6 +31,7 @@ class ServiceOrderTest {
     }
 
     @Test
+    @DisplayName("teste percorre o fluxo completo de status até DELIVERED")
     void walksThroughTheFullHappyPath() {
         ServiceOrder order = newOrder();
 
@@ -51,6 +54,7 @@ class ServiceOrderTest {
     }
 
     @Test
+    @DisplayName("teste falha ao iniciar diagnóstico fora do status RECEIVED")
     void startDiagnosisFailsWhenNotReceived() {
         ServiceOrder order = newOrder();
         order.startDiagnosis();
@@ -58,6 +62,7 @@ class ServiceOrderTest {
     }
 
     @Test
+    @DisplayName("teste falha ao finalizar diagnóstico fora do status IN_DIAGNOSIS")
     void finalizeDiagnosisFailsWhenNotInDiagnosis() {
         ServiceOrder order = newOrder();
         assertThatThrownBy(() -> order.finalizeDiagnosis(new Diagnosis("x")))
@@ -65,6 +70,7 @@ class ServiceOrderTest {
     }
 
     @Test
+    @DisplayName("teste exige a descrição do diagnóstico ao finalizar o diagnóstico")
     void finalizeDiagnosisRequiresDiagnosis() {
         ServiceOrder order = newOrder();
         order.startDiagnosis();
@@ -73,6 +79,7 @@ class ServiceOrderTest {
     }
 
     @Test
+    @DisplayName("teste rejeitar orçamento retorna a ordem de serviço para IN_DIAGNOSIS")
     void rejectBudgetReturnsToDiagnosis() {
         ServiceOrder order = newOrder();
         order.startDiagnosis();
@@ -82,16 +89,18 @@ class ServiceOrderTest {
     }
 
     @Test
+    @DisplayName("teste falha ao entregar a ordem de serviço que não está FINALIZED")
     void deliverFailsWhenNotFinalized() {
         ServiceOrder order = newOrder();
         assertThatThrownBy(order::deliver).isInstanceOf(ConflictException.class);
     }
 
     @Test
+    @DisplayName("teste aumenta e diminui a prioridade respeitando os limites LOW e URGENT")
     void priorityIncreasesAndDecreasesWithinBounds() {
-        ServiceOrder order = newOrder(); // LOW
+        ServiceOrder order = newOrder();
         order.decreasePriority();
-        assertThat(order.getPriority()).isEqualTo(ServiceOrderPriority.LOW); // cannot go below LOW
+        assertThat(order.getPriority()).isEqualTo(ServiceOrderPriority.LOW);
 
         order.increasePriority();
         assertThat(order.getPriority()).isEqualTo(ServiceOrderPriority.NORMAL);
@@ -99,6 +108,6 @@ class ServiceOrderTest {
         order.increasePriority();
         assertThat(order.getPriority()).isEqualTo(ServiceOrderPriority.URGENT);
         order.increasePriority();
-        assertThat(order.getPriority()).isEqualTo(ServiceOrderPriority.URGENT); // capped at URGENT
+        assertThat(order.getPriority()).isEqualTo(ServiceOrderPriority.URGENT);
     }
 }
