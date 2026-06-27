@@ -5,11 +5,14 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entit
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,11 +33,10 @@ class FinalizeDiagnosisUseCaseTest {
             new FinalizeDiagnosisUseCase(serviceOrderRepository, budgetRepository);
 
     private ServiceOrder orderInDiagnosis(UUID id) {
-        ServiceOrder order = ServiceOrder.build(
+        return ServiceOrder.build(
                 id, UUID.randomUUID(), UUID.randomUUID(), "problema", null,
-                ServiceOrderStatus.IN_DIAGNOSIS, java.time.LocalDateTime.now(), null,
-                com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority.LOW);
-        return order;
+                ServiceOrderStatus.IN_DIAGNOSIS, LocalDateTime.now(), null,
+                ServiceOrderPriority.LOW);
     }
 
     private Budget finalizedBudget(UUID soId) {
@@ -45,6 +47,7 @@ class FinalizeDiagnosisUseCaseTest {
     }
 
     @Test
+    @DisplayName("teste finaliza o diagnóstico quando o orçamento está finalizado com itens")
     void finalizesDiagnosisWhenBudgetReady() {
         UUID soId = UUID.randomUUID();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.of(orderInDiagnosis(soId)));
@@ -58,10 +61,11 @@ class FinalizeDiagnosisUseCaseTest {
     }
 
     @Test
+    @DisplayName("teste falha ao finalizar o diagnóstico quando o orçamento não está finalizado")
     void failsWhenBudgetNotFinalized() {
         UUID soId = UUID.randomUUID();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.of(orderInDiagnosis(soId)));
-        when(budgetRepository.findByServiceOrderId(soId)).thenReturn(Optional.of(Budget.create(soId))); // DRAFT, empty
+        when(budgetRepository.findByServiceOrderId(soId)).thenReturn(Optional.of(Budget.create(soId)));
 
         assertThatThrownBy(() -> useCase.execute(soId, "x"))
                 .isInstanceOf(ConflictException.class);
