@@ -27,6 +27,9 @@ public class JPAServiceOrderEntity {
     @Column(nullable = false)
     private String problemDescription;
 
+    @Column(columnDefinition = "TEXT")
+    private String diagnosis;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServiceOrderStatus status;
@@ -39,12 +42,13 @@ public class JPAServiceOrderEntity {
     private int priority=1;
 
     public JPAServiceOrderEntity(UUID id, UUID customerId, UUID vehicleId,
-                                 String problemDescription, ServiceOrderStatus status,
+                                 String problemDescription, String diagnosis, ServiceOrderStatus status,
                                  LocalDateTime openedAt, LocalDateTime concludedAt, ServiceOrderPriority priority) {
         this.id = id;
         this.customerId = customerId;
         this.vehicleId = vehicleId;
         this.problemDescription = problemDescription;
+        this.diagnosis = diagnosis;
         this.status = status;
         this.openedAt = openedAt;
         this.concludedAt = concludedAt;

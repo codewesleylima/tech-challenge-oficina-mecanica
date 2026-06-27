@@ -1,0 +1,45 @@
+package com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.implementations;
+
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.mappers.BudgetMapper;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.repositories.JPABudgetItemRepository;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.repositories.JPABudgetRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public class BudgetRepositoryImpl implements BudgetRepository {
+
+    private final JPABudgetRepository jpaBudgetRepository;
+    private final JPABudgetItemRepository jpaBudgetItemRepository;
+
+    public BudgetRepositoryImpl(JPABudgetRepository jpaBudgetRepository,
+                                JPABudgetItemRepository jpaBudgetItemRepository) {
+        this.jpaBudgetRepository = jpaBudgetRepository;
+        this.jpaBudgetItemRepository = jpaBudgetItemRepository;
+    }
+
+    @Override
+    public void save(Budget budget) {
+        jpaBudgetRepository.save(BudgetMapper.toJPA(budget));
+        jpaBudgetItemRepository.deleteByBudgetId(budget.getBudgetId());
+        budget.getItems().forEach(item -> jpaBudgetItemRepository.save(BudgetMapper.itemToJPA(item)));
+    }
+
+    @Override
+    public Optional<Budget> findByServiceOrderId(UUID serviceOrderId) {
+        return jpaBudgetRepository.findByServiceOrderId(serviceOrderId)
+                .map(entity -> BudgetMapper.toEntity(entity,
+                        jpaBudgetItemRepository.findByBudgetId(entity.getId())));
+    }
+
+    @Override
+    public Optional<Budget> findById(UUID budgetId) {
+        return jpaBudgetRepository.findById(budgetId)
+                .map(entity -> BudgetMapper.toEntity(entity,
+                        jpaBudgetItemRepository.findByBudgetId(entity.getId())));
+    }
+}
