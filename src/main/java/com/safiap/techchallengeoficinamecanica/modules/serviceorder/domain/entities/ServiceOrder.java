@@ -1,5 +1,6 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.events.ServiceOrderOpenedEvent;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRoot;
@@ -32,8 +33,11 @@ public class ServiceOrder extends AggregateRoot {
     }
 
     public static ServiceOrder open(UUID customerId, UUID vehicleId, String problemDescription) {
-        return new ServiceOrder(UUID.randomUUID(), customerId, vehicleId,
+        ServiceOrder serviceOrder = new ServiceOrder(UUID.randomUUID(), customerId, vehicleId,
                 problemDescription, ServiceOrderStatus.RECEIVED, LocalDateTime.now(), null, ServiceOrderPriority.LOW);
+        serviceOrder.registerDomainEvent(ServiceOrderOpenedEvent.of(
+                serviceOrder.serviceOrderId, serviceOrder.customerId, serviceOrder.vehicleId));
+        return serviceOrder;
     }
 
     public static ServiceOrder build(UUID serviceOrderId, UUID customerId, UUID vehicleId,
