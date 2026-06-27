@@ -5,6 +5,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entit
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetStatus;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.Diagnosis;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class FinalizeDiagnosisUseCase {
     }
 
     @Transactional
-    public ServiceOrderResponse execute(UUID serviceOrderId) {
+    public ServiceOrderResponse execute(UUID serviceOrderId, String diagnosis) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(serviceOrderId)
                 .orElseThrow(() -> new NotFoundException("Service order not found: " + serviceOrderId));
 
@@ -33,7 +34,7 @@ public class FinalizeDiagnosisUseCase {
                 .filter(b -> b.getStatus() == BudgetStatus.FINALIZED && !b.getItems().isEmpty())
                 .orElseThrow(() -> new ConflictException("A finalized budget with items is required before closing diagnosis"));
 
-        serviceOrder.finalizeDiagnosis();
+        serviceOrder.finalizeDiagnosis(new Diagnosis(diagnosis));
         serviceOrderRepository.save(serviceOrder);
 
         return ServiceOrderResponse.from(serviceOrder);
