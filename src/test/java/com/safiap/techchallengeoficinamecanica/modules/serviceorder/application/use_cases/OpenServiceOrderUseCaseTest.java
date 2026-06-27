@@ -9,6 +9,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -31,6 +32,7 @@ class OpenServiceOrderUseCaseTest {
             new OpenServiceOrderUseCase(serviceOrderRepository, customerRepository, vehicleRepository);
 
     @Test
+    @DisplayName("teste abre a ordem de serviço quando cliente e veículo existem")
     void opensOrderWhenCustomerAndVehicleExist() {
         UUID customerId = UUID.randomUUID();
         UUID vehicleId = UUID.randomUUID();
@@ -47,6 +49,7 @@ class OpenServiceOrderUseCaseTest {
     }
 
     @Test
+    @DisplayName("teste falha ao abrir a ordem de serviço quando o cliente não existe")
     void failsWhenCustomerNotFound() {
         UUID customerId = UUID.randomUUID();
         when(customerRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
@@ -59,6 +62,7 @@ class OpenServiceOrderUseCaseTest {
     }
 
     @Test
+    @DisplayName("teste falha ao abrir a ordem de serviço quando o veículo não existe")
     void failsWhenVehicleNotFound() {
         UUID customerId = UUID.randomUUID();
         UUID vehicleId = UUID.randomUUID();
