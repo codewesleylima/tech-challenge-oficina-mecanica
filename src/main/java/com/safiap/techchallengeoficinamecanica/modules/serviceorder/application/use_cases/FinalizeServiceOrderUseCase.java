@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
+import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +14,12 @@ import java.util.UUID;
 public class FinalizeServiceOrderUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
-    public FinalizeServiceOrderUseCase(ServiceOrderRepository serviceOrderRepository) {
+    public FinalizeServiceOrderUseCase(ServiceOrderRepository serviceOrderRepository,
+                                       DomainEventPublisher domainEventPublisher) {
         this.serviceOrderRepository = serviceOrderRepository;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Transactional
@@ -25,6 +29,7 @@ public class FinalizeServiceOrderUseCase {
 
         serviceOrder.finalizeOrder();
         serviceOrderRepository.save(serviceOrder);
+        domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
 
         return ServiceOrderResponse.from(serviceOrder);
     }

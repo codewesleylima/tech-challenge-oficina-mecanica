@@ -6,6 +6,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repos
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetStatus;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.Diagnosis;
+import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ public class FinalizeDiagnosisUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final BudgetRepository budgetRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
     public FinalizeDiagnosisUseCase(ServiceOrderRepository serviceOrderRepository,
-                                    BudgetRepository budgetRepository) {
+                                    BudgetRepository budgetRepository,
+                                    DomainEventPublisher domainEventPublisher) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.budgetRepository = budgetRepository;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Transactional
@@ -36,6 +40,7 @@ public class FinalizeDiagnosisUseCase {
 
         serviceOrder.finalizeDiagnosis(new Diagnosis(diagnosis));
         serviceOrderRepository.save(serviceOrder);
+        domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
 
         return ServiceOrderResponse.from(serviceOrder);
     }

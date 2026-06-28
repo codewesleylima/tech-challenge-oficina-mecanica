@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entit
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetItemType;
+import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +20,16 @@ public class StartServiceOrderExecutionUseCase {
     private final ServiceOrderRepository serviceOrderRepository;
     private final BudgetRepository budgetRepository;
     private final PartStockPort partStockPort;
+    private final DomainEventPublisher domainEventPublisher;
 
     public StartServiceOrderExecutionUseCase(ServiceOrderRepository serviceOrderRepository,
                                              BudgetRepository budgetRepository,
-                                             PartStockPort partStockPort) {
+                                             PartStockPort partStockPort,
+                                             DomainEventPublisher domainEventPublisher) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.budgetRepository = budgetRepository;
         this.partStockPort = partStockPort;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Transactional
@@ -36,6 +40,7 @@ public class StartServiceOrderExecutionUseCase {
         serviceOrder.startExecution();
         consumePartStock(serviceOrderId);
         serviceOrderRepository.save(serviceOrder);
+        domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
 
         return ServiceOrderResponse.from(serviceOrder);
     }
