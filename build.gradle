@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'info.solidsoft.pitest' version '1.15.0'
 }
 
 group = 'com.safiap'
@@ -42,4 +43,18 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+pitest {
+    junit5PluginVersion = '1.2.1'
+    targetClasses = [
+            'com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.*',
+            'com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.*',
+            'com.safiap.techchallengeoficinamecanica.modules.register.domain.*'
+    ]
+    targetTests = ['com.safiap.techchallengeoficinamecanica.*']
+    excludedTestClasses = ['com.safiap.techchallengeoficinamecanica.integration.*']
+    threads = 4
+    outputFormats = ['HTML', 'XML']
+    timestampedReports = false
 }
