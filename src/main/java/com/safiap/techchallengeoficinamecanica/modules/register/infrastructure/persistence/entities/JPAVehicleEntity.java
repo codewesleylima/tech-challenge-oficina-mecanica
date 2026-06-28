@@ -14,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class JPAVehicleEntity {
     @Id
-    @GeneratedValue(strategy= GenerationType.UUID)
     private UUID id;
 
     @Column (nullable = false)
