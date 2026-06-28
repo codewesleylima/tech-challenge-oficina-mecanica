@@ -32,6 +32,8 @@ public class JpaUserEntity implements UserDetails {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "customer_id")
+    private UUID customerId;
 
 
     @Override

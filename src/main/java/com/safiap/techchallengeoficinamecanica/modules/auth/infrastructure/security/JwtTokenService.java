@@ -27,13 +27,18 @@ public class JwtTokenService implements TokenService {
         Instant now = Instant.now();
         Instant expiresAt = now.plus(1, ChronoUnit.HOURS);
 
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder claimsBuilder = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(expiresAt)
                 .subject(user.subject())
-                .claim("roles", user.roles())
-                .build();
+                .claim("roles", user.roles());
+
+        if (user.customerId() != null) {
+            claimsBuilder.claim("customerId", user.customerId().toString());
+        }
+
+        JwtClaimsSet claims = claimsBuilder.build();
 
         JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
         return new UserTokenResponse(
