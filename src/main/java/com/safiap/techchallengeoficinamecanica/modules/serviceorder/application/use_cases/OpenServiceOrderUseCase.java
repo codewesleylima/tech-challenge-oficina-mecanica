@@ -6,6 +6,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
+import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +17,16 @@ public class OpenServiceOrderUseCase {
     private final ServiceOrderRepository serviceOrderRepository;
     private final CustomerRepository customerRepository;
     private final VehicleRepository vehicleRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
     public OpenServiceOrderUseCase(ServiceOrderRepository serviceOrderRepository,
                                    CustomerRepository customerRepository,
-                                   VehicleRepository vehicleRepository) {
+                                   VehicleRepository vehicleRepository,
+                                   DomainEventPublisher domainEventPublisher) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.customerRepository = customerRepository;
         this.vehicleRepository = vehicleRepository;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Transactional
@@ -40,7 +44,7 @@ public class OpenServiceOrderUseCase {
         );
 
         serviceOrderRepository.save(serviceOrder);
-
+        domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
         return ServiceOrderResponse.from(serviceOrder);
     }
 }
