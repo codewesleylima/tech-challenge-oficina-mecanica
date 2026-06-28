@@ -1,0 +1,55 @@
+{
+  "register": {
+    "email": "admin@oficina.com",
+    "password": "senha123"
+  },
+  "login": {
+    "email": "admin@oficina.com",
+    "password": "senha123"
+  },
+  "customer": {
+    "name": "João Silva",
+    "email": "joao@email.com",
+    "phone": "11999998888",
+    "cpf": "12345678900"
+  },
+  "vehicle": {
+    "carLicensePlate": "ABC1D23",
+    "model": "Civic",
+    "manufacturer": "Honda",
+    "kilometers": 45000,
+    "year": 2020
+  },
+  "part": {
+    "name": "Pastilha de freio dianteira",
+    "description": "Jogo de pastilhas cerâmicas",
+    "quantity": 10,
+    "price": 89.90
+  },
+  "service": {
+    "name": "Troca de pastilhas de freio",
+    "description": "Mão de obra - eixo dianteiro",
+    "price": 150.00
+  },
+  "openServiceOrder": {
+    "problemDescription": "Carro fazendo barulho ao frear"
+  },
+  "addPart": {
+    "description": "Pastilha de freio dianteira",
+    "quantity": 1,
+    "unitPrice": 89.90
+  },
+  "addService": {
+    "description": "Mão de obra - troca de freios",
+    "quantity": 1,
+    "unitPrice": 150.00
+  },
+  "finalizeDiagnosis": {
+    "diagnosis": "Pastilhas gastas e disco empenado no eixo dianteiro"
+  },
+  "recordServiceTime": {
+    "startTime": "2026-06-26T08:00:00",
+    "endTime": "2026-06-26T10:30:00",
+    "notes": "Troca de pastilhas de freio concluída"
+  }
+}

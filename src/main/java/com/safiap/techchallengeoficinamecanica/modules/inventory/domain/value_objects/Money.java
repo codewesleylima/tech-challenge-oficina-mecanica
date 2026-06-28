@@ -4,12 +4,11 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainE
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Objects;
 
 public record Money(BigDecimal amount) {
 
     public Money {
-        Objects.requireNonNull(amount, " amount is null");
+        DomainException.requireNonNull(amount, " amount is null");
         if (amount.signum() < 0) {
             throw new DomainException("amount cannot be negative");
         }

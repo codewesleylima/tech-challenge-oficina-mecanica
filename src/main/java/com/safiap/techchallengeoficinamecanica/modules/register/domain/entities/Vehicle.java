@@ -6,7 +6,6 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRo
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 
 import java.time.Year;
-import java.util.Objects;
 import java.util.UUID;
 
 public class Vehicle extends AggregateRoot {
@@ -73,12 +72,12 @@ public class Vehicle extends AggregateRoot {
                                          Kilometers kilometers,
                                          Year year) {
 
-        Objects.requireNonNull(customerId, " customerId is null");
-        Objects.requireNonNull(carLicensePlate, " carLicensePlate is null");
-        Objects.requireNonNull(model,  " model is null");
-        Objects.requireNonNull(manufacturer,   " manufacturer is null");
-        Objects.requireNonNull(kilometers,    " kilometers is null");
-        Objects.requireNonNull(year, " year is null");
+        DomainException.requireNonNull(customerId, " customerId is null");
+        DomainException.requireNonNull(carLicensePlate, " carLicensePlate is null");
+        DomainException.requireNotBlank(model, " model is blank");
+        DomainException.requireNotBlank(manufacturer, " manufacturer is blank");
+        DomainException.requireNonNull(kilometers,    " kilometers is null");
+        DomainException.requireNonNull(year, " year is null");
 
         return new Vehicle(
                 UUID.randomUUID(),
@@ -100,13 +99,13 @@ public class Vehicle extends AggregateRoot {
                                          Kilometers kilometers,
                                          Year year) {
 
-        Objects.requireNonNull(vehicleId, " vehicleId is null");
-        Objects.requireNonNull(customerId, " customerId is null");
-        Objects.requireNonNull(carLicensePlate, " carLicensePlate is null");
-        Objects.requireNonNull(model,  " model is null");
-        Objects.requireNonNull(manufacturer,   " manufacturer is null");
-        Objects.requireNonNull(kilometers,    " kilometers is null");
-        Objects.requireNonNull(year, " year is null");
+        DomainException.requireNonNull(vehicleId, " vehicleId is null");
+        DomainException.requireNonNull(customerId, " customerId is null");
+        DomainException.requireNonNull(carLicensePlate, " carLicensePlate is null");
+        DomainException.requireNotBlank(model, " model is blank");
+        DomainException.requireNotBlank(manufacturer, " manufacturer is blank");
+        DomainException.requireNonNull(kilometers,    " kilometers is null");
+        DomainException.requireNonNull(year, " year is null");
 
         return new Vehicle(
                 vehicleId,
