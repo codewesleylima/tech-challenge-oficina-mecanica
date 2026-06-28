@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.auth.presentation.contro
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.AddUserCommand;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.RegisterAccountCommand;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.UserLoginCommand;
+import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.RegisterAccountResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserCreateResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserTokenResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cases.LoginUseCase;
@@ -34,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/register-account")
-    public ResponseEntity<UserCreateResponse> registerAccount(@RequestBody RegisterAccountDto dto){
+    public ResponseEntity<RegisterAccountResponse> registerAccount(@RequestBody RegisterAccountDto dto){
         return ResponseEntity.status(201).body(registerAccountUseCase.execute(
                 new RegisterAccountCommand(dto.email(), dto.password(), dto.name(), dto.phone(), dto.cpf())
         ));
