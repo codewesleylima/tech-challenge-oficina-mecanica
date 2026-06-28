@@ -4,9 +4,9 @@ import java.util.UUID;
 
 public record AlterCustomerCommand(
         UUID id,
-        String Name,
-        String Email,
-        String Phone,
-        String Cpf
+        String name,
+        String email,
+        String phone,
+        String cpf
 ) {
 }

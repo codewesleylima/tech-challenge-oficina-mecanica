@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.register.application.use
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Customer;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class DeleteCustomerUseCase {
     @Transactional
     public void execute(UUID id){
 
-        Customer customer = customerRepository.findByCustomerId(id).orElseThrow(() -> new DomainException("Customer with id: " + id + " not found"));
+        Customer customer = customerRepository.findByCustomerId(id).orElseThrow(() -> new NotFoundException("Customer with id: " + id + " not found"));
 
         customerRepository.delete(customer);
     }

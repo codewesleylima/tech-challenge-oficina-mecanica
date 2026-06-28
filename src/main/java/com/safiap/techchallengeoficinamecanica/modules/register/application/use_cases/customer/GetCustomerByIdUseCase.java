@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.register.application.use
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.GetCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -28,7 +29,7 @@ public class GetCustomerByIdUseCase {
                                 customer.getCpf().cpf()
                         )
                 ).orElseThrow(
-                        () -> new DomainException("Customer with id " + id + " not found.")
+                        () -> new NotFoundException("Customer with id " + id + " not found.")
                 );
     }
 

@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositor
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CarLicensePlate;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Kilometers;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class AlterVehicleUseCase {
     public AlterVehicleResponse execute(AlterVehicleCommand command) {
 
         Vehicle vehicle = vehicleRepository.findByVehicleId(command.vehicleId())
-                .orElseThrow( () -> new DomainException("Vehicle not found."));
+                .orElseThrow( () -> new NotFoundException("Vehicle not found."));
 
         vehicle.alterVehicle(
                 new CarLicensePlate(command.carLicensePlate()),

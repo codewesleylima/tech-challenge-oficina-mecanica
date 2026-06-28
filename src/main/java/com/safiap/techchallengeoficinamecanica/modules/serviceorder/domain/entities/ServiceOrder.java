@@ -39,7 +39,7 @@ public class ServiceOrder extends AggregateRoot {
 
     public static ServiceOrder open(UUID customerId, UUID vehicleId, String problemDescription) {
         ServiceOrder serviceOrder = new ServiceOrder(UUID.randomUUID(), customerId, vehicleId,
-                problemDescription, ServiceOrderStatus.RECEIVED, LocalDateTime.now(), null, ServiceOrderPriority.LOW);
+                problemDescription, null, ServiceOrderStatus.RECEIVED, LocalDateTime.now(), null, ServiceOrderPriority.LOW);
         serviceOrder.registerDomainEvent(ServiceOrderOpenedEvent.of(
                 serviceOrder.serviceOrderId, serviceOrder.customerId, serviceOrder.vehicleId));
         return serviceOrder;

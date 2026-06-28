@@ -4,9 +4,9 @@ import java.util.UUID;
 
 public record GetCustomerResponse(
         UUID id,
-        String Name,
-        String Email,
-        String Phone,
-        String CPF
+        String name,
+        String email,
+        String phone,
+        String cpf
 ) {
 }

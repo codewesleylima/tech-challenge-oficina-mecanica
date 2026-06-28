@@ -4,6 +4,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.resp
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,7 +31,7 @@ public class GetCustomerByCpfUseCase {
                                 customer.getCpf().cpf()
                         )
                 ).orElseThrow(
-                        () -> new DomainException("Customer with cpf " + cpf + " not found.")
+                        () -> new NotFoundException("Customer with cpf " + cpf + " not found.")
                 );
     }
 

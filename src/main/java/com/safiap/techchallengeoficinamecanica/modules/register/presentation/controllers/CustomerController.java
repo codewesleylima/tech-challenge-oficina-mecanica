@@ -48,10 +48,10 @@ public class CustomerController {
             @RequestBody RegisterCustomerDTO request) {
 
         RegisterCustomerCommand command = new RegisterCustomerCommand(
-                request.Name(),
-                request.Email(),
-                request.Phone(),
-                request.CPF()
+                request.name(),
+                request.email(),
+                request.phone(),
+                request.cpf()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registerCustomerUseCase.execute(command));
