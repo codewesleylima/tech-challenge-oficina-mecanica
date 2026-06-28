@@ -31,6 +31,34 @@ public class Customer extends AggregateRoot {
         this.cpf = cpf;
     }
 
+
+    public UUID getCustomerId() {
+        return customerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Email getEmail() {
+        return email;
+    }
+
+    public Phone getPhone() {
+        return phone;
+    }
+
+    public CPF getCpf() {
+        return cpf;
+    }
+
+    private void changeName (String newName) {
+        if (newName == null || newName.isBlank()) {
+            throw new DomainException("Name cannot be null or empty.");
+        }
+        this.name = newName;
+    }
+
     public static Customer createCustomer(
                                   String name,
                                   Email email,
@@ -72,23 +100,12 @@ public class Customer extends AggregateRoot {
         );
     }
 
-    public UUID getCustomerId() {
-        return customerId;
+    public void alterCustomer(String Name, Email Email, Phone Phone, CPF CPF) {
+        changeName(Name);
+        this.email = Email;
+        this.phone = Phone;
+        this.cpf = CPF;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public Email getEmail() {
-        return email;
-    }
-
-    public Phone getPhone() {
-        return phone;
-    }
-
-    public CPF getCpf() {
-        return cpf;
-    }
 }

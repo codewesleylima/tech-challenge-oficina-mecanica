@@ -20,6 +20,35 @@ public class Vehicle extends AggregateRoot {
 
     private Vehicle () {};
 
+    public UUID getVehicleId() {
+        return vehicleId;
+    }
+
+    public UUID getCustomerId() {
+        return customerId;
+    }
+
+    public CarLicensePlate getCarLicensePlate() {
+        return carLicensePlate;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public Kilometers getKilometers() {
+        return kilometers;
+    }
+
+    public Year getYear() {
+        return year;
+    }
+
+
     private Vehicle(         UUID vehicleId,
                              UUID customerId,
                              CarLicensePlate carLicensePlate,
@@ -89,34 +118,20 @@ public class Vehicle extends AggregateRoot {
         ) ;
     }
 
+    public void changeKilometers(Kilometers kilometers) {
+        if (this.kilometers.value() > kilometers.value()) {
+            throw new DomainException("Kilometers cannot decrease.");
+        }
 
-
-    public UUID getVehicleId() {
-        return vehicleId;
+        this.kilometers = kilometers;
     }
 
-    public UUID getCustomerId() {
-        return customerId;
-    }
-
-    public CarLicensePlate getCarLicensePlate() {
-        return carLicensePlate;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public Kilometers getKilometers() {
-        return kilometers;
-    }
-
-    public Year getYear() {
-        return year;
+    public void alterVehicle(CarLicensePlate carLicensePlate, String model, String manufactures, Kilometers kilometers, Year year) {
+        changeKilometers(kilometers);
+        this.carLicensePlate = carLicensePlate;
+        this.model = model;
+        this.manufacturer = manufactures;
+        this.year = year;
     }
 
 }
