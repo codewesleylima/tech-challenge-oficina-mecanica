@@ -1,6 +1,6 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities;
 
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.events.ServiceOrderOpenedEvent;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.events.ServiceOrderStatusChangedEvent;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.Diagnosis;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
@@ -40,8 +40,9 @@ public class ServiceOrder extends AggregateRoot {
     public static ServiceOrder open(UUID customerId, UUID vehicleId, String problemDescription) {
         ServiceOrder serviceOrder = new ServiceOrder(UUID.randomUUID(), customerId, vehicleId,
                 problemDescription, null, ServiceOrderStatus.RECEIVED, LocalDateTime.now(), null, ServiceOrderPriority.LOW);
-        serviceOrder.registerDomainEvent(ServiceOrderOpenedEvent.of(
-                serviceOrder.serviceOrderId, serviceOrder.customerId, serviceOrder.vehicleId));
+        serviceOrder.registerDomainEvent(ServiceOrderStatusChangedEvent.of(
+                serviceOrder.serviceOrderId, serviceOrder.customerId, serviceOrder.vehicleId,
+                null, ServiceOrderStatus.RECEIVED));
         return serviceOrder;
     }
 
@@ -63,7 +64,7 @@ public class ServiceOrder extends AggregateRoot {
     public void startDiagnosis() {
         if (this.status != ServiceOrderStatus.RECEIVED)
             throw new ConflictException("Service order must be in RECEIVED status to start diagnosis");
-        this.status = ServiceOrderStatus.IN_DIAGNOSIS;
+        changeStatus(ServiceOrderStatus.IN_DIAGNOSIS);
     }
 
     public void finalizeDiagnosis(Diagnosis diagnosis) {
@@ -72,32 +73,39 @@ public class ServiceOrder extends AggregateRoot {
         if (diagnosis == null)
             throw new DomainException("Diagnosis description is required to finalize diagnosis");
         this.diagnosis = diagnosis;
-        this.status = ServiceOrderStatus.AWAITING_APPROVAL;
+        changeStatus(ServiceOrderStatus.AWAITING_APPROVAL);
     }
 
     public void startExecution() {
         if (this.status != ServiceOrderStatus.AWAITING_APPROVAL)
             throw new ConflictException("Service order must be in AWAITING_APPROVAL status to start execution");
-        this.status = ServiceOrderStatus.IN_EXECUTION;
+        changeStatus(ServiceOrderStatus.IN_EXECUTION);
     }
 
     public void rejectBudget() {
         if (this.status != ServiceOrderStatus.AWAITING_APPROVAL)
             throw new ConflictException("Service order must be in AWAITING_APPROVAL status to reject budget");
-        this.status = ServiceOrderStatus.IN_DIAGNOSIS;
+        changeStatus(ServiceOrderStatus.IN_DIAGNOSIS);
     }
 
     public void finalizeOrder() {
         if (this.status != ServiceOrderStatus.IN_EXECUTION)
             throw new ConflictException("Service order must be in IN_EXECUTION status to finalize");
-        this.status = ServiceOrderStatus.FINALIZED;
         this.concludedAt = LocalDateTime.now();
+        changeStatus(ServiceOrderStatus.FINALIZED);
     }
 
     public void deliver() {
         if (this.status != ServiceOrderStatus.FINALIZED)
             throw new ConflictException("Service order must be in FINALIZED status to deliver");
-        this.status = ServiceOrderStatus.DELIVERED;
+        changeStatus(ServiceOrderStatus.DELIVERED);
+    }
+
+    private void changeStatus(ServiceOrderStatus newStatus) {
+        ServiceOrderStatus previousStatus = this.status;
+        this.status = newStatus;
+        registerDomainEvent(ServiceOrderStatusChangedEvent.of(
+                serviceOrderId, customerId, vehicleId, previousStatus, newStatus));
     }
 
     public UUID getServiceOrderId() { return serviceOrderId; }

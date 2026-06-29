@@ -9,8 +9,12 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.FinalizeDiagnosisDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.RecordServiceTimeDTO;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.AuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -139,5 +143,14 @@ public class ServiceOrderController {
     @PatchMapping("/{serviceOrderId}/deliver")
     public ResponseEntity<ServiceOrderResponse> deliver(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(deliverServiceOrderUseCase.execute(serviceOrderId));
+    }
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/my-orders")
+    public ResponseEntity<List<ServiceOrderResponse>> getMyServiceOrders(@AuthenticationPrincipal Jwt jwt) {
+        String customerId = jwt.getClaimAsString("customerId");
+        if (customerId == null) {
+            throw new AuthException("Authenticated user is not linked to a customer");
+        }
+        return ResponseEntity.ok(listServiceOrdersByCustomerUseCase.execute(UUID.fromString(customerId)));
     }
 }
