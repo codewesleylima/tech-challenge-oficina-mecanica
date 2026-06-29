@@ -5,6 +5,7 @@ import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.ports.InventoryCatalogPort;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Component
@@ -19,11 +20,11 @@ public class InventoryCatalogAdapter implements InventoryCatalogPort {
         this.getServiceByIdUseCase = getServiceByIdUseCase;
     }
     @Override
-    public void ensurePartExists(UUID partId) {
-        getPartByIdUseCase.execute(partId);
+    public BigDecimal getPartPrice(UUID partId) {
+        return getPartByIdUseCase.execute(partId).price();
     }
     @Override
-    public void ensureServiceExists(UUID serviceId) {
-        getServiceByIdUseCase.execute(serviceId);
+    public BigDecimal getServicePrice(UUID serviceId) {
+        return getServiceByIdUseCase.execute(serviceId).price();
     }
 }

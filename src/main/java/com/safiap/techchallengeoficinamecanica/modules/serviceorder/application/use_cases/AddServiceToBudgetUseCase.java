@@ -9,6 +9,8 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoun
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 public class AddServiceToBudgetUseCase {
 
@@ -26,9 +28,9 @@ public class AddServiceToBudgetUseCase {
         Budget budget = budgetRepository.findByServiceOrderId(command.serviceOrderId())
                 .orElseThrow(() -> new NotFoundException("Budget not found for service order: " + command.serviceOrderId()));
 
-        inventoryCatalogPort.ensureServiceExists(command.itemId());
+        BigDecimal unitPrice = inventoryCatalogPort.getServicePrice(command.itemId());
 
-        budget.addService(command.itemId(), command.description(), command.quantity(), command.unitPrice());
+        budget.addService(command.itemId(), command.description(), command.quantity(), unitPrice);
         budgetRepository.save(budget);
 
         return BudgetResponse.from(budget);
