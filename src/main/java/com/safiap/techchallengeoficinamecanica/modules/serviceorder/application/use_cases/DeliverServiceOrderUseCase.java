@@ -4,6 +4,8 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,8 @@ import java.util.UUID;
 
 @Service
 public class DeliverServiceOrderUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(DeliverServiceOrderUseCase.class);
 
     private final ServiceOrderRepository serviceOrderRepository;
 
@@ -25,6 +29,8 @@ public class DeliverServiceOrderUseCase {
 
         serviceOrder.deliver();
         serviceOrderRepository.save(serviceOrder);
+
+        log.info("Service order {} delivered to customer", serviceOrderId);
 
         return ServiceOrderResponse.from(serviceOrder);
     }
