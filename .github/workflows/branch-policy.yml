@@ -90,7 +90,7 @@ jobs:
               return;
             }
 
-            // ── 2. Review validation ─────────────────────────────────────────
+            // ── 2. Review check (informativo, não bloqueia) ──────────────────
             const reviews = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -100,21 +100,8 @@ jobs:
             const approvals = reviews.data.filter(r => r.state === 'APPROVED');
 
             if (approvals.length === 0) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body: [
-                  `## ⚠️ Review obrigatório`,
-                  ``,
-                  `Este PR ainda não possui nenhuma aprovação.`,
-                  ``,
-                  `É necessário ao menos **1 aprovação** de um colaborador antes do merge.`,
-                ].join('\n'),
-              });
-
-              core.setFailed(`[BLOCKED] PR #${prNumber} requires at least 1 approving review before merge.`);
-              return;
+              core.notice(`PR #${prNumber} ainda sem aprovação — lembrete não bloqueante. `
+                + `A exigência de review é aplicada pela proteção de branch, não por este check.`);
             }
 
             core.info(`Branch policy OK — ${source} → ${target} | Approvals: ${approvals.length}`);
