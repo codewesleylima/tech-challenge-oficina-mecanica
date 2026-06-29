@@ -4,6 +4,8 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,8 @@ import java.util.UUID;
 
 @Service
 public class RejectBudgetUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(RejectBudgetUseCase.class);
 
     private final ServiceOrderRepository serviceOrderRepository;
 
@@ -25,6 +29,8 @@ public class RejectBudgetUseCase {
 
         serviceOrder.rejectBudget();
         serviceOrderRepository.save(serviceOrder);
+
+        log.warn("Budget rejected by customer for service order {} - returned to diagnosis", serviceOrderId);
 
         return ServiceOrderResponse.from(serviceOrder);
     }
