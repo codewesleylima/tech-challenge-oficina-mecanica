@@ -7,6 +7,8 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repos
 import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.UUID;
 
 @Service
 public class FinalizeServiceOrderUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(FinalizeServiceOrderUseCase.class);
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final BudgetRepository budgetRepository;
@@ -40,6 +44,8 @@ public class FinalizeServiceOrderUseCase {
         serviceOrder.finalizeOrder();
         serviceOrderRepository.save(serviceOrder);
         domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
+
+        log.debug("Service order {} work finalized - ready for delivery", serviceOrderId);
 
         return ServiceOrderResponse.from(serviceOrder);
     }

@@ -9,6 +9,8 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repos
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetItemType;
 import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,8 @@ import java.util.UUID;
 
 @Service
 public class StartServiceOrderExecutionUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(StartServiceOrderExecutionUseCase.class);
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final BudgetRepository budgetRepository;
@@ -41,6 +45,8 @@ public class StartServiceOrderExecutionUseCase {
         consumePartStock(serviceOrderId);
         serviceOrderRepository.save(serviceOrder);
         domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
+
+        log.debug("Service order {} budget approved - execution started", serviceOrderId);
 
         return ServiceOrderResponse.from(serviceOrder);
     }
