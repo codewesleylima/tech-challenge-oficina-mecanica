@@ -4,7 +4,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.comm
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.AlterCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Customer;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CnpjCpf;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
@@ -31,7 +31,7 @@ public class AlterCustomerUseCase {
                 command.name(),
                 new Email(command.email()),
                 new Phone(command.phone()),
-                new CPF(command.cpf())
+                new CnpjCpf(command.cnpjCpf())
         );
 
         customerRepository.save(customer);
@@ -41,7 +41,7 @@ public class AlterCustomerUseCase {
                 customer.getName(),
                 customer.getEmail().value(),
                 customer.getPhone().value(),
-                customer.getCpf().cpf());
+                customer.getCnpjCpf().value());
     }
 
 }

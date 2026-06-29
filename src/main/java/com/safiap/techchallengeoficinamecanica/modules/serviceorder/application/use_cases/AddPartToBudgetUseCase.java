@@ -1,6 +1,7 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases;
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddPartCommand;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.ports.InventoryCatalogPort;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
@@ -12,15 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class AddPartToBudgetUseCase {
 
     private final BudgetRepository budgetRepository;
+    private final InventoryCatalogPort inventoryCatalogPort;
 
-    public AddPartToBudgetUseCase(BudgetRepository budgetRepository) {
+    public AddPartToBudgetUseCase(BudgetRepository budgetRepository,
+                                  InventoryCatalogPort inventoryCatalogPort) {
         this.budgetRepository = budgetRepository;
+        this.inventoryCatalogPort = inventoryCatalogPort;
     }
 
     @Transactional
     public BudgetResponse execute(AddPartCommand command) {
         Budget budget = budgetRepository.findByServiceOrderId(command.serviceOrderId())
                 .orElseThrow(() -> new NotFoundException("Budget not found for service order: " + command.serviceOrderId()));
+
+        inventoryCatalogPort.ensurePartExists(command.itemId());
 
         budget.addPart(command.itemId(), command.description(), command.quantity(), command.unitPrice());
         budgetRepository.save(budget);

@@ -11,7 +11,7 @@ documentadas via **Swagger** e protegidas por **autenticação JWT**.
 ## Funcionalidades implementadas (MVP)
 
 **Cadastros e catálogo**
-- Cadastro de cliente com identificação por CPF (validação de dados sensíveis)
+- Cadastro de cliente com identificação por CPF/CNPJ (validação de dados sensíveis com dígitos verificadores)
 - Cadastro de veículo (placa no padrão Mercosul, marca, modelo, ano, km)
 - CRUD completo de **serviços** (catálogo)
 - CRUD completo de **peças/insumos** com **controle de estoque** (entrada/saída)
@@ -21,7 +21,8 @@ documentadas via **Swagger** e protegidas por **autenticação JWT**.
 - Orçamento da OS com peças e serviços e **cálculo automático do total**
 - Aprovação/rejeição do orçamento pelo cliente
 - Descrição do diagnóstico registrada ao encerrar o diagnóstico
-- Registro de tempo de execução do serviço
+- Conclusão da execução por item de serviço (data de fim por serviço); a OS só é finalizada quando todos os serviços estão concluídos
+- **Monitoramento do tempo médio de execução por tipo de serviço**
 - Fila de atendimento por prioridade (aumentar/diminuir prioridade)
 - Listagem e detalhamento de OS (por id, por cliente e por status)
 
@@ -38,13 +39,12 @@ RECEBIDA ──► EM_DIAGNÓSTICO ──► AGUARDANDO_APROVAÇÃO ──► EM
 
 **Segurança e qualidade**
 - Autenticação JWT (HS256) nas APIs administrativas
-- Validação de dados sensíveis (CPF, placa de veículo)
+- Validação de dados sensíveis (CPF/CNPJ, placa de veículo)
 - Tratamento global de exceções com respostas de erro padronizadas
 - Testes unitários (domínio e casos de uso) e de integração (fluxo completo da OS)
 
-> **Fora do escopo desta versão:** notificações/comunicação em tempo real com o cliente,
-> relatório de tempo médio de execução, identificação por CNPJ e CRUD completo (update/delete)
-> de clientes e veículos. Itens previstos para evoluções futuras.
+> **Fora do escopo desta versão:** notificações/comunicação em tempo real com o cliente.
+> Item previsto para evoluções futuras.
 
 ## Arquitetura
 
@@ -156,6 +156,50 @@ docker compose down          # para e remove os containers (mantém o volume de 
 docker compose down -v       # também remove o volume de dados do PostgreSQL (apaga os dados)
 ```
 
+## Observabilidade (Datadog) — opcional
+
+A observabilidade (**APM/traces, logs e métricas**) é **opt-in** via um overlay de compose
+(`docker-compose.datadog.yaml`). O `docker-compose.yaml` base sobe app + banco **sem** Datadog;
+quem quiser telemetria ativa o overlay. **Nenhuma chave fica no repositório** — cada membro usa a
+sua própria `DD_API_KEY` da organização compartilhada (site **us5.datadoghq.com**).
+
+### Como funciona
+- O **Datadog Agent** roda em container (overlay) e encaminha tudo para a org us5.
+- O **dd-java-agent** instrumenta o backend automaticamente (`-javaagent`), sem alterar código.
+- A `DD_API_KEY` é usada **só pelo Agent**. O `docker compose` lê `${DD_API_KEY}` do `.env`
+  **ou** de uma variável de ambiente do processo.
+
+### Onboarding de um novo membro
+1. **Entrar na org do Datadog** (peça convite ao responsável: *Organization Settings → Users*) e
+   **gerar a sua API Key** (*Organization Settings → API Keys*).
+2. **Vincular a chave** — escolha **uma** das formas:
+   - **`.env`** (recomendado): `cp .env.example .env` e preencha `DD_API_KEY`.
+   - **Variável de ambiente** (ex.: IntelliJ → *Run → Edit Configurations → Environment variables*
+     → `DD_API_KEY=...`), ou no shell antes de subir: `export DD_API_KEY=...`.
+3. **Baixar o tracer Java** na raiz do projeto (é git-ignored, não vai versionado):
+   ```bash
+   curl -Lo dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'
+   ```
+4. **Subir com o overlay**:
+   ```bash
+   docker compose -f docker-compose.yaml -f docker-compose.datadog.yaml up -d
+   ```
+   > Dica: descomente `COMPOSE_FILE=docker-compose.yaml:docker-compose.datadog.yaml` no `.env`
+   > e aí basta `docker compose up -d`.
+
+### Como ver os dados (UI compartilhada em app.us5.datadoghq.com)
+- **Logs Explorer** → filtro `service:oficina-sistema` (cada log traz `dd.trace_id` p/ correlação).
+- **APM → Services** → `oficina-sistema` (traces das requisições, com SQL do PostgreSQL).
+- **Dashboards / Infrastructure** → métricas de JVM, CPU e memória.
+
+### Validação
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.datadog.yaml exec dd-agent agent status "apm agent"
+```
+
+> Como todos rodam com `service:oficina-sistema` / `env:dev`, os dados dos devs se misturam na org.
+> Para distinguir, cada um pode adicionar uma tag própria (ex.: `DD_TAGS=developer:seunome`).
+
 ## Executando a API sem containers (opcional)
 Com uma instância do PostgreSQL acessível (ex.: `docker compose up postgres -d`), aponte o
 datasource via variáveis de ambiente e inicie a aplicação com o Gradle wrapper:
@@ -188,8 +232,9 @@ Os endpoints são RESTful e, exceto `POST /auth/register` e `POST /auth/login`, 
 | Veículos | `POST /vehicles/register` |
 | Peças (estoque) | `POST/GET/PUT/DELETE /part`, `PATCH /part/{id}/stock/{increase\|decrease}` |
 | Serviços | `POST/GET/PUT/DELETE /service` |
-| Ordem de Serviço | `POST /service-orders`, `GET /service-orders/{id}`, `GET /service-orders?status=`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `POST .../time-records`, `PATCH .../finalize`, `PATCH .../deliver` |
-| Orçamento | `POST /service-orders/{id}/budget`, `GET .../budget`, `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize` |
+| Ordem de Serviço | `POST /service-orders`, `GET /service-orders/{id}`, `GET /service-orders?status=`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `PATCH .../finalize`, `PATCH .../deliver` |
+| Orçamento | `POST /service-orders/{id}/budget`, `GET .../budget`, `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize`, `PATCH .../budget/items/{itemId}/complete` |
+| Métricas | `GET /service-orders/{id}/metrics/average-execution-time` (tempo médio de execução por tipo de serviço na OS) |
 
 A descrição completa, com corpo de cada requisição e a ordem de execução do fluxo, está em
 [`CURL/README.md`](CURL/README.md). Uma collection pronta para o Insomnia está em

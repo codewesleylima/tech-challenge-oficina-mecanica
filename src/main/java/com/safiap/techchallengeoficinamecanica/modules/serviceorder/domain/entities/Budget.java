@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.enti
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetItemType;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -47,6 +48,20 @@ public class Budget {
         if (this.status == BudgetStatus.FINALIZED)
             throw new ConflictException("Cannot modify a finalized budget");
         items.add(BudgetItem.create(this.budgetId, BudgetItemType.SERVICE, itemId, description, quantity, unitPrice));
+    }
+
+    public void completeServiceItem(UUID budgetItemId) {
+        BudgetItem item = items.stream()
+                .filter(i -> i.getBudgetItemId().equals(budgetItemId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Budget item not found: " + budgetItemId));
+        item.complete();
+    }
+
+    public boolean allServiceItemsCompleted() {
+        return items.stream()
+                .filter(BudgetItem::isService)
+                .allMatch(BudgetItem::isCompleted);
     }
 
     public BigDecimal calculateTotal() {

@@ -77,13 +77,17 @@ Status: **AWAITING_APPROVAL → IN_EXECUTION**
 > Status: **AWAITING_APPROVAL → IN_DIAGNOSIS**
 > Retorne ao passo 13 para revisar o orçamento.
 
-### 20. Service Orders → 12 - Record Service Time
-Registra o tempo de trabalho realizado. Pode ser chamado múltiplas vezes. Requer status **IN_EXECUTION**.
+### 20. Service Orders → 12 - Complete Service Item
+Conclui a execução de um item de serviço (grava a data de fim). Requer status **IN_EXECUTION**.
+Copie o `budgetItemId` do item do tipo `SERVICE` retornado em **Budget → Get Budget** para a variável `serviceBudgetItemId` do environment.
 
 ### 21. Service Orders → 13 - Finalize Order
-Finaliza a execução da OS.
+Finaliza a execução da OS. **Só é permitido quando todos os itens de serviço estão concluídos.**
 Status: **IN_EXECUTION → FINALIZED**
 
 ### 22. Service Orders → 14 - Deliver
 Registra a entrega do veículo ao cliente.
 Status: **FINALIZED → DELIVERED**
+
+### 23. Service Orders → 15 - Average Execution Time (Metrics)
+Retorna o **tempo médio de execução por tipo de serviço na OS** (em minutos), com a contagem de execuções concluídas consideradas.

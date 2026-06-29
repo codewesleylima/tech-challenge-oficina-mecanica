@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -36,8 +37,11 @@ public class JPABudgetItemEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
 
+    private LocalDateTime completedAt;
+
     public JPABudgetItemEntity(UUID id, UUID budgetId, BudgetItemType type, UUID itemId,
-                               String description, int quantity, BigDecimal unitPrice) {
+                               String description, int quantity, BigDecimal unitPrice,
+                               LocalDateTime completedAt) {
         this.id = id;
         this.budgetId = budgetId;
         this.type = type;
@@ -45,5 +49,6 @@ public class JPABudgetItemEntity {
         this.description = description;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
+        this.completedAt = completedAt;
     }
 }

@@ -5,6 +5,6 @@ public record RegisterCustomerCommand(
         String name,
         String email,
         String phone,
-        String cpf
+        String cnpjCpf
 ) {
 }
