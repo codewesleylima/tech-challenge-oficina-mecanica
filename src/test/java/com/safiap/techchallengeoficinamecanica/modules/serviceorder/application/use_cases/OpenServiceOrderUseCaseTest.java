@@ -8,6 +8,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
+import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,9 +28,10 @@ class OpenServiceOrderUseCaseTest {
     private final ServiceOrderRepository serviceOrderRepository = mock(ServiceOrderRepository.class);
     private final CustomerRepository customerRepository = mock(CustomerRepository.class);
     private final VehicleRepository vehicleRepository = mock(VehicleRepository.class);
+    private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
 
     private final OpenServiceOrderUseCase useCase =
-            new OpenServiceOrderUseCase(serviceOrderRepository, customerRepository, vehicleRepository);
+            new OpenServiceOrderUseCase(serviceOrderRepository, customerRepository, vehicleRepository, domainEventPublisher);
 
     @Test
     @DisplayName("teste abre a ordem de serviço quando cliente e veículo existem")

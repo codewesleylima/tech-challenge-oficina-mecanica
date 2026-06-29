@@ -10,7 +10,8 @@ public class UserMapper {
                 user.getId(),
                 user.getEmail().value(),
                 user.getPassword(),
-                user.getRole()
+                user.getRole(),
+                user.getCustomerId()
         );
     }
     public static User toEntity(JpaUserEntity jpaUserEntity) {
@@ -18,7 +19,8 @@ public class UserMapper {
                 jpaUserEntity.getId(),
                 jpaUserEntity.getEmail(),
                 jpaUserEntity.getPassword(),
-                jpaUserEntity.getRole()
+                jpaUserEntity.getRole(),
+                jpaUserEntity.getCustomerId()
         );
     }
 }
