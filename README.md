@@ -156,6 +156,50 @@ docker compose down          # para e remove os containers (mantém o volume de 
 docker compose down -v       # também remove o volume de dados do PostgreSQL (apaga os dados)
 ```
 
+## Observabilidade (Datadog) — opcional
+
+A observabilidade (**APM/traces, logs e métricas**) é **opt-in** via um overlay de compose
+(`docker-compose.datadog.yaml`). O `docker-compose.yaml` base sobe app + banco **sem** Datadog;
+quem quiser telemetria ativa o overlay. **Nenhuma chave fica no repositório** — cada membro usa a
+sua própria `DD_API_KEY` da organização compartilhada (site **us5.datadoghq.com**).
+
+### Como funciona
+- O **Datadog Agent** roda em container (overlay) e encaminha tudo para a org us5.
+- O **dd-java-agent** instrumenta o backend automaticamente (`-javaagent`), sem alterar código.
+- A `DD_API_KEY` é usada **só pelo Agent**. O `docker compose` lê `${DD_API_KEY}` do `.env`
+  **ou** de uma variável de ambiente do processo.
+
+### Onboarding de um novo membro
+1. **Entrar na org do Datadog** (peça convite ao responsável: *Organization Settings → Users*) e
+   **gerar a sua API Key** (*Organization Settings → API Keys*).
+2. **Vincular a chave** — escolha **uma** das formas:
+   - **`.env`** (recomendado): `cp .env.example .env` e preencha `DD_API_KEY`.
+   - **Variável de ambiente** (ex.: IntelliJ → *Run → Edit Configurations → Environment variables*
+     → `DD_API_KEY=...`), ou no shell antes de subir: `export DD_API_KEY=...`.
+3. **Baixar o tracer Java** na raiz do projeto (é git-ignored, não vai versionado):
+   ```bash
+   curl -Lo dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'
+   ```
+4. **Subir com o overlay**:
+   ```bash
+   docker compose -f docker-compose.yaml -f docker-compose.datadog.yaml up -d
+   ```
+   > Dica: descomente `COMPOSE_FILE=docker-compose.yaml:docker-compose.datadog.yaml` no `.env`
+   > e aí basta `docker compose up -d`.
+
+### Como ver os dados (UI compartilhada em app.us5.datadoghq.com)
+- **Logs Explorer** → filtro `service:oficina-sistema` (cada log traz `dd.trace_id` p/ correlação).
+- **APM → Services** → `oficina-sistema` (traces das requisições, com SQL do PostgreSQL).
+- **Dashboards / Infrastructure** → métricas de JVM, CPU e memória.
+
+### Validação
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.datadog.yaml exec dd-agent agent status "apm agent"
+```
+
+> Como todos rodam com `service:oficina-sistema` / `env:dev`, os dados dos devs se misturam na org.
+> Para distinguir, cada um pode adicionar uma tag própria (ex.: `DD_TAGS=developer:seunome`).
+
 ## Executando a API sem containers (opcional)
 Com uma instância do PostgreSQL acessível (ex.: `docker compose up postgres -d`), aponte o
 datasource via variáveis de ambiente e inicie a aplicação com o Gradle wrapper:
