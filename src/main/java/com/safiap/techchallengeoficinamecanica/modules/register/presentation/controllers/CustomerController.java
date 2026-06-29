@@ -65,9 +65,9 @@ public class CustomerController {
 
         AlterCustomerCommand command = new AlterCustomerCommand(
                 id,
-                request.Name(),
-                request.Email(),
-                request.Phone(),
+                request.name(),
+                request.email(),
+                request.phone(),
                 request.cnpjCpf()
         );
 
