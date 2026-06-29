@@ -4,7 +4,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.comm
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Customer;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.RegisterCustomerResponse;
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CnpjCpf;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
@@ -27,11 +27,11 @@ public class RegisterCustomerUseCase {
                 request.name(),
                 new Email(request.email()),
                 new Phone(request.phone()),
-                new CPF(request.cpf())
+                new CnpjCpf(request.cnpjCpf())
         );
 
-        customerRepository.findByCpf(customer.getCpf()).ifPresent(customerObj -> {
-            throw new DomainException("already exists CPF "+customerObj.getCpf());
+        customerRepository.findByCnpjCpf(customer.getCnpjCpf()).ifPresent(customerObj -> {
+            throw new DomainException("already exists document "+customerObj.getCnpjCpf().value());
         });
 
         customerRepository.save(customer);

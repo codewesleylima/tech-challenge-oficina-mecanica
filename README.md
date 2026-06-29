@@ -11,7 +11,7 @@ documentadas via **Swagger** e protegidas por **autenticação JWT**.
 ## Funcionalidades implementadas (MVP)
 
 **Cadastros e catálogo**
-- Cadastro de cliente com identificação por CPF (validação de dados sensíveis)
+- Cadastro de cliente com identificação por CPF/CNPJ (validação de dados sensíveis com dígitos verificadores)
 - Cadastro de veículo (placa no padrão Mercosul, marca, modelo, ano, km)
 - CRUD completo de **serviços** (catálogo)
 - CRUD completo de **peças/insumos** com **controle de estoque** (entrada/saída)
@@ -38,12 +38,12 @@ RECEBIDA ──► EM_DIAGNÓSTICO ──► AGUARDANDO_APROVAÇÃO ──► EM
 
 **Segurança e qualidade**
 - Autenticação JWT (HS256) nas APIs administrativas
-- Validação de dados sensíveis (CPF, placa de veículo)
+- Validação de dados sensíveis (CPF/CNPJ, placa de veículo)
 - Tratamento global de exceções com respostas de erro padronizadas
 - Testes unitários (domínio e casos de uso) e de integração (fluxo completo da OS)
 
 > **Fora do escopo desta versão:** notificações/comunicação em tempo real com o cliente,
-> relatório de tempo médio de execução, identificação por CNPJ e CRUD completo (update/delete)
+> relatório de tempo médio de execução e CRUD completo (update/delete)
 > de clientes e veículos. Itens previstos para evoluções futuras.
 
 ## Arquitetura

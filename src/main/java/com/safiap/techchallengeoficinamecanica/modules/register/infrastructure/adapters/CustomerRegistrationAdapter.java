@@ -17,9 +17,9 @@ public class CustomerRegistrationAdapter implements CustomerRegistration {
     }
 
     @Override
-    public UUID register(String name, String email, String phone, String cpf) {
+    public UUID register(String name, String email, String phone, String cnpjCpf) {
         return registerCustomerUseCase
-                .execute(new RegisterCustomerCommand(name, email, phone, cpf))
+                .execute(new RegisterCustomerCommand(name, email, phone, cnpjCpf))
                 .customerId();
     }
 }

@@ -1,6 +1,6 @@
 package com.safiap.techchallengeoficinamecanica.modules.register.domain.entities;
 
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CnpjCpf;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.shared.common.AggregateRoot;
@@ -14,7 +14,7 @@ public class Customer extends AggregateRoot {
     private String name;
     private Email email;
     private Phone phone;
-    private CPF cpf;
+    private CnpjCpf cnpjCpf;
 
     private Customer() {}
 
@@ -22,13 +22,13 @@ public class Customer extends AggregateRoot {
                      String name,
                      Email email,
                      Phone phone,
-                     CPF cpf) {
+                     CnpjCpf cnpjCpf) {
 
         this.customerId = customerId;
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.cpf = cpf;
+        this.cnpjCpf = cnpjCpf;
     }
 
 
@@ -48,8 +48,8 @@ public class Customer extends AggregateRoot {
         return phone;
     }
 
-    public CPF getCpf() {
-        return cpf;
+    public CnpjCpf getCnpjCpf() {
+        return cnpjCpf;
     }
 
     private void changeName (String newName) {
@@ -63,19 +63,19 @@ public class Customer extends AggregateRoot {
                                   String name,
                                   Email email,
                                   Phone phone,
-                                  CPF cpf) {
+                                  CnpjCpf cnpjCpf) {
 
         DomainException.requireNotBlank(name, " name is blank");
         DomainException.requireNonNull(email, " email is null");
         DomainException.requireNonNull(phone, " phone is null");
-        DomainException.requireNonNull(cpf, " cpf is null");
+        DomainException.requireNonNull(cnpjCpf, " cnpjCpf is null");
 
         return new Customer(
                 UUID.randomUUID(),
                 name,
                 email,
                 phone,
-                cpf
+                cnpjCpf
         );
     }
 
@@ -83,28 +83,28 @@ public class Customer extends AggregateRoot {
                                   String name,
                                   Email email,
                                   Phone phone,
-                                  CPF cpf) {
+                                  CnpjCpf cnpjCpf) {
 
         DomainException.requireNonNull(customerId, " customerId is null");
         DomainException.requireNotBlank(name, " name is blank");
         DomainException.requireNonNull(email, " email is null");
         DomainException.requireNonNull(phone, " phone is null");
-        DomainException.requireNonNull(cpf, " cpf is null");
+        DomainException.requireNonNull(cnpjCpf, " cnpjCpf is null");
 
         return new Customer(
                 customerId,
                 name,
                 email,
                 phone,
-                cpf
+                cnpjCpf
         );
     }
 
-    public void alterCustomer(String Name, Email Email, Phone Phone, CPF CPF) {
+    public void alterCustomer(String Name, Email Email, Phone Phone, CnpjCpf cnpjCpf) {
         changeName(Name);
         this.email = Email;
         this.phone = Phone;
-        this.cpf = CPF;
+        this.cnpjCpf = cnpjCpf;
     }
 
 

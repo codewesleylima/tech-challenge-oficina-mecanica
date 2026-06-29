@@ -11,7 +11,7 @@
     "name": "João Silva",
     "email": "joao@email.com",
     "phone": "11999998888",
-    "cpf": "12345678900"
+    "cnpjCpf": "11144477735"
   },
   "vehicle": {
     "carLicensePlate": "ABC1D23",

@@ -5,6 +5,6 @@ public record RegisterAccountDto(
         String password,
         String name,
         String phone,
-        String cpf
+        String cnpjCpf
 ) {
 }
