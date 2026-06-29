@@ -8,11 +8,15 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repos
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RecordServiceTimeUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(RecordServiceTimeUseCase.class);
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final ServiceTimeRepository serviceTimeRepository;
@@ -35,6 +39,9 @@ public class RecordServiceTimeUseCase {
         ServiceTimeRecord record = ServiceTimeRecord.create(
                 command.serviceOrderId(), command.startTime(), command.endTime(), command.notes());
         serviceTimeRepository.save(record);
+
+        log.debug("Service time recorded for service order {} ({} -> {})",
+                command.serviceOrderId(), command.startTime(), command.endTime());
 
         return ServiceTimeRecordResponse.from(record);
     }
