@@ -27,14 +27,15 @@ public class BudgetMapper {
                 item.getItemId(),
                 item.getDescription(),
                 item.getQuantity(),
-                item.getUnitPrice()
+                item.getUnitPrice(),
+                item.getCompletedAt()
         );
     }
 
     public static Budget toEntity(JPABudgetEntity entity, List<JPABudgetItemEntity> itemEntities) {
         List<BudgetItem> items = itemEntities.stream()
                 .map(i -> BudgetItem.build(i.getId(), i.getBudgetId(), i.getType(),
-                        i.getItemId(), i.getDescription(), i.getQuantity(), i.getUnitPrice()))
+                        i.getItemId(), i.getDescription(), i.getQuantity(), i.getUnitPrice(), i.getCompletedAt()))
                 .collect(Collectors.toList());
         return Budget.build(entity.getId(), entity.getServiceOrderId(), entity.getStatus(),
                 items, entity.getCreatedAt());

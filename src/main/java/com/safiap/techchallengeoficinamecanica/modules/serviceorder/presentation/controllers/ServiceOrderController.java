@@ -1,14 +1,11 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.controllers;
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.OpenServiceOrderCommand;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.RecordServiceTimeCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceTimeRecordResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.FinalizeDiagnosisDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderDTO;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.RecordServiceTimeDTO;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.AuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/service-orders")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class ServiceOrderController {
 
     private final OpenServiceOrderUseCase openServiceOrderUseCase;
@@ -35,7 +33,6 @@ public class ServiceOrderController {
     private final FinalizeDiagnosisUseCase finalizeDiagnosisUseCase;
     private final StartServiceOrderExecutionUseCase startServiceOrderExecutionUseCase;
     private final RejectBudgetUseCase rejectBudgetUseCase;
-    private final RecordServiceTimeUseCase recordServiceTimeUseCase;
     private final FinalizeServiceOrderUseCase finalizeServiceOrderUseCase;
     private final DeliverServiceOrderUseCase deliverServiceOrderUseCase;
 
@@ -50,7 +47,6 @@ public class ServiceOrderController {
                                   FinalizeDiagnosisUseCase finalizeDiagnosisUseCase,
                                   StartServiceOrderExecutionUseCase startServiceOrderExecutionUseCase,
                                   RejectBudgetUseCase rejectBudgetUseCase,
-                                  RecordServiceTimeUseCase recordServiceTimeUseCase,
                                   FinalizeServiceOrderUseCase finalizeServiceOrderUseCase,
                                   DeliverServiceOrderUseCase deliverServiceOrderUseCase) {
         this.openServiceOrderUseCase = openServiceOrderUseCase;
@@ -64,7 +60,6 @@ public class ServiceOrderController {
         this.finalizeDiagnosisUseCase = finalizeDiagnosisUseCase;
         this.startServiceOrderExecutionUseCase = startServiceOrderExecutionUseCase;
         this.rejectBudgetUseCase = rejectBudgetUseCase;
-        this.recordServiceTimeUseCase = recordServiceTimeUseCase;
         this.finalizeServiceOrderUseCase = finalizeServiceOrderUseCase;
         this.deliverServiceOrderUseCase = deliverServiceOrderUseCase;
     }
@@ -125,14 +120,6 @@ public class ServiceOrderController {
     @PatchMapping("/{serviceOrderId}/reject-budget")
     public ResponseEntity<ServiceOrderResponse> rejectBudget(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(rejectBudgetUseCase.execute(serviceOrderId));
-    }
-
-    @PostMapping("/{serviceOrderId}/time-records")
-    public ResponseEntity<ServiceTimeRecordResponse> recordServiceTime(
-            @PathVariable UUID serviceOrderId, @RequestBody RecordServiceTimeDTO request) {
-        RecordServiceTimeCommand command = new RecordServiceTimeCommand(
-                serviceOrderId, request.startTime(), request.endTime(), request.notes());
-        return ResponseEntity.status(HttpStatus.CREATED).body(recordServiceTimeUseCase.execute(command));
     }
 
     @PatchMapping("/{serviceOrderId}/finalize")

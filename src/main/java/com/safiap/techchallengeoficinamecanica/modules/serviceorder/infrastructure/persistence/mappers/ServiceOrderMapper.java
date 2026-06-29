@@ -16,6 +16,7 @@ public class ServiceOrderMapper {
                 serviceOrder.getDiagnosis() != null ? serviceOrder.getDiagnosis().value() : null,
                 serviceOrder.getStatus(),
                 serviceOrder.getOpenedAt(),
+                serviceOrder.getExecutionStartedAt(),
                 serviceOrder.getConcludedAt(),
                 serviceOrder.getPriority()
         );
@@ -30,6 +31,7 @@ public class ServiceOrderMapper {
                 entity.getDiagnosis() != null ? new Diagnosis(entity.getDiagnosis()) : null,
                 entity.getStatus(),
                 entity.getOpenedAt(),
+                entity.getExecutionStartedAt(),
                 entity.getConcludedAt(),
                 ServiceOrderPriority.fromValue(entity.getPriority())
         );

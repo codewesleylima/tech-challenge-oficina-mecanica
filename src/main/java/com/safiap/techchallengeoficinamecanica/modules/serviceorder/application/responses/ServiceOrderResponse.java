@@ -14,6 +14,7 @@ public record ServiceOrderResponse(
         String diagnosis,
         ServiceOrderStatus status,
         LocalDateTime openedAt,
+        LocalDateTime executionStartedAt,
         LocalDateTime concludedAt,
         String priority
 ) {
@@ -26,6 +27,7 @@ public record ServiceOrderResponse(
                 serviceOrder.getDiagnosis() != null ? serviceOrder.getDiagnosis().value() : null,
                 serviceOrder.getStatus(),
                 serviceOrder.getOpenedAt(),
+                serviceOrder.getExecutionStartedAt(),
                 serviceOrder.getConcludedAt(),
                 serviceOrder.getPriority().name()
         );

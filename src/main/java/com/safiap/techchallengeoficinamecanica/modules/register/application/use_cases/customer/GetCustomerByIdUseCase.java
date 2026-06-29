@@ -26,7 +26,7 @@ public class GetCustomerByIdUseCase {
                                 customer.getName(),
                                 customer.getEmail().value(),
                                 customer.getPhone().value(),
-                                customer.getCpf().cpf()
+                                customer.getCnpjCpf().value()
                         )
                 ).orElseThrow(
                         () -> new NotFoundException("Customer with id " + id + " not found.")

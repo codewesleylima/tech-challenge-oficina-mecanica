@@ -5,7 +5,7 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainE
 public record CarLicensePlate(String plate) {
 
     private static final String MERCOSUL =
-            "^(?:[A-Z]{3}-?[0-9]{4}|[A-Z]{3}[0-9][A-Z][0-9]{2})$";
+            "^[A-Z]{3}[0-9][A-Z][0-9]{2}$";
 
     public CarLicensePlate {
         if (plate == null || !plate.matches(MERCOSUL)) {

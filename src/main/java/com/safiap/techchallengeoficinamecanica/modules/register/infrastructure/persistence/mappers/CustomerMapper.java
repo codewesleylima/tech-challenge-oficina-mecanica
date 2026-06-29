@@ -1,7 +1,7 @@
 package com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.mappers;
 
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Customer;
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CnpjCpf;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Email;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.Phone;
 import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.entities.JPACustomerEntity;
@@ -14,7 +14,7 @@ public class CustomerMapper {
                 customer.getName(),
                 customer.getEmail().value(),
                 customer.getPhone().value(),
-                customer.getCpf().cpf()
+                customer.getCnpjCpf().value()
         );
     }
 
@@ -24,7 +24,7 @@ public class CustomerMapper {
                 customerEntity.getName(),
                 new Email(customerEntity.getEmail()),
                 new Phone(customerEntity.getPhone()),
-                new CPF(customerEntity.getCpf())
+                new CnpjCpf(customerEntity.getCnpjCpf())
         );
     }
 }

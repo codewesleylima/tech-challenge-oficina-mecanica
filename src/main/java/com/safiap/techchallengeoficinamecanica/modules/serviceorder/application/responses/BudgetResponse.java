@@ -24,14 +24,16 @@ public record BudgetResponse(
             String description,
             int quantity,
             BigDecimal unitPrice,
-            BigDecimal totalPrice
+            BigDecimal totalPrice,
+            LocalDateTime completedAt
     ) {}
 
     public static BudgetResponse from(Budget budget) {
         List<BudgetItemResponse> items = budget.getItems().stream()
                 .map(i -> new BudgetItemResponse(
                         i.getBudgetItemId(), i.getType().name(), i.getItemId(),
-                        i.getDescription(), i.getQuantity(), i.getUnitPrice(), i.totalPrice()))
+                        i.getDescription(), i.getQuantity(), i.getUnitPrice(), i.totalPrice(),
+                        i.getCompletedAt()))
                 .collect(Collectors.toList());
         return new BudgetResponse(
                 budget.getBudgetId(), budget.getServiceOrderId(), budget.getStatus(),

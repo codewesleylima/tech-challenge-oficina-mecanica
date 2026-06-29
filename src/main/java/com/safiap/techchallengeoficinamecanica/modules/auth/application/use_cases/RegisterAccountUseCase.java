@@ -38,7 +38,7 @@ public class RegisterAccountUseCase {
                 command.name(),
                 command.email(),
                 command.phone(),
-                command.cpf()
+                command.cnpjCpf()
         );
 
         User user = User.createCustomerUser(

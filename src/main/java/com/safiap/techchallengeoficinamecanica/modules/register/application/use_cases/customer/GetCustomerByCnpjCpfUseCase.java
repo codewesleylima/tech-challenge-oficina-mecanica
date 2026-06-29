@@ -2,36 +2,35 @@ package com.safiap.techchallengeoficinamecanica.modules.register.application.use
 
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.customer.GetCustomerResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
-import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CnpjCpf;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GetCustomerByCpfUseCase {
+public class GetCustomerByCnpjCpfUseCase {
 
     private final CustomerRepository customerRepository;
 
-    public GetCustomerByCpfUseCase(CustomerRepository customerRepository) {
+    public GetCustomerByCnpjCpfUseCase(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
-    public GetCustomerResponse execute(String cpf){
+    public GetCustomerResponse execute(String cnpjCpf){
 
-        CPF cpfObject = new CPF(cpf);
+        CnpjCpf cnpjCpfObject = new CnpjCpf(cnpjCpf);
 
         return customerRepository
-                .findByCpf(cpfObject)
+                .findByCnpjCpf(cnpjCpfObject)
                 .map(customer ->
                         new GetCustomerResponse(
                                 customer.getCustomerId(),
                                 customer.getName(),
                                 customer.getEmail().value(),
                                 customer.getPhone().value(),
-                                customer.getCpf().cpf()
+                                customer.getCnpjCpf().value()
                         )
                 ).orElseThrow(
-                        () -> new NotFoundException("Customer with cpf " + cpf + " not found.")
+                        () -> new NotFoundException("Customer with document " + cnpjCpf + " not found.")
                 );
     }
 

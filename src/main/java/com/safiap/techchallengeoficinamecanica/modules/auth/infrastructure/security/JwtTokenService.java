@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.auth.infrastructure.secu
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserTokenResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.service.AuthenticatedUser;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.service.TokenService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -11,21 +12,23 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 @Service
 public class JwtTokenService implements TokenService {
 
     private final JwtEncoder encoder;
+    private final long expirationSeconds;
 
-    public JwtTokenService(JwtEncoder encoder) {
+    public JwtTokenService(JwtEncoder encoder,
+                           @Value("${JWT_EXPIRATION:3600}") long expirationSeconds) {
         this.encoder = encoder;
+        this.expirationSeconds = expirationSeconds;
     }
 
     @Override
     public UserTokenResponse generateToken(AuthenticatedUser user) {
         Instant now = Instant.now();
-        Instant expiresAt = now.plus(1, ChronoUnit.HOURS);
+        Instant expiresAt = now.plusSeconds(expirationSeconds);
 
         JwtClaimsSet.Builder claimsBuilder = JwtClaimsSet.builder()
                 .issuer("self")

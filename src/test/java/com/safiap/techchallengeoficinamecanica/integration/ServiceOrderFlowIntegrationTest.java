@@ -108,6 +108,14 @@ class ServiceOrderFlowIntegrationTest {
         JsonNode budget = objectMapper.readTree(budgetResult.getResponse().getContentAsString());
         assertThat(budget.get("totalAmount").decimalValue()).isEqualByComparingTo(new BigDecimal("239.90"));
 
+        String serviceBudgetItemId = null;
+        for (JsonNode item : budget.get("items")) {
+            if ("SERVICE".equals(item.get("type").asText())) {
+                serviceBudgetItemId = item.get("budgetItemId").asText();
+            }
+        }
+        assertThat(serviceBudgetItemId).isNotNull();
+
         mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/budget/finalize", null, token))
                 .andExpect(status().isOk());
 
@@ -121,8 +129,9 @@ class ServiceOrderFlowIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("IN_EXECUTION"));
 
-        mockMvc.perform(authPost("/service-orders/" + serviceOrderId + "/time-records", body("recordServiceTime"), token))
-                .andExpect(status().isCreated());
+        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/budget/items/" + serviceBudgetItemId + "/complete", null, token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items[?(@.type == 'SERVICE')].completedAt").exists());
 
         mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/finalize", null, token))
                 .andExpect(status().isOk())
@@ -131,6 +140,20 @@ class ServiceOrderFlowIntegrationTest {
         mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/deliver", null, token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DELIVERED"));
+
+        MvcResult metricsResult = mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/metrics/average-execution-time", token))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode metrics = objectMapper.readTree(metricsResult.getResponse().getContentAsString());
+        boolean serviceMetricFound = false;
+        for (JsonNode metric : metrics) {
+            if (serviceId.equals(metric.get("serviceId").asText())) {
+                serviceMetricFound = true;
+                assertThat(metric.get("sampleCount").asLong()).isGreaterThanOrEqualTo(1);
+                assertThat(metric.get("averageMinutes").asDouble()).isGreaterThanOrEqualTo(0.0);
+            }
+        }
+        assertThat(serviceMetricFound).isTrue();
     }
 
     @Test
