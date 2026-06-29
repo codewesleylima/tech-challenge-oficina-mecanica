@@ -7,6 +7,6 @@ public record AlterCustomerCommand(
         String name,
         String email,
         String phone,
-        String cpf
+        String cnpjCpf
 ) {
 }

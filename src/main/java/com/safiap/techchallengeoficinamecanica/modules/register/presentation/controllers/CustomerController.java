@@ -26,20 +26,20 @@ public class CustomerController {
     private final AlterCustomerUseCase alterCustomerUseCase;
     private final GetAllCustomersUseCase getAllCustomersUseCase;
     private final GetCustomerByIdUseCase  getCustomerByIdUseCase;
-    private final GetCustomerByCpfUseCase getCustomerByCpfUseCase;
+    private final GetCustomerByCnpjCpfUseCase getCustomerByCnpjCpfUseCase;
     private final DeleteCustomerUseCase deleteCustomerUseCase;
 
     public CustomerController(RegisterCustomerUseCase registerCustomerUseCase,
                               AlterCustomerUseCase alterCustomerUseCase,
                               GetAllCustomersUseCase getAllCustomersUseCase,
                               GetCustomerByIdUseCase getCustomerByIdUseCase,
-                              GetCustomerByCpfUseCase getCustomerByCpfUseCase,
+                              GetCustomerByCnpjCpfUseCase getCustomerByCnpjCpfUseCase,
                               DeleteCustomerUseCase deleteCustomerUseCase) {
         this.registerCustomerUseCase = registerCustomerUseCase;
         this.alterCustomerUseCase = alterCustomerUseCase;
         this.getAllCustomersUseCase = getAllCustomersUseCase;
         this.getCustomerByIdUseCase = getCustomerByIdUseCase;
-        this.getCustomerByCpfUseCase = getCustomerByCpfUseCase;
+        this.getCustomerByCnpjCpfUseCase = getCustomerByCnpjCpfUseCase;
         this.deleteCustomerUseCase = deleteCustomerUseCase;
     }
 
@@ -51,7 +51,7 @@ public class CustomerController {
                 request.name(),
                 request.email(),
                 request.phone(),
-                request.cpf()
+                request.cnpjCpf()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registerCustomerUseCase.execute(command));
@@ -68,7 +68,7 @@ public class CustomerController {
                 request.Name(),
                 request.Email(),
                 request.Phone(),
-                request.CPF()
+                request.cnpjCpf()
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(alterCustomerUseCase.execute(command));
@@ -87,11 +87,11 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.OK).body(getCustomerByIdUseCase.execute(id));
     }
 
-    @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<GetCustomerResponse> findCustomerByCPF(
-            @PathVariable String cpf
+    @GetMapping("/cnpj-cpf/{cnpjCpf}")
+    public ResponseEntity<GetCustomerResponse> findCustomerByCnpjCpf(
+            @PathVariable String cnpjCpf
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(getCustomerByCpfUseCase.execute(cpf));
+        return ResponseEntity.status(HttpStatus.OK).body(getCustomerByCnpjCpfUseCase.execute(cnpjCpf));
     }
 
     @DeleteMapping("/{id}")

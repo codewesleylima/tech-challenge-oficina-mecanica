@@ -2,5 +2,5 @@ package com.safiap.techchallengeoficinamecanica.modules.register.application.res
 
 import java.util.UUID;
 
-public record AlterCustomerResponse(UUID id, String Name, String Email, String Phone, String Cpf) {
+public record AlterCustomerResponse(UUID id, String name, String email, String phone, String cnpjCpf) {
 }

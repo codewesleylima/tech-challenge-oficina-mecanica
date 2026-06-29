@@ -21,20 +21,20 @@ public class JPACustomerEntity {
     @Column(nullable = false)
     private String phone;
     @Column(nullable = false)
-    private String cpf;
+    private String cnpjCpf;
 
-    public JPACustomerEntity(String name, String email, String phone, String cpf) {
+    public JPACustomerEntity(String name, String email, String phone, String cnpjCpf) {
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.cpf = cpf;
+        this.cnpjCpf = cnpjCpf;
     }
 
-    public JPACustomerEntity(UUID customerId, String name, String email, String phone, String cpf) {
+    public JPACustomerEntity(UUID customerId, String name, String email, String phone, String cnpjCpf) {
         this.id = customerId;
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.cpf = cpf;
+        this.cnpjCpf = cnpjCpf;
     }
 }

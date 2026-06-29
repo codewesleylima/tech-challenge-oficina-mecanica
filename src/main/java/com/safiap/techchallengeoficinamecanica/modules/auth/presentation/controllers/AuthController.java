@@ -37,7 +37,7 @@ public class AuthController {
     @PostMapping("/register-account")
     public ResponseEntity<RegisterAccountResponse> registerAccount(@RequestBody RegisterAccountDto dto){
         return ResponseEntity.status(201).body(registerAccountUseCase.execute(
-                new RegisterAccountCommand(dto.email(), dto.password(), dto.name(), dto.phone(), dto.cpf())
+                new RegisterAccountCommand(dto.email(), dto.password(), dto.name(), dto.phone(), dto.cnpjCpf())
         ));
     }
 

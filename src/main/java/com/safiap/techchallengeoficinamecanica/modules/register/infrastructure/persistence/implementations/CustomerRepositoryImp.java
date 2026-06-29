@@ -2,7 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.
 
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Customer;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
-import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CPF;
+import com.safiap.techchallengeoficinamecanica.modules.register.domain.value_objects.CnpjCpf;
 import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.entities.JPACustomerEntity;
 import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.mappers.CustomerMapper;
 import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.repositories.JPACustomerRepository;
@@ -34,9 +34,9 @@ public class CustomerRepositoryImp implements CustomerRepository {
     }
 
     @Override
-    public Optional<Customer> findByCpf(CPF cpf) {
+    public Optional<Customer> findByCnpjCpf(CnpjCpf cnpjCpf) {
         return jpacustomerRepository
-                .findByCpf(cpf.cpf())
+                .findByCnpjCpf(cnpjCpf.value())
                 .map(CustomerMapper::toEntity);
     }
 

@@ -25,7 +25,7 @@ public class GetAllCustomersUseCase {
                                 customer.getName(),
                                 customer.getEmail().value(),
                                 customer.getPhone().value(),
-                                customer.getCpf().cpf()
+                                customer.getCnpjCpf().value()
                         )
                 )
                 .toList();

@@ -126,7 +126,7 @@
       ],
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"phone\": \"11999998888\",\n  \"cpf\": \"123.456.789-00\"\n}"
+        "text": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"phone\": \"11999998888\",\n  \"cnpjCpf\": \"111.444.777-35\"\n}"
       },
       "authentication": {},
       "parameters": [],
