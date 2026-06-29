@@ -1,8 +1,8 @@
 package com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.adapters;
 
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.service.CustomerRegistration;
-import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.RegisterCustomerCommand;
-import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.RegisterCustomerUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.customer.RegisterCustomerCommand;
+import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.customer.RegisterCustomerUseCase;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
