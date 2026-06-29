@@ -44,3 +44,4 @@ docs/docusauros/
 *.pdf
 *.bundle
 application-local.properties
+dd-java-agent.jar
