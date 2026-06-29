@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repos
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
+import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,9 +29,10 @@ class FinalizeDiagnosisUseCaseTest {
 
     private final ServiceOrderRepository serviceOrderRepository = mock(ServiceOrderRepository.class);
     private final BudgetRepository budgetRepository = mock(BudgetRepository.class);
+    private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
 
     private final FinalizeDiagnosisUseCase useCase =
-            new FinalizeDiagnosisUseCase(serviceOrderRepository, budgetRepository);
+            new FinalizeDiagnosisUseCase(serviceOrderRepository, budgetRepository, domainEventPublisher);
 
     private ServiceOrder orderInDiagnosis(UUID id) {
         return ServiceOrder.build(
@@ -58,6 +60,7 @@ class FinalizeDiagnosisUseCaseTest {
         assertThat(response.status()).isEqualTo(ServiceOrderStatus.AWAITING_APPROVAL);
         assertThat(response.diagnosis()).isEqualTo("Pastilhas gastas");
         verify(serviceOrderRepository, times(1)).save(any());
+        verify(domainEventPublisher, times(1)).publishAll(any());
     }
 
     @Test

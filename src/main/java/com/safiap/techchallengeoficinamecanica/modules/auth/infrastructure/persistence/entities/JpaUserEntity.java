@@ -23,7 +23,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class JpaUserEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false, unique = true)
     private String email;
@@ -32,6 +31,8 @@ public class JpaUserEntity implements UserDetails {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "customer_id")
+    private UUID customerId;
 
 
     @Override

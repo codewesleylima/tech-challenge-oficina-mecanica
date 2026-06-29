@@ -1,11 +1,15 @@
 package com.safiap.techchallengeoficinamecanica.modules.auth.presentation.controllers;
 
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.AddUserCommand;
+import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.RegisterAccountCommand;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.commands.UserLoginCommand;
+import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.RegisterAccountResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserCreateResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.responses.UserTokenResponse;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cases.LoginUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cases.RegisterAccountUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_cases.RegisterUserUseCase;
+import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.RegisterAccountDto;
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.UserLoginDto;
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.AddUserDto;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +21,24 @@ public class AuthController {
 
 
     private final RegisterUserUseCase registerUserUseCase;
+    private final RegisterAccountUseCase registerAccountUseCase;
     private final LoginUseCase loginUseCase;
 
-    public AuthController(RegisterUserUseCase registerUserUseCase, LoginUseCase loginUseCase) {
+    public AuthController(RegisterUserUseCase registerUserUseCase, RegisterAccountUseCase registerAccountUseCase, LoginUseCase loginUseCase) {
         this.registerUserUseCase = registerUserUseCase;
+        this.registerAccountUseCase = registerAccountUseCase;
         this.loginUseCase = loginUseCase;
     }
     @PostMapping("/register")
     public ResponseEntity<UserCreateResponse> register(@RequestBody AddUserDto dto){
         return ResponseEntity.status(201).body(registerUserUseCase.execute(new AddUserCommand(dto.email(),dto.password())));
+    }
+
+    @PostMapping("/register-account")
+    public ResponseEntity<RegisterAccountResponse> registerAccount(@RequestBody RegisterAccountDto dto){
+        return ResponseEntity.status(201).body(registerAccountUseCase.execute(
+                new RegisterAccountCommand(dto.email(), dto.password(), dto.name(), dto.phone(), dto.cpf())
+        ));
     }
 
     @PostMapping("/login")

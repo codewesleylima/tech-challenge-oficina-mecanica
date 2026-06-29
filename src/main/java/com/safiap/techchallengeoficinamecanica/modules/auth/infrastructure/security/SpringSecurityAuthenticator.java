@@ -2,6 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.auth.infrastructure.secu
 
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.service.AuthenticatedUser;
 import com.safiap.techchallengeoficinamecanica.modules.auth.application.service.Authenticator;
+import com.safiap.techchallengeoficinamecanica.modules.auth.infrastructure.persistence.entities.JpaUserEntity;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.AuthException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class SpringSecurityAuthenticator implements Authenticator {
@@ -38,6 +40,11 @@ public class SpringSecurityAuthenticator implements Authenticator {
                 .map(a -> a.substring("ROLE_".length()))
                 .toList();
 
-        return new AuthenticatedUser(auth.getName(), roles);
+        UUID customerId = null;
+        if (auth.getPrincipal() instanceof JpaUserEntity principal) {
+            customerId = principal.getCustomerId();
+        }
+
+        return new AuthenticatedUser(auth.getName(), roles, customerId);
     }
 }

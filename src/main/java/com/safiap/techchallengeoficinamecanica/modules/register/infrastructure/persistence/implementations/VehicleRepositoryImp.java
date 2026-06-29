@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.p
 import com.safiap.techchallengeoficinamecanica.modules.register.infrastructure.persistence.repositories.JPAVehicleRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,4 +38,23 @@ public class VehicleRepositoryImp implements VehicleRepository {
                 .findByCarLicensePlate(carLicensePlate.plate())
                 .map(VehicleMapper::toEntity);
     }
+
+    @Override
+    public Optional<Vehicle> findByCustomerId(UUID customerId) {
+        return jpaVehicleRepository
+                .findByCustomerId(customerId)
+                .map(VehicleMapper::toEntity);
+    }
+
+    @Override
+    public void delete(Vehicle vehicle) {
+        jpaVehicleRepository.delete(VehicleMapper.toJPA(vehicle));
+    }
+
+    @Override
+    public List<Vehicle> findAll() {
+        return jpaVehicleRepository.findAll().stream().map(VehicleMapper::toEntity ).toList();
+    }
+
+
 }

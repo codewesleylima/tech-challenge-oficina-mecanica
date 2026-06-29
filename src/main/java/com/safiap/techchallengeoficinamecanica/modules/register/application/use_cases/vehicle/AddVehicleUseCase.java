@@ -1,6 +1,6 @@
-package com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases;
+package com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.vehicle;
 
-import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.AddVehicleCommand;
+import com.safiap.techchallengeoficinamecanica.modules.register.application.commands.vehicle.AddVehicleCommand;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.entities.Vehicle;
 import com.safiap.techchallengeoficinamecanica.modules.register.application.responses.vehicle.AddVehicleResponse;
 import com.safiap.techchallengeoficinamecanica.modules.register.domain.repositories.CustomerRepository;
