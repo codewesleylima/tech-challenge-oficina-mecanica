@@ -2,11 +2,6 @@ package com.safiap.techchallengeoficinamecanica.modules.register.domain.value_ob
 
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 
-/**
- * Documento de identificação do cliente. Aceita CPF (11 dígitos) ou CNPJ (14 dígitos),
- * validando os dígitos verificadores. A entrada pode conter pontuação (ex.: "111.444.777-35"
- * ou "11.222.333/0001-81"); o valor é normalizado para conter apenas dígitos.
- */
 public record CnpjCpf(String value) {
 
     public CnpjCpf {
@@ -52,7 +47,6 @@ public record CnpjCpf(String value) {
         return firstCheck == digitAt(cnpj, 12) && secondCheck == digitAt(cnpj, 13);
     }
 
-    /** Dígito verificador do CPF: pesos decrescentes a partir de {@code startWeight}. */
     private static int checkDigit(String value, int length, int startWeight) {
         int sum = 0;
         for (int i = 0; i < length; i++) {
@@ -61,7 +55,6 @@ public record CnpjCpf(String value) {
         return remainderToDigit(sum);
     }
 
-    /** Dígito verificador do CNPJ: pesos fixos por posição. */
     private static int checkDigit(String value, int[] weights) {
         int sum = 0;
         for (int i = 0; i < weights.length; i++) {

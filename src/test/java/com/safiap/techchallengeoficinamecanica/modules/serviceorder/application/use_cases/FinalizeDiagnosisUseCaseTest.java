@@ -37,7 +37,7 @@ class FinalizeDiagnosisUseCaseTest {
     private ServiceOrder orderInDiagnosis(UUID id) {
         return ServiceOrder.build(
                 id, UUID.randomUUID(), UUID.randomUUID(), "problema", null,
-                ServiceOrderStatus.IN_DIAGNOSIS, LocalDateTime.now(), null,
+                ServiceOrderStatus.IN_DIAGNOSIS, LocalDateTime.now(), null, null,
                 ServiceOrderPriority.LOW);
     }
 

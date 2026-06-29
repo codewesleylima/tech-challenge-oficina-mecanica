@@ -20,12 +20,14 @@ public class ServiceOrder extends AggregateRoot {
     private Diagnosis diagnosis;
     private ServiceOrderStatus status;
     private LocalDateTime openedAt;
+    private LocalDateTime executionStartedAt;
     private LocalDateTime concludedAt;
     private ServiceOrderPriority priority;
 
     private ServiceOrder(UUID serviceOrderId, UUID customerId, UUID vehicleId,
                          String problemDescription, Diagnosis diagnosis, ServiceOrderStatus status,
-                         LocalDateTime openedAt, LocalDateTime concludedAt, ServiceOrderPriority priority) {
+                         LocalDateTime openedAt, LocalDateTime executionStartedAt,
+                         LocalDateTime concludedAt, ServiceOrderPriority priority) {
         this.serviceOrderId = serviceOrderId;
         this.customerId = customerId;
         this.vehicleId = vehicleId;
@@ -33,13 +35,15 @@ public class ServiceOrder extends AggregateRoot {
         this.diagnosis = diagnosis;
         this.status = status;
         this.openedAt = openedAt;
+        this.executionStartedAt = executionStartedAt;
         this.concludedAt = concludedAt;
         this.priority = priority;
     }
 
     public static ServiceOrder open(UUID customerId, UUID vehicleId, String problemDescription) {
         ServiceOrder serviceOrder = new ServiceOrder(UUID.randomUUID(), customerId, vehicleId,
-                problemDescription, null, ServiceOrderStatus.RECEIVED, LocalDateTime.now(), null, ServiceOrderPriority.LOW);
+                problemDescription, null, ServiceOrderStatus.RECEIVED, LocalDateTime.now(), null, null,
+                ServiceOrderPriority.LOW);
         serviceOrder.registerDomainEvent(ServiceOrderStatusChangedEvent.of(
                 serviceOrder.serviceOrderId, serviceOrder.customerId, serviceOrder.vehicleId,
                 null, ServiceOrderStatus.RECEIVED));
@@ -48,9 +52,10 @@ public class ServiceOrder extends AggregateRoot {
 
     public static ServiceOrder build(UUID serviceOrderId, UUID customerId, UUID vehicleId,
                                      String problemDescription, Diagnosis diagnosis, ServiceOrderStatus status,
-                                     LocalDateTime openedAt, LocalDateTime concludedAt, ServiceOrderPriority priority) {
+                                     LocalDateTime openedAt, LocalDateTime executionStartedAt,
+                                     LocalDateTime concludedAt, ServiceOrderPriority priority) {
         return new ServiceOrder(serviceOrderId, customerId, vehicleId,
-                problemDescription, diagnosis, status, openedAt, concludedAt, priority);
+                problemDescription, diagnosis, status, openedAt, executionStartedAt, concludedAt, priority);
     }
 
     public void increasePriority() {
@@ -79,6 +84,7 @@ public class ServiceOrder extends AggregateRoot {
     public void startExecution() {
         if (this.status != ServiceOrderStatus.AWAITING_APPROVAL)
             throw new ConflictException("Service order must be in AWAITING_APPROVAL status to start execution");
+        this.executionStartedAt = LocalDateTime.now();
         changeStatus(ServiceOrderStatus.IN_EXECUTION);
     }
 
@@ -115,6 +121,7 @@ public class ServiceOrder extends AggregateRoot {
     public Diagnosis getDiagnosis() { return diagnosis; }
     public ServiceOrderStatus getStatus() { return status; }
     public LocalDateTime getOpenedAt() { return openedAt; }
+    public LocalDateTime getExecutionStartedAt() { return executionStartedAt; }
     public LocalDateTime getConcludedAt() { return concludedAt; }
     public ServiceOrderPriority getPriority() { return priority;}
 }

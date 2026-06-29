@@ -8,12 +8,14 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddServiceDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/service-orders/{serviceOrderId}/budget")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class BudgetController {
 
     private final OpenBudgetUseCase openBudgetUseCase;
@@ -21,17 +23,20 @@ public class BudgetController {
     private final AddServiceToBudgetUseCase addServiceToBudgetUseCase;
     private final GetBudgetUseCase getBudgetUseCase;
     private final FinalizeBudgetUseCase finalizeBudgetUseCase;
+    private final CompleteServiceItemUseCase completeServiceItemUseCase;
 
     public BudgetController(OpenBudgetUseCase openBudgetUseCase,
                             AddPartToBudgetUseCase addPartToBudgetUseCase,
                             AddServiceToBudgetUseCase addServiceToBudgetUseCase,
                             GetBudgetUseCase getBudgetUseCase,
-                            FinalizeBudgetUseCase finalizeBudgetUseCase) {
+                            FinalizeBudgetUseCase finalizeBudgetUseCase,
+                            CompleteServiceItemUseCase completeServiceItemUseCase) {
         this.openBudgetUseCase = openBudgetUseCase;
         this.addPartToBudgetUseCase = addPartToBudgetUseCase;
         this.addServiceToBudgetUseCase = addServiceToBudgetUseCase;
         this.getBudgetUseCase = getBudgetUseCase;
         this.finalizeBudgetUseCase = finalizeBudgetUseCase;
+        this.completeServiceItemUseCase = completeServiceItemUseCase;
     }
 
     @PostMapping
@@ -63,5 +68,11 @@ public class BudgetController {
     @PatchMapping("/finalize")
     public ResponseEntity<BudgetResponse> finalizeBudget(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(finalizeBudgetUseCase.execute(serviceOrderId));
+    }
+
+    @PatchMapping("/items/{budgetItemId}/complete")
+    public ResponseEntity<BudgetResponse> completeServiceItem(
+            @PathVariable UUID serviceOrderId, @PathVariable UUID budgetItemId) {
+        return ResponseEntity.ok(completeServiceItemUseCase.execute(serviceOrderId, budgetItemId));
     }
 }

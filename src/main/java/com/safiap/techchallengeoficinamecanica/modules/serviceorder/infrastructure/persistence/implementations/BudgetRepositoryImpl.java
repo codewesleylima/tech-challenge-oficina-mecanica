@@ -2,11 +2,15 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastruct
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceDurationSample;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetItemType;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.mappers.BudgetMapper;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.repositories.JPABudgetItemRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.repositories.JPABudgetRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,5 +45,14 @@ public class BudgetRepositoryImpl implements BudgetRepository {
         return jpaBudgetRepository.findById(budgetId)
                 .map(entity -> BudgetMapper.toEntity(entity,
                         jpaBudgetItemRepository.findByBudgetId(entity.getId())));
+    }
+
+    @Override
+    public List<ServiceDurationSample> findServiceDurations(UUID serviceOrderId) {
+        return jpaBudgetItemRepository.findCompletedServiceTimes(serviceOrderId, BudgetItemType.SERVICE).stream()
+                .map(row -> new ServiceDurationSample(
+                        row.getServiceId(),
+                        Duration.between(row.getStartedAt(), row.getCompletedAt()).getSeconds()))
+                .toList();
     }
 }

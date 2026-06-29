@@ -2,6 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repo
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,4 +10,5 @@ public interface BudgetRepository {
     void save(Budget budget);
     Optional<Budget> findByServiceOrderId(UUID serviceOrderId);
     Optional<Budget> findById(UUID budgetId);
+    List<ServiceDurationSample> findServiceDurations(UUID serviceOrderId);
 }

@@ -21,10 +21,11 @@
         "token": "",
         "customerId": "",
         "vehicleId": "",
-        "serviceOrderId": ""
+        "serviceOrderId": "",
+        "serviceBudgetItemId": ""
       },
       "dataPropertyOrder": {
-        "&": ["baseUrl", "token", "customerId", "vehicleId", "serviceOrderId"]
+        "&": ["baseUrl", "token", "customerId", "vehicleId", "serviceOrderId", "serviceBudgetItemId"]
       },
       "color": null,
       "isPrivate": false,
@@ -329,21 +330,17 @@
       "metaSortKey": -45
     },
     {
-      "_id": "req_so_record_time",
+      "_id": "req_so_complete_service_item",
       "_type": "request",
       "parentId": "fld_service_orders",
-      "name": "12 - Record Service Time",
-      "description": "Requer status IN_EXECUTION. endTime deve ser após startTime.",
-      "method": "POST",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/time-records",
+      "name": "12 - Complete Service Item",
+      "description": "Conclui a execução de um item de serviço. Requer status IN_EXECUTION. Copie o budgetItemId do item do tipo SERVICE retornado em 'Get Budget' para a variável serviceBudgetItemId.",
+      "method": "PATCH",
+      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/items/{{ serviceBudgetItemId }}/complete",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" },
         { "name": "Authorization", "value": "Bearer {{ token }}" }
       ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"startTime\": \"2026-06-26T08:00:00\",\n  \"endTime\": \"2026-06-26T10:30:00\",\n  \"notes\": \"Troca de pastilhas de freio concluída\"\n}"
-      },
+      "body": {},
       "authentication": {},
       "parameters": [],
       "metaSortKey": -40
@@ -379,6 +376,22 @@
       "authentication": {},
       "parameters": [],
       "metaSortKey": -20
+    },
+    {
+      "_id": "req_so_avg_execution_time",
+      "_type": "request",
+      "parentId": "fld_service_orders",
+      "name": "15 - Average Execution Time (Metrics)",
+      "description": "Tempo médio de execução por tipo de serviço na OS (em minutos), com a contagem de execuções concluídas.",
+      "method": "GET",
+      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/metrics/average-execution-time",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ],
+      "body": {},
+      "authentication": {},
+      "parameters": [],
+      "metaSortKey": -10
     },
     {
       "_id": "req_budget_open",

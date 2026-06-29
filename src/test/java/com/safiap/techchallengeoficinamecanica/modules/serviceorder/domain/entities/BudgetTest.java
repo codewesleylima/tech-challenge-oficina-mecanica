@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.enti
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetItemType;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.ConflictException;
+import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -77,5 +78,77 @@ class BudgetTest {
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("10.00"));
         assertThatThrownBy(() -> budget.getItems().clear())
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    @DisplayName("teste conclui um item de serviço marcando a data de conclusão")
+    void completesServiceItem() {
+        Budget budget = draft();
+        budget.addService(UUID.randomUUID(), "Mão de obra", 1, new BigDecimal("150.00"));
+        UUID serviceItemId = budget.getItems().get(0).getBudgetItemId();
+
+        budget.completeServiceItem(serviceItemId);
+
+        assertThat(budget.getItems().get(0).getCompletedAt()).isNotNull();
+        assertThat(budget.getItems().get(0).isCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("teste falha ao concluir um item que não é serviço")
+    void cannotCompleteNonServiceItem() {
+        Budget budget = draft();
+        budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
+        UUID partItemId = budget.getItems().get(0).getBudgetItemId();
+
+        assertThatThrownBy(() -> budget.completeServiceItem(partItemId))
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("teste falha ao concluir um item de serviço já concluído")
+    void cannotCompleteServiceItemTwice() {
+        Budget budget = draft();
+        budget.addService(UUID.randomUUID(), "Mão de obra", 1, new BigDecimal("150.00"));
+        UUID serviceItemId = budget.getItems().get(0).getBudgetItemId();
+        budget.completeServiceItem(serviceItemId);
+
+        assertThatThrownBy(() -> budget.completeServiceItem(serviceItemId))
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("teste falha ao concluir um item inexistente")
+    void cannotCompleteUnknownItem() {
+        Budget budget = draft();
+        budget.addService(UUID.randomUUID(), "Mão de obra", 1, new BigDecimal("150.00"));
+
+        assertThatThrownBy(() -> budget.completeServiceItem(UUID.randomUUID()))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("teste só considera todos os serviços concluídos quando cada serviço tem data de conclusão")
+    void allServiceItemsCompletedReflectsServiceItems() {
+        Budget budget = draft();
+        budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
+        budget.addService(UUID.randomUUID(), "Mão de obra", 1, new BigDecimal("150.00"));
+
+        assertThat(budget.allServiceItemsCompleted()).isFalse();
+
+        UUID serviceItemId = budget.getItems().stream()
+                .filter(i -> i.getType() == BudgetItemType.SERVICE)
+                .findFirst().orElseThrow().getBudgetItemId();
+        budget.completeServiceItem(serviceItemId);
+
+        assertThat(budget.allServiceItemsCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("teste considera vacuamente concluído um orçamento só com peças")
+    void allServiceItemsCompletedIsTrueWhenNoServices() {
+        Budget budget = draft();
+        budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
+
+        assertThat(budget.allServiceItemsCompleted()).isTrue();
     }
 }

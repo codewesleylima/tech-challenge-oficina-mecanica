@@ -21,7 +21,8 @@ documentadas via **Swagger** e protegidas por **autenticação JWT**.
 - Orçamento da OS com peças e serviços e **cálculo automático do total**
 - Aprovação/rejeição do orçamento pelo cliente
 - Descrição do diagnóstico registrada ao encerrar o diagnóstico
-- Registro de tempo de execução do serviço
+- Conclusão da execução por item de serviço (data de fim por serviço); a OS só é finalizada quando todos os serviços estão concluídos
+- **Monitoramento do tempo médio de execução por tipo de serviço**
 - Fila de atendimento por prioridade (aumentar/diminuir prioridade)
 - Listagem e detalhamento de OS (por id, por cliente e por status)
 
@@ -42,9 +43,8 @@ RECEBIDA ──► EM_DIAGNÓSTICO ──► AGUARDANDO_APROVAÇÃO ──► EM
 - Tratamento global de exceções com respostas de erro padronizadas
 - Testes unitários (domínio e casos de uso) e de integração (fluxo completo da OS)
 
-> **Fora do escopo desta versão:** notificações/comunicação em tempo real com o cliente,
-> relatório de tempo médio de execução e CRUD completo (update/delete)
-> de clientes e veículos. Itens previstos para evoluções futuras.
+> **Fora do escopo desta versão:** notificações/comunicação em tempo real com o cliente.
+> Item previsto para evoluções futuras.
 
 ## Arquitetura
 
@@ -188,8 +188,9 @@ Os endpoints são RESTful e, exceto `POST /auth/register` e `POST /auth/login`, 
 | Veículos | `POST /vehicles/register` |
 | Peças (estoque) | `POST/GET/PUT/DELETE /part`, `PATCH /part/{id}/stock/{increase\|decrease}` |
 | Serviços | `POST/GET/PUT/DELETE /service` |
-| Ordem de Serviço | `POST /service-orders`, `GET /service-orders/{id}`, `GET /service-orders?status=`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `POST .../time-records`, `PATCH .../finalize`, `PATCH .../deliver` |
-| Orçamento | `POST /service-orders/{id}/budget`, `GET .../budget`, `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize` |
+| Ordem de Serviço | `POST /service-orders`, `GET /service-orders/{id}`, `GET /service-orders?status=`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `PATCH .../finalize`, `PATCH .../deliver` |
+| Orçamento | `POST /service-orders/{id}/budget`, `GET .../budget`, `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize`, `PATCH .../budget/items/{itemId}/complete` |
+| Métricas | `GET /service-orders/{id}/metrics/average-execution-time` (tempo médio de execução por tipo de serviço na OS) |
 
 A descrição completa, com corpo de cada requisição e a ordem de execução do fluxo, está em
 [`CURL/README.md`](CURL/README.md). Uma collection pronta para o Insomnia está em

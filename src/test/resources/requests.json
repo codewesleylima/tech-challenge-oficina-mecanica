@@ -46,10 +46,5 @@
   },
   "finalizeDiagnosis": {
     "diagnosis": "Pastilhas gastas e disco empenado no eixo dianteiro"
-  },
-  "recordServiceTime": {
-    "startTime": "2026-06-26T08:00:00",
-    "endTime": "2026-06-26T10:30:00",
-    "notes": "Troca de pastilhas de freio concluída"
   }
 }
