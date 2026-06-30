@@ -15,6 +15,10 @@ java {
     }
 }
 
+// Spring Boot 3.2 manages Flyway 9.x (no PostgreSQL 17 support). Override to
+// Flyway 10.x so PostgreSQL 17 is supported via flyway-database-postgresql.
+ext['flyway.version'] = '10.20.1'
+
 repositories {
     mavenCentral()
 }
@@ -29,6 +33,11 @@ dependencies {
     // Persistence (PostgreSQL) — added per ADR-002 implementation plan
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
+
+    // Database migrations (Flyway). PostgreSQL 17 requires Flyway 10+, which
+    // splits the Postgres support into a dedicated module (flyway-database-postgresql).
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.20.1'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
