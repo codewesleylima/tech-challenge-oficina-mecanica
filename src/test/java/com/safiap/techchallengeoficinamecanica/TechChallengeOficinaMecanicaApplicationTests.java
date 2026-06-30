@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 class TechChallengeOficinaMecanicaApplicationTests {
 
     @Test
-    @DisplayName("teste carrega o contexto da aplicação com sucesso")
+    @DisplayName("loads the application context successfully")
     void contextLoads() {
     }
 

@@ -34,7 +34,7 @@ class OpenServiceOrderUseCaseTest {
             new OpenServiceOrderUseCase(serviceOrderRepository, customerRepository, vehicleRepository, domainEventPublisher);
 
     @Test
-    @DisplayName("teste abre a ordem de serviço quando cliente e veículo existem")
+    @DisplayName("opens the service order when customer and vehicle exist")
     void opensOrderWhenCustomerAndVehicleExist() {
         UUID customerId = UUID.randomUUID();
         UUID vehicleId = UUID.randomUUID();
@@ -51,7 +51,7 @@ class OpenServiceOrderUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste falha ao abrir a ordem de serviço quando o cliente não existe")
+    @DisplayName("fails to open the service order when the customer does not exist")
     void failsWhenCustomerNotFound() {
         UUID customerId = UUID.randomUUID();
         when(customerRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
@@ -64,7 +64,7 @@ class OpenServiceOrderUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste falha ao abrir a ordem de serviço quando o veículo não existe")
+    @DisplayName("fails to open the service order when the vehicle does not exist")
     void failsWhenVehicleNotFound() {
         UUID customerId = UUID.randomUUID();
         UUID vehicleId = UUID.randomUUID();
