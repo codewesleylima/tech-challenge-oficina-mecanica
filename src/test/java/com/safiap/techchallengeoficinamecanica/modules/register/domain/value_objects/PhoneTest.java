@@ -10,26 +10,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PhoneTest {
 
     @Test
-    @DisplayName("teste remove caracteres não numéricos do telefone")
+    @DisplayName("strips non-numeric characters from the phone")
     void stripsNonDigits() {
         Phone phone = new Phone("(11) 99999-8888");
         assertThat(phone.value()).isEqualTo("11999998888");
     }
 
     @Test
-    @DisplayName("teste aceita telefone com dez dígitos")
+    @DisplayName("accepts a ten-digit phone")
     void acceptsTenDigits() {
         assertThat(new Phone("1133334444").value()).isEqualTo("1133334444");
     }
 
     @Test
-    @DisplayName("teste rejeita telefone curto demais")
+    @DisplayName("rejects a too-short phone")
     void rejectsTooShort() {
         assertThatThrownBy(() -> new Phone("9999")).isInstanceOf(DomainException.class);
     }
 
     @Test
-    @DisplayName("teste rejeita telefone em branco")
+    @DisplayName("rejects a blank phone")
     void rejectsBlank() {
         assertThatThrownBy(() -> new Phone(" ")).isInstanceOf(DomainException.class);
     }

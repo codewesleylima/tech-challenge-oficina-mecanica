@@ -44,7 +44,7 @@ class CompleteServiceItemUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste conclui o item de serviço quando a OS está em execução")
+    @DisplayName("completes the service item when the order is in execution")
     void completesServiceItem() {
         UUID soId = UUID.randomUUID();
         Budget budget = budgetWithService(soId);
@@ -60,7 +60,7 @@ class CompleteServiceItemUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste falha ao concluir item quando a OS não está em execução")
+    @DisplayName("fails to complete the item when the order is not in execution")
     void failsWhenNotInExecution() {
         UUID soId = UUID.randomUUID();
         when(serviceOrderRepository.findById(soId))
@@ -71,7 +71,7 @@ class CompleteServiceItemUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste falha ao concluir item quando a OS não existe")
+    @DisplayName("fails to complete the item when the order does not exist")
     void failsWhenOrderNotFound() {
         UUID soId = UUID.randomUUID();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.empty());

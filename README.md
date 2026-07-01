@@ -8,6 +8,10 @@ priorização, falhas no controle de peças e perda de histórico de clientes e 
 O projeto é um **monolito** desenvolvido com **Domain-Driven Design (DDD)**, expondo **APIs REST**
 documentadas via **Swagger** e protegidas por **autenticação JWT**.
 
+## Documentação no MIRO
+
+[Documentação DDD](https://miro.com/app/board/uXjVHIl34Zc=/?share_link_id=851279149523)
+
 ## Funcionalidades implementadas (MVP)
 
 **Cadastros e catálogo**

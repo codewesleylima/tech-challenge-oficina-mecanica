@@ -22,7 +22,7 @@ class GetAverageServiceTimeUseCaseTest {
     private final GetAverageServiceTimeUseCase useCase = new GetAverageServiceTimeUseCase(budgetRepository);
 
     @Test
-    @DisplayName("teste agrupa por serviço e calcula a média em minutos com a contagem de amostras")
+    @DisplayName("groups by service and computes the average in minutes with the sample count")
     void averagesPerService() {
         UUID serviceOrderId = UUID.randomUUID();
         UUID serviceA = UUID.randomUUID();
@@ -43,7 +43,7 @@ class GetAverageServiceTimeUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste retorna lista vazia quando não há serviços concluídos")
+    @DisplayName("returns an empty list when there are no completed services")
     void emptyWhenNoSamples() {
         when(budgetRepository.findServiceDurations(any())).thenReturn(List.of());
         assertThat(useCase.execute(UUID.randomUUID())).isEmpty();
