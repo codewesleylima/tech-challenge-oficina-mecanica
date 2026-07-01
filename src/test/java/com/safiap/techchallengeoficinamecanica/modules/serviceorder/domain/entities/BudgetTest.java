@@ -20,7 +20,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste cria o orçamento como DRAFT e sem itens")
+    @DisplayName("creates the budget as DRAFT with no items")
     void createsAsDraftWithNoItems() {
         Budget budget = draft();
         assertThat(budget.getStatus()).isEqualTo(BudgetStatus.DRAFT);
@@ -29,7 +29,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste calcula o total somando peças e serviços")
+    @DisplayName("calculates the total summing parts and services")
     void calculatesTotalFromPartsAndServices() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 2, new BigDecimal("89.90"));
@@ -42,7 +42,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste falha ao finalizar orçamento sem itens")
+    @DisplayName("fails to finalize a budget with no items")
     void finalizeFailsWhenEmpty() {
         Budget budget = draft();
         assertThatThrownBy(budget::finalize)
@@ -50,7 +50,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste finaliza o orçamento marcando como FINALIZED")
+    @DisplayName("finalizes the budget marking it as FINALIZED")
     void finalizeMarksAsFinalized() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
@@ -59,7 +59,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste impede alterar ou refinalizar um orçamento já finalizado")
+    @DisplayName("prevents modifying or refinalizing an already finalized budget")
     void cannotModifyOrRefinalizeAfterFinalized() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
@@ -72,7 +72,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste expõe a lista de itens como imutável")
+    @DisplayName("exposes the item list as immutable")
     void itemsListIsUnmodifiable() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("10.00"));
@@ -81,7 +81,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste conclui um item de serviço marcando a data de conclusão")
+    @DisplayName("completes a service item marking the completion date")
     void completesServiceItem() {
         Budget budget = draft();
         budget.addService(UUID.randomUUID(), "Mão de obra", 1, new BigDecimal("150.00"));
@@ -94,7 +94,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste falha ao concluir um item que não é serviço")
+    @DisplayName("fails to complete an item that is not a service")
     void cannotCompleteNonServiceItem() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
@@ -105,7 +105,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste falha ao concluir um item de serviço já concluído")
+    @DisplayName("fails to complete an already completed service item")
     void cannotCompleteServiceItemTwice() {
         Budget budget = draft();
         budget.addService(UUID.randomUUID(), "Mão de obra", 1, new BigDecimal("150.00"));
@@ -117,7 +117,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste falha ao concluir um item inexistente")
+    @DisplayName("fails to complete a non-existent item")
     void cannotCompleteUnknownItem() {
         Budget budget = draft();
         budget.addService(UUID.randomUUID(), "Mão de obra", 1, new BigDecimal("150.00"));
@@ -127,7 +127,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste só considera todos os serviços concluídos quando cada serviço tem data de conclusão")
+    @DisplayName("considers all services completed only when each service has a completion date")
     void allServiceItemsCompletedReflectsServiceItems() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
@@ -144,7 +144,7 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("teste considera vacuamente concluído um orçamento só com peças")
+    @DisplayName("considers a parts-only budget vacuously completed")
     void allServiceItemsCompletedIsTrueWhenNoServices() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));

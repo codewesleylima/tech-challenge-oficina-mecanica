@@ -10,21 +10,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class EmailTest {
 
     @Test
-    @DisplayName("teste normaliza o e-mail para minúsculas")
+    @DisplayName("normalizes the email to lowercase")
     void normalizesToLowercase() {
         Email email = new Email("Joao@Email.COM");
         assertThat(email.value()).isEqualTo("joao@email.com");
     }
 
     @Test
-    @DisplayName("teste rejeita e-mail com formato inválido")
+    @DisplayName("rejects an email with an invalid format")
     void rejectsInvalidFormat() {
         assertThatThrownBy(() -> new Email("joao@")).isInstanceOf(DomainException.class);
         assertThatThrownBy(() -> new Email("joao")).isInstanceOf(DomainException.class);
     }
 
     @Test
-    @DisplayName("teste rejeita e-mail em branco")
+    @DisplayName("rejects a blank email")
     void rejectsBlank() {
         assertThatThrownBy(() -> new Email("  ")).isInstanceOf(DomainException.class);
     }

@@ -53,7 +53,7 @@ public class BudgetController {
     public ResponseEntity<BudgetResponse> addPart(
             @PathVariable UUID serviceOrderId, @RequestBody AddPartDTO request) {
         AddPartCommand command = new AddPartCommand(
-                serviceOrderId, request.itemId(), request.description(), request.quantity(), request.unitPrice());
+                serviceOrderId, request.itemId(), request.description(), request.quantity());
         return ResponseEntity.status(HttpStatus.CREATED).body(addPartToBudgetUseCase.execute(command));
     }
 
@@ -61,7 +61,7 @@ public class BudgetController {
     public ResponseEntity<BudgetResponse> addService(
             @PathVariable UUID serviceOrderId, @RequestBody AddServiceDTO request) {
         AddServiceCommand command = new AddServiceCommand(
-                serviceOrderId, request.itemId(), request.description(), request.quantity(), request.unitPrice());
+                serviceOrderId, request.itemId(), request.description(), request.quantity());
         return ResponseEntity.status(HttpStatus.CREATED).body(addServiceToBudgetUseCase.execute(command));
     }
 

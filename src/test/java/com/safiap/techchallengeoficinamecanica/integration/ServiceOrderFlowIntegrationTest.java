@@ -39,7 +39,7 @@ class ServiceOrderFlowIntegrationTest {
     private JsonNode fixtures;
 
     @Test
-    @DisplayName("teste percorre o fluxo completo da ordem de serviço de ponta a ponta")
+    @DisplayName("walks through the full service order flow end to end")
     void fullServiceOrderLifecycle() throws Exception {
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +157,7 @@ class ServiceOrderFlowIntegrationTest {
     }
 
     @Test
-    @DisplayName("teste rejeita acesso a endpoint protegido sem token de autenticação")
+    @DisplayName("rejects access to a protected endpoint without an authentication token")
     void protectedEndpointWithoutTokenIsRejected() throws Exception {
         mockMvc.perform(get("/service-orders").param("status", "RECEIVED"))
                 .andExpect(status().isUnauthorized());

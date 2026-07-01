@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class MoneyTest {
 
     @Test
-    @DisplayName("normaliza a escala para 2 casas usando HALF_UP")
+    @DisplayName("normalizes the scale to 2 places using HALF_UP")
     void shouldNormalizeScaleToTwoDecimals() {
         Money money = new Money(new BigDecimal("10.005"));
 

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ServiceOrderPriorityTest {
 
     @Test
-    @DisplayName("teste aumentar a prioridade para no máximo URGENT")
+    @DisplayName("increases the priority up to URGENT at most")
     void increaseStopsAtUrgent() {
         assertThat(ServiceOrderPriority.LOW.increase()).isEqualTo(ServiceOrderPriority.NORMAL);
         assertThat(ServiceOrderPriority.NORMAL.increase()).isEqualTo(ServiceOrderPriority.HIGH);
@@ -19,7 +19,7 @@ class ServiceOrderPriorityTest {
     }
 
     @Test
-    @DisplayName("teste diminuir a prioridade para no mínimo LOW")
+    @DisplayName("decreases the priority down to LOW at least")
     void decreaseStopsAtLow() {
         assertThat(ServiceOrderPriority.URGENT.decrease()).isEqualTo(ServiceOrderPriority.HIGH);
         assertThat(ServiceOrderPriority.HIGH.decrease()).isEqualTo(ServiceOrderPriority.NORMAL);
@@ -28,14 +28,14 @@ class ServiceOrderPriorityTest {
     }
 
     @Test
-    @DisplayName("teste resolve a prioridade a partir do valor numérico conhecido")
+    @DisplayName("resolves the priority from a known numeric value")
     void fromValueResolvesKnownValues() {
         assertThat(ServiceOrderPriority.fromValue(1)).isEqualTo(ServiceOrderPriority.LOW);
         assertThat(ServiceOrderPriority.fromValue(4)).isEqualTo(ServiceOrderPriority.URGENT);
     }
 
     @Test
-    @DisplayName("teste falha ao resolver a prioridade a partir de valor desconhecido")
+    @DisplayName("fails to resolve the priority from an unknown value")
     void fromValueFailsForUnknownValue() {
         assertThatThrownBy(() -> ServiceOrderPriority.fromValue(99))
                 .isInstanceOf(NotFoundException.class);
