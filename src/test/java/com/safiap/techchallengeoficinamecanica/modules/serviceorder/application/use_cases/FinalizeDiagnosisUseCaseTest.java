@@ -49,7 +49,7 @@ class FinalizeDiagnosisUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste finaliza o diagnóstico quando o orçamento está finalizado com itens")
+    @DisplayName("finalizes the diagnosis when the budget is finalized with items")
     void finalizesDiagnosisWhenBudgetReady() {
         UUID soId = UUID.randomUUID();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.of(orderInDiagnosis(soId)));
@@ -64,7 +64,7 @@ class FinalizeDiagnosisUseCaseTest {
     }
 
     @Test
-    @DisplayName("teste falha ao finalizar o diagnóstico quando o orçamento não está finalizado")
+    @DisplayName("fails to finalize the diagnosis when the budget is not finalized")
     void failsWhenBudgetNotFinalized() {
         UUID soId = UUID.randomUUID();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.of(orderInDiagnosis(soId)));

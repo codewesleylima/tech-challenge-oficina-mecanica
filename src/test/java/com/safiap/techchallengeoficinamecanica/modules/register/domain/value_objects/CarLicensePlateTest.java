@@ -10,26 +10,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CarLicensePlateTest {
 
     @Test
-    @DisplayName("teste aceita placa no padrão Mercosul")
+    @DisplayName("accepts a Mercosul-pattern plate")
     void acceptsMercosulFormat() {
         CarLicensePlate plate = new CarLicensePlate("ABC1D23");
         assertThat(plate.plate()).isEqualTo("ABC1D23");
     }
 
     @Test
-    @DisplayName("teste rejeita placa no formato antigo")
+    @DisplayName("rejects an old-format plate")
     void rejectsOldFormat() {
         assertThatThrownBy(() -> new CarLicensePlate("ABC1234")).isInstanceOf(DomainException.class);
     }
 
     @Test
-    @DisplayName("teste rejeita placa em minúsculas")
+    @DisplayName("rejects a lowercase plate")
     void rejectsLowercase() {
         assertThatThrownBy(() -> new CarLicensePlate("abc1d23")).isInstanceOf(DomainException.class);
     }
 
     @Test
-    @DisplayName("teste rejeita placa nula")
+    @DisplayName("rejects a null plate")
     void rejectsNull() {
         assertThatThrownBy(() -> new CarLicensePlate(null)).isInstanceOf(DomainException.class);
     }

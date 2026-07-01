@@ -76,6 +76,7 @@ segurança) e `presentation` (controllers e DTOs).
 - **Gradle** (build via wrapper `./gradlew`)
 - **Docker** + **Docker Compose** (orquestração local)
 - **springdoc-openapi** (Swagger UI)
+- **SonarQube** (porta `9000`)
 
 ### Por que PostgreSQL?
 O domínio é fortemente relacional — cliente → veículo → ordem de serviço → orçamento → itens —
@@ -279,6 +280,10 @@ export NVD_API_KEY=<sua-chave>   # https://nvd.nist.gov/developers/request-an-ap
 
 > Falsos-positivos ou CVEs aceitos com justificativa podem ser registrados em
 > `config/dependency-check-suppressions.xml`.
+
+## SonarQube
+
+É iniciado junto da aplicação e pode ser acessado pela rota `http://localhost:9000`
 
 ## Membros da Equipe
 

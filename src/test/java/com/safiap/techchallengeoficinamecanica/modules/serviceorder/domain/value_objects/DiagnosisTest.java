@@ -10,20 +10,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class DiagnosisTest {
 
     @Test
-    @DisplayName("teste aceita descrição válida e remove espaços nas pontas")
+    @DisplayName("accepts a valid description and trims surrounding spaces")
     void acceptsAndTrimsValidDescription() {
         Diagnosis diagnosis = new Diagnosis("  Pastilhas gastas  ");
         assertThat(diagnosis.value()).isEqualTo("Pastilhas gastas");
     }
 
     @Test
-    @DisplayName("teste rejeita diagnóstico nulo")
+    @DisplayName("rejects a null diagnosis")
     void rejectsNull() {
         assertThatThrownBy(() -> new Diagnosis(null)).isInstanceOf(DomainException.class);
     }
 
     @Test
-    @DisplayName("teste rejeita diagnóstico em branco")
+    @DisplayName("rejects a blank diagnosis")
     void rejectsBlank() {
         assertThatThrownBy(() -> new Diagnosis("   ")).isInstanceOf(DomainException.class);
     }

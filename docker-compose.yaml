@@ -24,6 +24,21 @@ services:
     networks:
       - oficina-network
 
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonar-qube
+    ports:
+      - 9000:9000
+    networks:
+      - oficina-network
+    environment:
+      - SONARQUBE_JDBC_USERNAME=${DB_USER:-oficina}
+      - SONARQUBE_JDBC_PASSWORD=${DB_PASSWORD:-oficina_pass}
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://postgres:5432/${DB_NAME:-oficina_db}
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+
   backend:
     build:
       context: .
@@ -63,6 +78,8 @@ services:
 volumes:
   postgres_data:
     driver: local
+  sonarqube_data:
+  sonarqube_extensions:
 
 networks:
   oficina-network:
