@@ -303,7 +303,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
     </td>
     <td align="center">
       <a href="https://www.linkedin.com/in/tim-morgenstern-4581911b1/" title="Tim Morgenstern">
-        <img src="https://media.licdn.com/dms/image/v2/C4E03AQG57Du9tsCS5A/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1643980434981?e=1782345600&v=beta&t=r2XlUXgFNRi3C0LKczF1AGjaMhCUQSYQcLx11Ilq_Yk" width="100px;" alt="Foto do Tim Morgenstern"/><br>
+        <img src="https://media.licdn.com/dms/image/v2/C4E03AQG57Du9tsCS5A/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1643980434981?e=1784764800&v=beta&t=I2Mkh-h3qjUXzc33y7lI20qR1-5GCTveSBqYu0rIY48" width="100px;" alt="Foto do Tim Morgenstern"/><br>
         <sub>
           <b>Tim Morgenstern</b>
         </sub>
@@ -313,7 +313,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
     </td>
     <td align="center">
       <a href="https://www.linkedin.com/in/matheus-pitas-baptista/" title="Matheus Pitas Baptista">
-        <img src="https://media.licdn.com/dms/image/v2/D4D03AQHFS4VJk5WteA/profile-displayphoto-crop_800_800/B4DZv_LwbmHYAI-/0/1769512832027?e=1782345600&v=beta&t=yZNCtRAXZNCIw2ecvKaIVvtxjQy4dkoilGYparn1br0" width="100px;" alt="Foto do Matheus Pitas Baptista"/><br>
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQHFS4VJk5WteA/profile-displayphoto-crop_800_800/B4DZv_LwbmHYAI-/0/1769512832027?e=1784764800&v=beta&t=QrOUIs2mGpKkh5JKWwI6vsdLVOhP-cei32RUrukkXfY" width="100px;" alt="Foto do Matheus Pitas Baptista"/><br>
         <sub>
           <b>Matheus Pitas Baptista</b>
         </sub>
