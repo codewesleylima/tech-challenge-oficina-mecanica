@@ -55,7 +55,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-oficina_db}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-oficina}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-oficina_pass}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
       JWT_SECRET: ${JWT_SECRET:-chave-dev-minimo-256-bits-dev-dev-dev-dev-dev-dev-dev}
       JWT_EXPIRATION: 3600
       LOGGING_LEVEL_ROOT: ${LOGGING_LEVEL:-INFO}
