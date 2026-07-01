@@ -76,6 +76,7 @@ segurança) e `presentation` (controllers e DTOs).
 - **Gradle** (build via wrapper `./gradlew`)
 - **Docker** + **Docker Compose** (orquestração local)
 - **springdoc-openapi** (Swagger UI)
+- **SonarQube** (porta `9000`)
 
 ### Por que PostgreSQL?
 O domínio é fortemente relacional — cliente → veículo → ordem de serviço → orçamento → itens —
@@ -255,6 +256,34 @@ de Docker ou PostgreSQL.
 ./gradlew test          # executa toda a suíte
 ./gradlew clean build   # compila, empacota e executa os testes
 ```
+
+## Análise de Vulnerabilidades (OWASP)
+
+O projeto faz varredura de vulnerabilidades das dependências com o
+**[OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/)**
+(plugin Gradle), cobrindo a categoria **A06 – Vulnerable & Outdated Components**
+do OWASP Top 10. A ferramenta cruza cada biblioteca com a base de CVEs da NVD e
+gera um relatório com os achados e sua severidade.
+
+O relatório mais recente, gerado pelo próprio plugin, está versionado em
+[`docs/security/dependency-check-report.html`](docs/security/dependency-check-report.html)
+(abra no navegador).
+
+Para gerar/atualizar o relatório:
+
+```bash
+# (opcional) uma chave da NVD acelera o download da base de CVEs
+export NVD_API_KEY=<sua-chave>   # https://nvd.nist.gov/developers/request-an-api-key
+
+./gradlew dependencyCheckAnalyze  # saída em build/reports/dependency-check-report.html
+```
+
+> Falsos-positivos ou CVEs aceitos com justificativa podem ser registrados em
+> `config/dependency-check-suppressions.xml`.
+
+## SonarQube
+
+É iniciado junto da aplicação e pode ser acessado pela rota `http://localhost:9000`
 
 ## Membros da Equipe
 
