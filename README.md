@@ -76,6 +76,7 @@ segurança) e `presentation` (controllers e DTOs).
 - **Gradle** (build via wrapper `./gradlew`)
 - **Docker** + **Docker Compose** (orquestração local)
 - **springdoc-openapi** (Swagger UI)
+- **SonarQube** (porta `9000`)
 
 ### Por que PostgreSQL?
 O domínio é fortemente relacional — cliente → veículo → ordem de serviço → orçamento → itens —
@@ -255,6 +256,10 @@ de Docker ou PostgreSQL.
 ./gradlew test          # executa toda a suíte
 ./gradlew clean build   # compila, empacota e executa os testes
 ```
+
+## SonarQube
+
+É iniciado junto da aplicação e pode ser acessado pela rota `http://localhost:9000`
 
 ## Membros da Equipe
 
