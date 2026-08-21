@@ -55,6 +55,4 @@ jobs:
         with:
           context: backend/
           push: true
-          cache-from: type=registry,ref=timbeck97/tc-fiap:cache
-          cache-to: type=registry,ref=timbeck97/tc-fiap:cache,mode=max
           tags: timbeck97/tc-fiap:latest, timbeck97/tc-fiap:${{ github.run_number }}
