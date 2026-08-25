@@ -8,6 +8,10 @@ priorização, falhas no controle de peças e perda de histórico de clientes e 
 O projeto é um **monolito** desenvolvido com **Domain-Driven Design (DDD)**, expondo **APIs REST**
 documentadas via **Swagger** e protegidas por **autenticação JWT**.
 
+## Documentação no MIRO
+
+[Documentação DDD](https://miro.com/app/board/uXjVHIl34Zc=/?share_link_id=851279149523)
+
 ## Funcionalidades implementadas (MVP)
 
 **Cadastros e catálogo**
@@ -72,6 +76,7 @@ segurança) e `presentation` (controllers e DTOs).
 - **Gradle** (build via wrapper `./gradlew`)
 - **Docker** + **Docker Compose** (orquestração local)
 - **springdoc-openapi** (Swagger UI)
+- **SonarQube** (porta `9000`)
 
 ### Por que PostgreSQL?
 O domínio é fortemente relacional — cliente → veículo → ordem de serviço → orçamento → itens —
@@ -252,6 +257,34 @@ de Docker ou PostgreSQL.
 ./gradlew clean build   # compila, empacota e executa os testes
 ```
 
+## Análise de Vulnerabilidades (OWASP)
+
+O projeto faz varredura de vulnerabilidades das dependências com o
+**[OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/)**
+(plugin Gradle), cobrindo a categoria **A06 – Vulnerable & Outdated Components**
+do OWASP Top 10. A ferramenta cruza cada biblioteca com a base de CVEs da NVD e
+gera um relatório com os achados e sua severidade.
+
+O relatório mais recente, gerado pelo próprio plugin, está versionado em
+[`docs/security/dependency-check-report.html`](docs/security/dependency-check-report.html)
+(abra no navegador).
+
+Para gerar/atualizar o relatório:
+
+```bash
+# (opcional) uma chave da NVD acelera o download da base de CVEs
+export NVD_API_KEY=<sua-chave>   # https://nvd.nist.gov/developers/request-an-api-key
+
+./gradlew dependencyCheckAnalyze  # saída em build/reports/dependency-check-report.html
+```
+
+> Falsos-positivos ou CVEs aceitos com justificativa podem ser registrados em
+> `config/dependency-check-suppressions.xml`.
+
+## SonarQube
+
+É iniciado junto da aplicação e pode ser acessado pela rota `http://localhost:9000`
+
 ## Membros da Equipe
 
 Agradecemos às seguintes pessoas que contribuíram para este projeto:
@@ -270,7 +303,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
     </td>
     <td align="center">
       <a href="https://www.linkedin.com/in/tim-morgenstern-4581911b1/" title="Tim Morgenstern">
-        <img src="https://media.licdn.com/dms/image/v2/C4E03AQG57Du9tsCS5A/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1643980434981?e=1782345600&v=beta&t=r2XlUXgFNRi3C0LKczF1AGjaMhCUQSYQcLx11Ilq_Yk" width="100px;" alt="Foto do Tim Morgenstern"/><br>
+        <img src="https://media.licdn.com/dms/image/v2/C4E03AQG57Du9tsCS5A/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1643980434981?e=1784764800&v=beta&t=I2Mkh-h3qjUXzc33y7lI20qR1-5GCTveSBqYu0rIY48" width="100px;" alt="Foto do Tim Morgenstern"/><br>
         <sub>
           <b>Tim Morgenstern</b>
         </sub>
@@ -280,7 +313,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
     </td>
     <td align="center">
       <a href="https://www.linkedin.com/in/matheus-pitas-baptista/" title="Matheus Pitas Baptista">
-        <img src="https://media.licdn.com/dms/image/v2/D4D03AQHFS4VJk5WteA/profile-displayphoto-crop_800_800/B4DZv_LwbmHYAI-/0/1769512832027?e=1782345600&v=beta&t=yZNCtRAXZNCIw2ecvKaIVvtxjQy4dkoilGYparn1br0" width="100px;" alt="Foto do Matheus Pitas Baptista"/><br>
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQHFS4VJk5WteA/profile-displayphoto-crop_800_800/B4DZv_LwbmHYAI-/0/1769512832027?e=1784764800&v=beta&t=QrOUIs2mGpKkh5JKWwI6vsdLVOhP-cei32RUrukkXfY" width="100px;" alt="Foto do Matheus Pitas Baptista"/><br>
         <sub>
           <b>Matheus Pitas Baptista</b>
         </sub>

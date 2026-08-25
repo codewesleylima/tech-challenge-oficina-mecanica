@@ -3,6 +3,8 @@ plugins {
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'info.solidsoft.pitest' version '1.15.0'
+    id "org.owasp.dependencycheck" version "12.2.2"
+    id "org.sonarqube" version "7.3.0.8198"
 }
 
 group = 'com.safiap'
@@ -24,6 +26,7 @@ repositories {
 }
 
 dependencies {
+
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -52,6 +55,21 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+dependencyCheck {
+    // Relatório de análise de vulnerabilidades (OWASP A06 — componentes desatualizados).
+    // Rode com: ./gradlew dependencyCheckAnalyze  -> build/reports/dependency-check-report.html
+    formats = ['HTML', 'JSON']
+    // Chave da NVD lida de env var (nunca hardcode). Acelera o download da base de CVEs.
+    // Gere em https://nvd.nist.gov/developers/request-an-api-key e exporte NVD_API_KEY.
+    nvd {
+        apiKey = System.getenv('NVD_API_KEY')
+    }
+    // Report-only por padrão para não quebrar o CI verde. Para transformar em gate
+    // de qualidade, troque para 7.0 (falha em achados High/Critical, CVSS >= 7).
+    failBuildOnCVSS = 11
+    suppressionFile = 'config/dependency-check-suppressions.xml'
 }
 
 pitest {
