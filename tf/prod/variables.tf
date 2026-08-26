@@ -33,3 +33,18 @@ variable "jwtSecret" {
   sensitive   = true
   description = "Chave de assinatura do JWT (mínimo 256 bits)"
 }
+variable "clusterName" {
+  type        = string
+  default     = "my-cluster"
+  description = "Nome do cluster EKS"
+}
+variable "logRetentionDays" {
+  type        = number
+  default     = 7
+  description = "Retenção dos log groups do cluster. Sem isso o padrão do CloudWatch é nunca expirar"
+}
+variable "clusterLogTypes" {
+  type        = list(string)
+  default     = ["api", "audit", "authenticator"]
+  description = "Logs do control plane. controllerManager e scheduler ficam de fora por serem os mais verbosos"
+}
