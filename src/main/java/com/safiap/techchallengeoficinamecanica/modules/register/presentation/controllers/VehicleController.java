@@ -8,6 +8,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.resp
 import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.vehicle.*;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.vehicle.AddVehicleDTO;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.vehicle.AlterVehicleDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,7 +47,7 @@ public class VehicleController {
 
     @PostMapping("/register")
     public ResponseEntity<AddVehicleResponse> addVehicle(
-            @RequestBody AddVehicleDTO request) {
+            @Valid @RequestBody AddVehicleDTO request) {
 
         AddVehicleCommand command = new AddVehicleCommand(
                 request.customerId(),
@@ -66,7 +67,7 @@ public class VehicleController {
     @PutMapping("/alter/{id}")
     public ResponseEntity<AlterVehicleResponse> alterVehicle(
             @PathVariable UUID id,
-            @RequestBody AlterVehicleDTO request) {
+            @Valid @RequestBody AlterVehicleDTO request) {
 
         AlterVehicleCommand command = new AlterVehicleCommand(
                 id,

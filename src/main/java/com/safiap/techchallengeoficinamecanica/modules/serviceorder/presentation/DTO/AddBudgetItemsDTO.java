@@ -1,14 +1,12 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
-public record FinalizeDiagnosisDTO(
-        @NotBlank(message = "diagnosis is required")
-        String diagnosis,
-
+public record AddBudgetItemsDTO(
+        @NotEmpty(message = "at least one budget item is required")
         @Valid
         List<BudgetItemDTO> items
 ) {}

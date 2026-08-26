@@ -1,8 +1,19 @@
 package com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.service;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.math.BigDecimal;
 
 public record RegisterServiceDTO(
-        String name, String description, BigDecimal price
+        @NotBlank(message = "name is required")
+        String name,
+
+        String description,
+
+        @NotNull(message = "price is required")
+        @PositiveOrZero(message = "price must not be negative")
+        BigDecimal price
 ) {
 }

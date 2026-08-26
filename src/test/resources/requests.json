@@ -24,12 +24,12 @@
     "name": "Pastilha de freio dianteira",
     "description": "Jogo de pastilhas cerâmicas",
     "quantity": 10,
-    "price": 89.90
+    "price": 89.9
   },
   "service": {
     "name": "Troca de pastilhas de freio",
     "description": "Mão de obra - eixo dianteiro",
-    "price": 150.00
+    "price": 150.0
   },
   "openServiceOrder": {
     "problemDescription": "Carro fazendo barulho ao frear"
@@ -37,14 +37,33 @@
   "addPart": {
     "description": "Pastilha de freio dianteira",
     "quantity": 1,
-    "unitPrice": 89.90
-  },
-  "addService": {
-    "description": "Mão de obra - troca de freios",
-    "quantity": 1,
-    "unitPrice": 150.00
+    "unitPrice": 89.9
   },
   "finalizeDiagnosis": {
     "diagnosis": "Pastilhas gastas e disco empenado no eixo dianteiro"
+  },
+  "budgetItems": {
+    "items": [
+      {
+        "type": "SERVICE",
+        "description": "Mão de obra - troca de freios",
+        "quantity": 1
+      }
+    ]
+  },
+  "finalizeDiagnosisWithItems": {
+    "diagnosis": "Pastilhas gastas e disco empenado no eixo dianteiro",
+    "items": [
+      {
+        "type": "PART",
+        "description": "Pastilha de freio dianteira",
+        "quantity": 1
+      },
+      {
+        "type": "SERVICE",
+        "description": "Mão de obra - troca de freios",
+        "quantity": 1
+      }
+    ]
   }
 }
