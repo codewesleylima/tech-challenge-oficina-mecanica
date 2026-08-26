@@ -11,7 +11,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api                   # nome do Deployment em k8s-api-deployment.tf
-  minReplicas: 1                
+  minReplicas: 2                
   maxReplicas: 5                
   metrics:
   - type: Resource

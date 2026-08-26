@@ -41,14 +41,22 @@ RECEBIDA ──► EM_DIAGNÓSTICO ──► AGUARDANDO_APROVAÇÃO ──► EM
                    └──── rejeitar ◄──────┘
 ```
 
+**Notificações**
+- E-mail automático para o cliente a cada mudança de status da OS (uma mensagem por transição,
+  do recebimento à entrega), disparado por evento de domínio após o commit da transação
+- Envio assíncrono e *best-effort*: uma falha de SMTP registra erro no log e **nunca** afeta a
+  operação de negócio nem a resposta da API
+- SMTP configurável por variáveis de ambiente (MailHog no desenvolvimento; Gmail, SES ou
+  Mailtrap em outros ambientes) — sem mudança de código
+
 **Segurança e qualidade**
 - Autenticação JWT (HS256) nas APIs administrativas
 - Validação de dados sensíveis (CPF/CNPJ, placa de veículo)
 - Tratamento global de exceções com respostas de erro padronizadas
 - Testes unitários (domínio e casos de uso) e de integração (fluxo completo da OS)
 
-> **Fora do escopo desta versão:** notificações/comunicação em tempo real com o cliente.
-> Item previsto para evoluções futuras.
+> **Fora do escopo desta versão:** comunicação em tempo real com o cliente (chat/push).
+> As notificações são feitas por e-mail, de forma assíncrona.
 
 ## Arquitetura
 
@@ -61,6 +69,7 @@ Monolito em camadas seguindo DDD, organizado por **módulos** (bounded contexts)
 | `register` | Cadastro de clientes e veículos |
 | `inventory` | Catálogo de peças e serviços + controle de estoque |
 | `serviceorder` | Ordem de serviço, orçamento, diagnóstico e ciclo de vida |
+| `notifications` | Envio de e-mail ao cliente a cada mudança de status da OS |
 | `shared` | Exceções, handler global de erros e blocos de domínio comuns |
 
 Cada módulo é dividido em `domain` (entidades, value objects, repositórios),
@@ -111,11 +120,20 @@ ambientes fora do desenvolvimento).
 | `SPRING_JPA_HIBERNATE_DDL_AUTO` | `none` | Estratégia DDL do Hibernate |
 | `JWT_SECRET` | padrão dev | Segredo de assinatura JWT (substitua fora do dev) |
 | `JWT_EXPIRATION` | `3600` | Expiração do JWT em segundos |
+| `MAIL_HOST` | `mailhog` | Host do servidor SMTP |
+| `MAIL_PORT` | `1025` | Porta SMTP (mapeada do MailHog para o host) |
+| `MAIL_UI_PORT` | `8025` | Porta da interface web do MailHog |
+| `MAIL_USERNAME` | — | Usuário SMTP (vazio no MailHog) |
+| `MAIL_PASSWORD` | — | Senha SMTP (vazio no MailHog) |
+| `MAIL_SMTP_AUTH` | `false` | Autenticação SMTP (`true` para Gmail/SES) |
+| `MAIL_SMTP_STARTTLS` | `false` | STARTTLS (`true` para Gmail/SES) |
+| `NOTIFICATIONS_EMAIL_ENABLED` | `true` | `false` desativa o envio (e-mail só vai para o log) |
+| `NOTIFICATIONS_EMAIL_FROM` | `nao-responda@oficina.local` | Remetente das notificações |
 
 ## Executando com Docker Compose
-O Docker Compose sobe dois serviços: `oficina-db` (PostgreSQL) e
-`oficina-backend` (a API). O backend só inicia após o PostgreSQL reportar
-saúde, e se conecta a ele pela rede interna `oficina-network`.
+O Docker Compose sobe três serviços: `oficina-db` (PostgreSQL), `oficina-mailhog` (SMTP de
+desenvolvimento) e `oficina-backend` (a API). O backend só inicia após o PostgreSQL reportar
+saúde, e se conecta a eles pela rede interna `oficina-network`.
 
 ```bash
 # Constrói as imagens e sobe tudo em segundo plano
@@ -126,6 +144,24 @@ docker compose ps
 ```
 
 Quando saudável, a API estará disponível em `http://localhost:8080`.
+
+### Notificações por e-mail
+Cada mudança de status da OS dispara um e-mail para o cliente cadastrado. No ambiente local os
+e-mails são capturados pelo **MailHog** — nada é entregue de verdade. Abra a caixa de entrada em:
+
+```
+http://localhost:8025
+```
+
+Para enviar por um SMTP real, aponte as variáveis de ambiente para ele (nenhuma mudança de código):
+
+```bash
+MAIL_HOST=smtp.gmail.com  MAIL_PORT=587  MAIL_SMTP_AUTH=true  MAIL_SMTP_STARTTLS=true \
+MAIL_USERNAME=<conta>     MAIL_PASSWORD=<app password>
+```
+
+Para desligar o envio (o e-mail passa a ser apenas registrado no log), use
+`NOTIFICATIONS_EMAIL_ENABLED=false`.
 
 ### Conexão com o banco de dados
 Dentro da rede do Compose, o backend acessa o banco pelo nome do serviço:

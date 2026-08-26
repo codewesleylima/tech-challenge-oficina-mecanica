@@ -21,6 +21,9 @@ spec:
         image: timbeck97/tc-fiap:latest
         ports:
         - containerPort: 8080
+        env:
+        - name: SPRING_OUTPUT_ANSI_ENABLED
+          value: "never"
         envFrom:
         - secretRef:
             name: api-secret
