@@ -41,6 +41,23 @@ RECEBIDA ──► EM_DIAGNÓSTICO ──► AGUARDANDO_APROVAÇÃO ──► EM
                    └──── rejeitar ◄──────┘
 ```
 
+**Caminho curto (3 chamadas até a aprovação):** o orçamento é criado sob demanda no primeiro item
+adicionado e é finalizado junto com o diagnóstico, então não existem endpoints separados para
+"abrir" e "fechar" orçamento:
+
+```
+POST  /service-orders                            → RECEIVED
+PATCH /service-orders/{id}/start-diagnosis       → IN_DIAGNOSIS
+PATCH /service-orders/{id}/finalize-diagnosis    → AWAITING_APPROVAL   (aceita os itens do orçamento no corpo)
+PATCH /service-orders/{id}/execute               → IN_EXECUTION        (cliente aprovou)
+PATCH /service-orders/{id}/budget/items/{itemId}/complete   (um por serviço executado)
+PATCH /service-orders/{id}/finalize              → FINALIZED
+PATCH /service-orders/{id}/deliver               → DELIVERED
+```
+
+Quem preferir montar o orçamento aos poucos continua podendo usar `POST .../budget/items`
+(lote de peças e serviços), `POST .../budget/parts`, `POST .../budget/services` e
+`PATCH .../budget/finalize` antes de encerrar o diagnóstico.
 **Notificações**
 - E-mail automático para o cliente a cada mudança de status da OS (uma mensagem por transição,
   do recebimento à entrega), disparado por evento de domínio após o commit da transação
@@ -52,7 +69,10 @@ RECEBIDA ──► EM_DIAGNÓSTICO ──► AGUARDANDO_APROVAÇÃO ──► EM
 **Segurança e qualidade**
 - Autenticação JWT (HS256) nas APIs administrativas
 - Validação de dados sensíveis (CPF/CNPJ, placa de veículo)
-- Tratamento global de exceções com respostas de erro padronizadas
+- Validação de payload nas APIs (Bean Validation): campos obrigatórios e IDs ausentes respondem
+  `400` com a lista de `fieldErrors`, em vez de estourar no repositório
+- Tratamento global de exceções com respostas de erro padronizadas (`400` para payload/parâmetro
+  inválido, `404`, `405`, `409` de conflito de estado)
 - Testes unitários (domínio e casos de uso) e de integração (fluxo completo da OS)
 
 > **Fora do escopo desta versão:** comunicação em tempo real com o cliente (chat/push).
@@ -274,7 +294,7 @@ Os endpoints são RESTful e, exceto `POST /auth/register` e `POST /auth/login`, 
 | Peças (estoque) | `POST/GET/PUT/DELETE /part`, `PATCH /part/{id}/stock/{increase\|decrease}` |
 | Serviços | `POST/GET/PUT/DELETE /service` |
 | Ordem de Serviço | `POST /service-orders`, `GET /service-orders/{id}`, `GET /service-orders?status=`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `PATCH .../finalize`, `PATCH .../deliver` |
-| Orçamento | `POST /service-orders/{id}/budget`, `GET .../budget`, `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize`, `PATCH .../budget/items/{itemId}/complete` |
+| Orçamento | `GET /service-orders/{id}/budget`, `POST .../budget/items` (peças e serviços em lote), `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize`, `PATCH .../budget/items/{itemId}/complete` |
 | Métricas | `GET /service-orders/{id}/metrics/average-execution-time` (tempo médio de execução por tipo de serviço na OS) |
 
 A descrição completa, com corpo de cada requisição e a ordem de execução do fluxo, está em

@@ -1,12 +1,15 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.controllers;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.FinalizeDiagnosisCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.OpenServiceOrderCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.BudgetItemMapper;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.FinalizeDiagnosisDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderDTO;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.AuthException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,7 +68,7 @@ public class ServiceOrderController {
     }
 
     @PostMapping
-    public ResponseEntity<ServiceOrderResponse> openServiceOrder(@RequestBody OpenServiceOrderDTO request) {
+    public ResponseEntity<ServiceOrderResponse> openServiceOrder(@Valid @RequestBody OpenServiceOrderDTO request) {
         OpenServiceOrderCommand command = new OpenServiceOrderCommand(
                 request.customerId(), request.vehicleId(), request.problemDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(openServiceOrderUseCase.execute(command));
@@ -108,8 +111,10 @@ public class ServiceOrderController {
 
     @PatchMapping("/{serviceOrderId}/finalize-diagnosis")
     public ResponseEntity<ServiceOrderResponse> finalizeDiagnosis(
-            @PathVariable UUID serviceOrderId, @RequestBody FinalizeDiagnosisDTO request) {
-        return ResponseEntity.ok(finalizeDiagnosisUseCase.execute(serviceOrderId, request.diagnosis()));
+            @PathVariable UUID serviceOrderId, @Valid @RequestBody FinalizeDiagnosisDTO request) {
+        FinalizeDiagnosisCommand command = new FinalizeDiagnosisCommand(
+                serviceOrderId, request.diagnosis(), BudgetItemMapper.toInputs(request.items()));
+        return ResponseEntity.ok(finalizeDiagnosisUseCase.execute(command));
     }
 
     @PatchMapping("/{serviceOrderId}/execute")

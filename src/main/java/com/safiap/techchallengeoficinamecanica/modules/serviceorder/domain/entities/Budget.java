@@ -78,6 +78,10 @@ public class Budget {
         this.status = BudgetStatus.FINALIZED;
     }
 
+    public void reopen() {
+        this.status = BudgetStatus.DRAFT;
+    }
+
     public UUID getBudgetId() { return budgetId; }
     public UUID getServiceOrderId() { return serviceOrderId; }
     public BudgetStatus getStatus() { return status; }
