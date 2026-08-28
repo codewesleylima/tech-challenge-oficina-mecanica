@@ -3,7 +3,7 @@ resource "aws_eks_node_group" "main" {
   node_group_name = "Nodeg-${var.projectName}"
   node_role_arn   = data.aws_iam_role.lab_role.arn
   subnet_ids      = [aws_subnet.private.id, aws_subnet.public.id]
-  instance_types  = ["t3.medium"] # t3.micro so permite 4 pods por no, insuficiente para o metrics-server
+  instance_types  = ["t3.medium"]
 
 
   scaling_config {
