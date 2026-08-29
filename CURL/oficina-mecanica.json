@@ -1,595 +1,1056 @@
 {
-  "_type": "export",
-  "__export_format": 4,
-  "__export_date": "2026-06-26T00:00:00.000Z",
-  "__export_source": "insomnia.desktop.app:v8.0.0",
-  "resources": [
+  "info": {
+    "_postman_id": "0972d855-3f6f-4ba2-9467-c0e880a4a43f",
+    "name": "Oficina Mecânica - Tech Challenge",
+    "description": "Coleção com todos os endpoints da API, organizados por módulo (auth, register, inventory, service-order).\n\nUso rápido:\n1. Ajuste a variável `baseUrl` se necessário (padrão http://localhost:8080).\n2. Rode `Auth > Login` — o token é salvo automaticamente na variável `token` e aplicado via Bearer nas demais requisições.\n3. Endpoints protegidos herdam o Bearer da coleção; preencha as variáveis de ID (`customerId`, `vehicleId`, `serviceOrderId`, `partId`, `serviceId`) conforme for criando os recursos.\n\nFluxo da OS (requisições numeradas de 1 a 7):\n1. Abrir Ordem de Serviço            → RECEIVED\n2. Iniciar Diagnóstico               → IN_DIAGNOSIS\n3. Finalizar Diagnóstico             → AWAITING_APPROVAL  (aceita os itens do orçamento no corpo)\n4. Executar Ordem                    → IN_EXECUTION       (cliente aprovou; baixa o estoque)\n5. Finalizar Item de Serviço         (um por serviço executado — pasta Budget)\n6. Finalizar Ordem                   → FINALIZED\n7. Entregar Veículo                  → DELIVERED\n\nO orçamento não tem endpoints de 'abrir' e 'fechar': ele é criado sob demanda no primeiro item adicionado e é finalizado junto com o diagnóstico. Os endpoints da pasta Budget servem para montar o orçamento aos poucos antes do passo 3 — são todos opcionais.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52763100",
+    "_collection_link": "https://tim-b04e1488-2727448.postman.co/workspace/Tim-Morgenstern-Beck's-Workspac~bfa1bd4c-97d6-4bd0-84c5-4ecc05b861e5/collection/52763100-0972d855-3f6f-4ba2-9467-c0e880a4a43f?action=share&source=collection_link&creator=52763100"
+  },
+  "item": [
     {
-      "_id": "wrk_oficina",
-      "_type": "workspace",
-      "name": "Oficina Mecânica",
-      "description": "tech-challenge-oficina-mecanica API collection",
-      "scope": "collection"
-    },
-    {
-      "_id": "env_local",
-      "_type": "environment",
-      "parentId": "wrk_oficina",
-      "name": "local",
-      "data": {
-        "baseUrl": "http://localhost:8080",
-        "token": "",
-        "customerId": "",
-        "vehicleId": "",
-        "serviceOrderId": "",
-        "serviceBudgetItemId": ""
-      },
-      "dataPropertyOrder": {
-        "&": [
-          "baseUrl",
-          "token",
-          "customerId",
-          "vehicleId",
-          "serviceOrderId",
-          "serviceBudgetItemId"
-        ]
-      },
-      "color": null,
-      "isPrivate": false,
-      "metaSortKey": 0
-    },
-    {
-      "_id": "fld_auth",
-      "_type": "request_group",
-      "parentId": "wrk_oficina",
       "name": "Auth",
-      "description": "",
-      "environment": {},
-      "metaSortKey": -1000
-    },
-    {
-      "_id": "fld_customers",
-      "_type": "request_group",
-      "parentId": "wrk_oficina",
-      "name": "Customers",
-      "description": "",
-      "environment": {},
-      "metaSortKey": -900
-    },
-    {
-      "_id": "fld_vehicles",
-      "_type": "request_group",
-      "parentId": "wrk_oficina",
-      "name": "Vehicles",
-      "description": "",
-      "environment": {},
-      "metaSortKey": -800
-    },
-    {
-      "_id": "fld_service_orders",
-      "_type": "request_group",
-      "parentId": "wrk_oficina",
-      "name": "Service Orders",
-      "description": "",
-      "environment": {},
-      "metaSortKey": -700
-    },
-    {
-      "_id": "fld_budget",
-      "_type": "request_group",
-      "parentId": "wrk_oficina",
-      "name": "Budget",
-      "description": "",
-      "environment": {},
-      "metaSortKey": -600
-    },
-    {
-      "_id": "req_auth_register",
-      "_type": "request",
-      "parentId": "fld_auth",
-      "name": "Register",
-      "method": "POST",
-      "url": "{{ baseUrl }}/auth/register",
-      "headers": [
+      "item": [
         {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"admin@oficina.com\",\n  \"password\": \"senha123\"\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_auth_login",
-      "_type": "request",
-      "parentId": "fld_auth",
-      "name": "Login",
-      "description": "Após login, copie o token retornado e cole na variável 'token' do environment.",
-      "method": "POST",
-      "url": "{{ baseUrl }}/auth/login",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"admin@oficina.com\",\n  \"password\": \"senha123\"\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -90
-    },
-    {
-      "_id": "req_customers_register",
-      "_type": "request",
-      "parentId": "fld_customers",
-      "name": "Register Customer",
-      "description": "Após criar, copie o id retornado e cole em 'customerId' no environment.",
-      "method": "POST",
-      "url": "{{ baseUrl }}/customers/register",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Register (user simples)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@user.com\",\n  \"password\": \"teste123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Cria um usuário simples (ROLE_USER), sem vínculo com cliente.\n\nAnotações de execuções anteriores: b20e467c-5f7b-4ec3-ad47-db55918d132c"
+          },
+          "response": []
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"phone\": \"11999998888\",\n  \"cnpjCpf\": \"111.444.777-35\"\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_vehicles_register",
-      "_type": "request",
-      "parentId": "fld_vehicles",
-      "name": "Register Vehicle",
-      "description": "Após criar, copie o id retornado e cole em 'vehicleId' no environment.",
-      "method": "POST",
-      "url": "{{ baseUrl }}/vehicles/register",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Register Account (user + customer)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tim@tim.com\",\n  \"password\": \"teste123\",\n  \"name\": \"Tim Beck\",\n  \"phone\": \"11999998888\",\n  \"cnpjCpf\": \"04263284003\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register-account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register-account"
+              ]
+            },
+            "description": "Cadastro unificado: cria o cliente e um usuário (ROLE_CUSTOMER) já vinculado ao customerId. O customerId é embutido no token no próximo login.\n\nAnotações de execuções anteriores: customeir id c1a35b98-f5ae-45fb-b3e4-d396f3a7fe11"
+          },
+          "response": []
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"customerId\": \"{{ customerId }}\",\n  \"carLicensePlate\": \"ABC-1234\",\n  \"model\": \"Civic\",\n  \"manufacturer\": \"Honda\",\n  \"kilometers\": 45000,\n  \"year\": 2020\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_so_open",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "01 - Open Service Order",
-      "description": "Após criar, copie o id retornado e cole em 'serviceOrderId' no environment.",
-      "method": "POST",
-      "url": "{{ baseUrl }}/service-orders",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Login Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.accessToken) {",
+                  "  pm.collectionVariables.set('token', json.accessToken);",
+                  "  console.log('Token salvo na variável de coleção.');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tim@tim.com\",\n  \"password\": \"teste123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Autentica e retorna o accessToken. O script de teste salva o token na variável `token` automaticamente."
+          },
+          "response": []
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Login Employe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.accessToken) {",
+                  "  pm.collectionVariables.set('token', json.accessToken);",
+                  "  console.log('Token salvo na variável de coleção.');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@user.com\",\n  \"password\": \"teste123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Autentica e retorna o accessToken. O script de teste salva o token na variável `token` automaticamente."
+          },
+          "response": []
         }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"customerId\": \"{{ customerId }}\",\n  \"vehicleId\": \"{{ vehicleId }}\",\n  \"problemDescription\": \"Carro fazendo barulho ao frear\"\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -140
+      ]
     },
     {
-      "_id": "req_so_get",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "02 - Get Service Order",
-      "method": "GET",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}",
-      "headers": [
+      "name": "Register (Cadastros)",
+      "item": [
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -130
-    },
-    {
-      "_id": "req_so_list_by_customer",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "03 - List By Customer",
-      "method": "GET",
-      "url": "{{ baseUrl }}/service-orders/customer/{{ customerId }}",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -120
-    },
-    {
-      "_id": "req_so_list_by_status",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "04 - List By Status",
-      "method": "GET",
-      "url": "{{ baseUrl }}/service-orders",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [
-        {
-          "name": "status",
-          "value": "RECEIVED"
-        }
-      ],
-      "metaSortKey": -110
-    },
-    {
-      "_id": "req_so_pull_next",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "05 - Pull Next (Queue)",
-      "method": "GET",
-      "url": "{{ baseUrl }}/service-orders/pullNext",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -100
-    },
-    {
-      "_id": "req_so_increase_priority",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "06 - Increase Priority",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/priority/increase",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -90
-    },
-    {
-      "_id": "req_so_decrease_priority",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "07 - Decrease Priority",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/priority/decrease",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -80
-    },
-    {
-      "_id": "req_so_start_diagnosis",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "08 - Start Diagnosis",
-      "description": "Status: RECEIVED → IN_DIAGNOSIS",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/start-diagnosis",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -70
-    },
-    {
-      "_id": "req_so_finalize_diagnosis",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "09 - Finalize Diagnosis",
-      "description": "Status: IN_DIAGNOSIS → AWAITING_APPROVAL. Aceita os itens do orçamento no corpo (campo 'items', opcional): monta e finaliza o orçamento na mesma chamada. Se o orçamento já foi montado antes, envie apenas 'diagnosis'.",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/finalize-diagnosis",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Registrar Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João da Silva\",\n  \"email\": \"joao@example.com\",\n  \"phone\": \"11999998888\",\n  \"cnpjCpf\": \"52998224725\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "register"
+              ]
+            },
+            "description": "Cadastra o cliente. O campo do documento é `cnpjCpf` (aceita CPF ou CNPJ, com dígitos verificadores validados). Copie o `customerId` retornado para a variável `customerId`."
+          },
+          "response": []
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Registrar Veículo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"carLicensePlate\": \"ABC1D23\",\n  \"model\": \"Gol\",\n  \"manufacturer\": \"Volkswagen\",\n  \"kilometers\": 45000,\n  \"year\": 2020\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehicles/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehicles",
+                "register"
+              ]
+            },
+            "description": "Anotações de execuções anteriores: customer id: 5ef27db9-a5d3-437b-b83c-fedb32ded57f"
+          },
+          "response": []
         }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"diagnosis\": \"Pastilhas gastas e disco empenado no eixo dianteiro\",\n  \"items\": [\n    {\n      \"type\": \"PART\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000001\",\n      \"description\": \"Pastilha de freio dianteira\",\n      \"quantity\": 1\n    },\n    {\n      \"type\": \"SERVICE\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000002\",\n      \"description\": \"Mão de obra - troca de freios\",\n      \"quantity\": 1\n    }\n  ]\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -60
+      ]
     },
     {
-      "_id": "req_so_execute",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "10 - Execute Order",
-      "description": "Status: AWAITING_APPROVAL → IN_EXECUTION",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/execute",
-      "headers": [
+      "name": "Inventory (Estoque)",
+      "item": [
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -50
-    },
-    {
-      "_id": "req_so_reject_budget",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "11 - Reject Budget",
-      "description": "Status: AWAITING_APPROVAL → IN_DIAGNOSIS",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/reject-budget",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -45
-    },
-    {
-      "_id": "req_so_complete_service_item",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "12 - Complete Service Item",
-      "description": "Conclui a execução de um item de serviço. Requer status IN_EXECUTION. Copie o budgetItemId do item do tipo SERVICE retornado em 'Get Budget' para a variável serviceBudgetItemId.",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/items/{{ serviceBudgetItemId }}/complete",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -40
-    },
-    {
-      "_id": "req_so_finalize",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "13 - Finalize Order",
-      "description": "Status: IN_EXECUTION → FINALIZED",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/finalize",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -30
-    },
-    {
-      "_id": "req_so_deliver",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "14 - Deliver",
-      "description": "Status: FINALIZED → DELIVERED",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/deliver",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -20
-    },
-    {
-      "_id": "req_so_avg_execution_time",
-      "_type": "request",
-      "parentId": "fld_service_orders",
-      "name": "15 - Average Execution Time (Metrics)",
-      "description": "Tempo médio de execução por tipo de serviço na OS (em minutos), com a contagem de execuções concluídas.",
-      "method": "GET",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/metrics/average-execution-time",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -10
-    },
-    {
-      "_id": "req_budget_add_items",
-      "_type": "request",
-      "parentId": "fld_budget",
-      "name": "01 - Add Items (Batch)",
-      "description": "Adiciona peças e serviços ao orçamento em uma única chamada. O orçamento é criado sob demanda no primeiro item. Requer status IN_DIAGNOSIS.",
-      "method": "POST",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/items",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Parts (Peças)",
+          "item": [
+            {
+              "name": "Criar Peça",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Filtro de óleo\",\n  \"description\": \"Filtro de óleo do motor\",\n  \"quantity\": 100,\n  \"price\": 35.90\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/part",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "part"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Peças",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/part",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "part"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Peça por ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/part/{{partId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "part",
+                    "{{partId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Alterar Peça",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Filtro de óleo premium\",\n  \"description\": \"Filtro de óleo sintético\",\n  \"price\": 49.90\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/part/{{partId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "part",
+                    "{{partId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Aumentar Estoque",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/part/{{partId}}/stock/increase",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "part",
+                    "{{partId}}",
+                    "stock",
+                    "increase"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Diminuir Estoque",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 5\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/part/{{partId}}/stock/decrease",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "part",
+                    "{{partId}}",
+                    "stock",
+                    "decrease"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Deletar Peça",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/part/{{partId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "part",
+                    "{{partId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Services (Serviços)",
+          "item": [
+            {
+              "name": "Criar Serviço",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Troca de óleo\",\n  \"description\": \"Troca de óleo e filtro\",\n  \"price\": 120.00\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/service",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service"
+                  ]
+                },
+                "description": "Anotações de execuções anteriores: id: 6b2780b7-872e-46ff-acf3-53a24a87225a"
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Serviços",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Serviço por ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service/{{serviceId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service",
+                    "{{serviceId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Alterar Serviço",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Troca de óleo completa\",\n  \"description\": \"Troca de óleo, filtro e checagem\",\n  \"price\": 150.00\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/service/{{serviceId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service",
+                    "{{serviceId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Deletar Serviço",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service/{{serviceId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service",
+                    "{{serviceId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"items\": [\n    {\n      \"type\": \"PART\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000001\",\n      \"description\": \"Pastilha de freio dianteira\",\n      \"quantity\": 1\n    },\n    {\n      \"type\": \"SERVICE\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000002\",\n      \"description\": \"Mão de obra - troca de freios\",\n      \"quantity\": 1\n    }\n  ]\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -100
+      ]
     },
     {
-      "_id": "req_budget_get",
-      "_type": "request",
-      "parentId": "fld_budget",
-      "name": "02 - Get Budget",
-      "method": "GET",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget",
-      "headers": [
+      "name": "Service Order (Ordens de Serviço)",
+      "item": [
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -90
-    },
-    {
-      "_id": "req_budget_add_part",
-      "_type": "request",
-      "parentId": "fld_budget",
-      "name": "03 - Add Part",
-      "method": "POST",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/parts",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
+          "name": "Service Orders",
+          "item": [
+            {
+              "name": "1-Abrir Ordem de Serviço",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"problemDescription\": \"Necessario trolar oleo do veiculo\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar OS por ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Próxima da Fila (pullNext)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/pullNext",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "pullNext"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar OS por Cliente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/customer/{{customerId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "customer",
+                    "{{customerId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar OS por Status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders?status=RECEIVED",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "RECEIVED",
+                      "description": "Valores: RECEIVED, IN_DIAGNOSIS, AWAITING_APPROVAL, IN_EXECUTION, FINALIZED, DELIVERED"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Aumentar Prioridade",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/priority/increase",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "priority",
+                    "increase"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Diminuir Prioridade",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/priority/decrease",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "priority",
+                    "decrease"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "2-Iniciar Diagnóstico",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/start-diagnosis",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "start-diagnosis"
+                  ]
+                },
+                "description": "Puxa a OS para o diagnóstico.\n\nStatus: RECEIVED → IN_DIAGNOSIS\n\nA partir daqui o orçamento pode receber itens (ele é criado sob demanda)."
+              },
+              "response": []
+            },
+            {
+              "name": "3-Finalizar Diagnóstico (monta e fecha o orçamento)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"diagnosis\": \"Sera necessario trocar apenas o oleo e filtro do motor\",\n  \"items\": [\n    {\n      \"type\": \"PART\",\n      \"itemId\": \"{{partId}}\",\n      \"description\": \"Oleo de motor\",\n      \"quantity\": 1\n    },\n    {\n      \"type\": \"SERVICE\",\n      \"itemId\": \"{{serviceId}}\",\n      \"description\": \"Mão de obra - troca de oleo\",\n      \"quantity\": 1\n    }\n  ]\n}"
+                },
+                "description": "Encerra o diagnóstico e envia a OS para aprovação do cliente.\n\nO campo `items` é OPCIONAL e monta o orçamento na mesma chamada — com ele, a OS sai de aberta para AGUARDANDO_APROVAÇÃO em 3 requisições. O orçamento é finalizado automaticamente, não é preciso chamar 'Finalizar Orçamento' antes.\n\nATENÇÃO: se você já montou o orçamento pelos endpoints da pasta Budget, REMOVA o bloco `items` do corpo e envie apenas `diagnosis` — enviar itens para um orçamento já finalizado retorna 409 'Cannot modify a finalized budget'.\n\nOs preços vêm do catálogo — o corpo envia só `type` (PART ou SERVICE), `itemId`, `description` e `quantity`.\n\nStatus: IN_DIAGNOSIS → AWAITING_APPROVAL",
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/finalize-diagnosis",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "finalize-diagnosis"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "4-Executar Ordem (cliente aprova)",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/execute",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "execute"
+                  ]
+                },
+                "description": "Aprovação do orçamento pelo cliente: inicia a execução e dá baixa no estoque das peças do orçamento.\n\nStatus: AWAITING_APPROVAL → IN_EXECUTION"
+              },
+              "response": []
+            },
+            {
+              "name": "Rejeitar Orçamento",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/reject-budget",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "reject-budget"
+                  ]
+                },
+                "description": "Cliente rejeita o orçamento: a OS volta para o diagnóstico e o orçamento é reaberto (volta para DRAFT), permitindo revisar os itens e chamar 'Finalizar Diagnóstico' novamente.\n\nStatus: AWAITING_APPROVAL → IN_DIAGNOSIS"
+              },
+              "response": []
+            },
+            {
+              "name": "Tempo Médio de Execução (métricas)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "description": "Tempo médio de execução por tipo de serviço na OS (em minutos), com a quantidade de execuções concluídas consideradas. Calculado a partir dos itens de serviço concluídos.",
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/metrics/average-execution-time",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "metrics",
+                    "average-execution-time"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "6-Finalizar Ordem",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/finalize",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "finalize"
+                  ]
+                },
+                "description": "Conclui a execução. Só é permitido quando TODOS os itens de serviço do orçamento estão concluídos.\n\nStatus: IN_EXECUTION → FINALIZED"
+              },
+              "response": []
+            },
+            {
+              "name": "7-Entregar Veículo",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/deliver",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "deliver"
+                  ]
+                },
+                "description": "Registra a entrega do veículo.\n\nStatus: FINALIZED → DELIVERED"
+              },
+              "response": []
+            },
+            {
+              "name": "Minhas OS",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/my-orders",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "my-orders"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         },
         {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
+          "name": "Budget (Orçamento)",
+          "item": [
+            {
+              "name": "Adicionar Itens ao Orçamento (lote)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"type\": \"PART\",\n      \"itemId\": \"{{partId}}\",\n      \"description\": \"Oleo de motor\",\n      \"quantity\": 1\n    },\n    {\n      \"type\": \"SERVICE\",\n      \"itemId\": \"{{serviceId}}\",\n      \"description\": \"Mão de obra - troca de oleo\",\n      \"quantity\": 1\n    }\n  ]\n}"
+                },
+                "description": "Adiciona peças e serviços ao orçamento em UMA única chamada.\n\nNão existe endpoint para 'abrir orçamento': ele é criado sob demanda no primeiro item adicionado. Requer a OS em IN_DIAGNOSIS.\n\nOs preços vêm do catálogo — o corpo envia só `type` (PART ou SERVICE), `itemId`, `description` e `quantity`.\n\nOpcional: 'Finalizar Diagnóstico' aceita os mesmos itens no corpo e dispensa esta chamada.",
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/budget/items",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "budget",
+                    "items"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Orçamento",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/budget",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "budget"
+                  ]
+                },
+                "description": "Consulta o orçamento com os itens, o total calculado e o status (DRAFT enquanto editável, FINALIZED depois de fechado)."
+              },
+              "response": []
+            },
+            {
+              "name": "Adicionar Peça ao Orçamento (avulsa)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"itemId\": \"{{partId}}\",\n  \"description\": \"Oleo de motor\",\n  \"quantity\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/budget/parts",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "budget",
+                    "parts"
+                  ]
+                },
+                "description": "Adiciona uma peça avulsa. O orçamento é criado sob demanda no primeiro item. Requer a OS em IN_DIAGNOSIS."
+              },
+              "response": []
+            },
+            {
+              "name": "Adicionar Serviço ao Orçamento (avulso)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"itemId\": \"{{serviceId}}\",\n  \"description\": \"Mão de obra - troca de oleo\",\n  \"quantity\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/budget/services",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "budget",
+                    "services"
+                  ]
+                },
+                "description": "Adiciona um serviço avulso. O orçamento é criado sob demanda no primeiro item. Requer a OS em IN_DIAGNOSIS."
+              },
+              "response": []
+            },
+            {
+              "name": "Finalizar Orçamento (opcional)",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/budget/finalize",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "budget",
+                    "finalize"
+                  ]
+                },
+                "description": "Fecha o orçamento para edição. OPCIONAL: 'Finalizar Diagnóstico' já finaliza o orçamento automaticamente. Requer ao menos 1 item."
+              },
+              "response": []
+            },
+            {
+              "name": "5-Finalizar Item de Serviço",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders/{{serviceOrderId}}/budget/items/{{itemId}}/complete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders",
+                    "{{serviceOrderId}}",
+                    "budget",
+                    "items",
+                    "{{itemId}}",
+                    "complete"
+                  ]
+                },
+                "description": "Conclui a execução de um item de serviço (grava a data de fim, usada nas métricas). Requer a OS em IN_EXECUTION.\n\nCopie o `budgetItemId` do item do tipo SERVICE retornado em 'Consultar Orçamento' para a variável `itemId`."
+              },
+              "response": []
+            }
+          ]
         }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"itemId\": \"00000000-0000-0000-0000-000000000001\",\n  \"description\": \"Pastilha de freio dianteira\",\n  \"quantity\": 1,\n  \"unitPrice\": 89.90\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -80,
-      "description": "Adiciona uma peça avulsa. O orçamento é criado sob demanda no primeiro item. Requer status IN_DIAGNOSIS."
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
     },
     {
-      "_id": "req_budget_add_service",
-      "_type": "request",
-      "parentId": "fld_budget",
-      "name": "04 - Add Service",
-      "method": "POST",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/services",
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"itemId\": \"00000000-0000-0000-0000-000000000002\",\n  \"description\": \"Mão de obra - troca de freios\",\n  \"quantity\": 1,\n  \"unitPrice\": 150.00\n}"
-      },
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -70,
-      "description": "Adiciona um serviço avulso. O orçamento é criado sob demanda no primeiro item. Requer status IN_DIAGNOSIS."
+      "key": "token",
+      "value": "",
+      "type": "string"
     },
     {
-      "_id": "req_budget_finalize",
-      "_type": "request",
-      "parentId": "fld_budget",
-      "name": "05 - Finalize Budget (opcional)",
-      "description": "Fecha o orçamento para edição. Opcional: 'Finalize Diagnosis' já finaliza o orçamento automaticamente. Requer ao menos 1 item no orçamento.",
-      "method": "PATCH",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/finalize",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "body": {},
-      "authentication": {},
-      "parameters": [],
-      "metaSortKey": -60
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vehicleId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "serviceOrderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "partId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "serviceId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "itemId",
+      "value": "",
+      "type": "default"
     }
   ]
 }

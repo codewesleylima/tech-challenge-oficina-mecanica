@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -21,26 +22,84 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Run tests
         run: ./gradlew test --no-daemon
 
+      # Temporarily disabled while the SonarQube configuration is being finalized.
+      # - name: SonarQube Analysis
+      #   run: |
+      #     chmod +x gradlew
+      #     ./gradlew sonarqube \
+      #       -Dsonar.projectKey=tech-challenge-oficina-mecanica \
+      #       -Dsonar.sources=src \
+      #       -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+      #       -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results
           path: |
             build/reports/tests/test
             build/test-results/test
           if-no-files-found: ignore
+      - name: Docker Login
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_LOGIN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push Docker image backend
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: timbeck97/tc-fiap:latest, timbeck97/tc-fiap:${{ github.run_number }}
+      - name: Configure AWS Credentials (OIDC)
+        if: github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+        # To use OIDC without long-lived keys:
+        # 1. Create an IAM Role trusting GitHub's OIDC provider (token.actions.githubusercontent.com) and allow sts:AssumeRoleWithWebIdentity.
+        # 2. Restrict trust using conditions (repo and ref).
+        # 3. Save the role ARN into repo secret AWS_ROLE_TO_ASSUME.
+        # Example trust policy:
+        # {
+        #   "Version": "2012-10-17",
+        #   "Statement": [
+        #     {
+        #       "Effect": "Allow",
+        #       "Principal": {"Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"},
+        #       "Action": "sts:AssumeRoleWithWebIdentity",
+        #       "Condition": {
+        #         "StringLike": {"token.actions.githubusercontent.com:sub": "repo:codewesleylima/tech-challenge-oficina-mecanica:ref:refs/heads/main"}
+        #       }
+        #     }
+        #   ]
+        # }
+
+      - name: Update Kubeconfig for EKS
+        if: github.ref == 'refs/heads/main'
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+      - name: Restart EKS Pods
+        if: github.ref == 'refs/heads/main'
+        run: |
+          kubectl rollout restart deployment/api -n prod
+  
