@@ -35,16 +35,17 @@ jobs:
       - name: Run tests
         run: ./gradlew test --no-daemon
 
-      - name: SonarQube Analysis
-        run: |
-          chmod +x gradlew
-          ./gradlew sonarqube \
-            -Dsonar.projectKey=tech-challenge-oficina-mecanica \
-            -Dsonar.sources=src \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Temporarily disabled while the SonarQube configuration is being finalized.
+      # - name: SonarQube Analysis
+      #   run: |
+      #     chmod +x gradlew
+      #     ./gradlew sonarqube \
+      #       -Dsonar.projectKey=tech-challenge-oficina-mecanica \
+      #       -Dsonar.sources=src \
+      #       -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+      #       -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish test report
         if: always()
