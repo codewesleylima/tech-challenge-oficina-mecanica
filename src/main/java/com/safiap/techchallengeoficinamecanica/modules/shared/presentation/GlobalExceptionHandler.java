@@ -11,9 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -80,6 +83,29 @@ public class GlobalExceptionHandler {
                                                            HttpServletRequest request) {
         logClientError(HttpStatus.BAD_REQUEST, ex, request);
         return build(HttpStatus.BAD_REQUEST, "Malformed JSON request", request);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                            HttpServletRequest request) {
+        String required = ex.getRequiredType() == null ? "the expected type" : ex.getRequiredType().getSimpleName();
+        String message = "Parameter '" + ex.getName() + "' must be a valid " + required;
+        logClientError(HttpStatus.BAD_REQUEST, ex, request);
+        return build(HttpStatus.BAD_REQUEST, message, request);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex,
+                                                                  HttpServletRequest request) {
+        logClientError(HttpStatus.METHOD_NOT_ALLOWED, ex, request);
+        return build(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResource(NoResourceFoundException ex,
+                                                          HttpServletRequest request) {
+        logClientError(HttpStatus.NOT_FOUND, ex, request);
+        return build(HttpStatus.NOT_FOUND, "Resource not found", request);
     }
 
     //default exception handler

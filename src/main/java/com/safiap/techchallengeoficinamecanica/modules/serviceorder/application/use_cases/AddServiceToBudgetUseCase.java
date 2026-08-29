@@ -1,38 +1,27 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddBudgetItemsCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddServiceCommand;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.ports.InventoryCatalogPort;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.BudgetItemInput;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
-import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetItemType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class AddServiceToBudgetUseCase {
 
-    private final BudgetRepository budgetRepository;
-    private final InventoryCatalogPort inventoryCatalogPort;
+    private final AddItemsToBudgetUseCase addItemsToBudgetUseCase;
 
-    public AddServiceToBudgetUseCase(BudgetRepository budgetRepository,
-                                     InventoryCatalogPort inventoryCatalogPort) {
-        this.budgetRepository = budgetRepository;
-        this.inventoryCatalogPort = inventoryCatalogPort;
+    public AddServiceToBudgetUseCase(AddItemsToBudgetUseCase addItemsToBudgetUseCase) {
+        this.addItemsToBudgetUseCase = addItemsToBudgetUseCase;
     }
 
-    @Transactional
     public BudgetResponse execute(AddServiceCommand command) {
-        Budget budget = budgetRepository.findByServiceOrderId(command.serviceOrderId())
-                .orElseThrow(() -> new NotFoundException("Budget not found for service order: " + command.serviceOrderId()));
-
-        BigDecimal unitPrice = inventoryCatalogPort.getServicePrice(command.itemId());
-
-        budget.addService(command.itemId(), command.description(), command.quantity(), unitPrice);
-        budgetRepository.save(budget);
-
-        return BudgetResponse.from(budget);
+        BudgetItemInput service = new BudgetItemInput(
+                BudgetItemType.SERVICE, command.itemId(), command.description(), command.quantity());
+        return addItemsToBudgetUseCase.execute(
+                new AddBudgetItemsCommand(command.serviceOrderId(), List.of(service)));
     }
 }

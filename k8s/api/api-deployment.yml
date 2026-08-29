@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    app: api-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-pod         
+  template:
+    metadata:
+      labels:
+        app: api-pod       
+    spec:
+      containers:
+      - name: api-container
+        image: timbeck97/tc-fiap:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: api-secret
+        resources:
+          requests:
+            cpu: "250m"      # 100 millicores (0.1 CPU)
+            memory: "348Mi"  # 256 Megabytes

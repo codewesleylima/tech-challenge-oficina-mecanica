@@ -25,7 +25,14 @@
         "serviceBudgetItemId": ""
       },
       "dataPropertyOrder": {
-        "&": ["baseUrl", "token", "customerId", "vehicleId", "serviceOrderId", "serviceBudgetItemId"]
+        "&": [
+          "baseUrl",
+          "token",
+          "customerId",
+          "vehicleId",
+          "serviceOrderId",
+          "serviceBudgetItemId"
+        ]
       },
       "color": null,
       "isPrivate": false,
@@ -84,7 +91,10 @@
       "method": "POST",
       "url": "{{ baseUrl }}/auth/register",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
       ],
       "body": {
         "mimeType": "application/json",
@@ -103,7 +113,10 @@
       "method": "POST",
       "url": "{{ baseUrl }}/auth/login",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
       ],
       "body": {
         "mimeType": "application/json",
@@ -122,8 +135,14 @@
       "method": "POST",
       "url": "{{ baseUrl }}/customers/register",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" },
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {
         "mimeType": "application/json",
@@ -142,8 +161,14 @@
       "method": "POST",
       "url": "{{ baseUrl }}/vehicles/register",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" },
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {
         "mimeType": "application/json",
@@ -162,8 +187,14 @@
       "method": "POST",
       "url": "{{ baseUrl }}/service-orders",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" },
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {
         "mimeType": "application/json",
@@ -181,7 +212,10 @@
       "method": "GET",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -196,7 +230,10 @@
       "method": "GET",
       "url": "{{ baseUrl }}/service-orders/customer/{{ customerId }}",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -211,12 +248,18 @@
       "method": "GET",
       "url": "{{ baseUrl }}/service-orders",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
       "parameters": [
-        { "name": "status", "value": "RECEIVED" }
+        {
+          "name": "status",
+          "value": "RECEIVED"
+        }
       ],
       "metaSortKey": -110
     },
@@ -228,7 +271,10 @@
       "method": "GET",
       "url": "{{ baseUrl }}/service-orders/pullNext",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -243,7 +289,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/priority/increase",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -258,7 +307,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/priority/decrease",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -274,7 +326,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/start-diagnosis",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -286,13 +341,23 @@
       "_type": "request",
       "parentId": "fld_service_orders",
       "name": "09 - Finalize Diagnosis",
-      "description": "Status: IN_DIAGNOSIS → AWAITING_APPROVAL. Requer orçamento finalizado com itens.",
+      "description": "Status: IN_DIAGNOSIS → AWAITING_APPROVAL. Aceita os itens do orçamento no corpo (campo 'items', opcional): monta e finaliza o orçamento na mesma chamada. Se o orçamento já foi montado antes, envie apenas 'diagnosis'.",
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/finalize-diagnosis",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
-      "body": {},
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"diagnosis\": \"Pastilhas gastas e disco empenado no eixo dianteiro\",\n  \"items\": [\n    {\n      \"type\": \"PART\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000001\",\n      \"description\": \"Pastilha de freio dianteira\",\n      \"quantity\": 1\n    },\n    {\n      \"type\": \"SERVICE\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000002\",\n      \"description\": \"Mão de obra - troca de freios\",\n      \"quantity\": 1\n    }\n  ]\n}"
+      },
       "authentication": {},
       "parameters": [],
       "metaSortKey": -60
@@ -306,7 +371,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/execute",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -322,7 +390,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/reject-budget",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -338,7 +409,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/items/{{ serviceBudgetItemId }}/complete",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -354,7 +428,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/finalize",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -370,7 +447,10 @@
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/deliver",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -386,7 +466,10 @@
       "method": "GET",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/metrics/average-execution-time",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -394,17 +477,27 @@
       "metaSortKey": -10
     },
     {
-      "_id": "req_budget_open",
+      "_id": "req_budget_add_items",
       "_type": "request",
       "parentId": "fld_budget",
-      "name": "01 - Open Budget",
-      "description": "Requer status IN_DIAGNOSIS.",
+      "name": "01 - Add Items (Batch)",
+      "description": "Adiciona peças e serviços ao orçamento em uma única chamada. O orçamento é criado sob demanda no primeiro item. Requer status IN_DIAGNOSIS.",
       "method": "POST",
-      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget",
+      "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/items",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
-      "body": {},
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"items\": [\n    {\n      \"type\": \"PART\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000001\",\n      \"description\": \"Pastilha de freio dianteira\",\n      \"quantity\": 1\n    },\n    {\n      \"type\": \"SERVICE\",\n      \"itemId\": \"00000000-0000-0000-0000-000000000002\",\n      \"description\": \"Mão de obra - troca de freios\",\n      \"quantity\": 1\n    }\n  ]\n}"
+      },
       "authentication": {},
       "parameters": [],
       "metaSortKey": -100
@@ -417,7 +510,10 @@
       "method": "GET",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
@@ -432,8 +528,14 @@
       "method": "POST",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/parts",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" },
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {
         "mimeType": "application/json",
@@ -441,7 +543,8 @@
       },
       "authentication": {},
       "parameters": [],
-      "metaSortKey": -80
+      "metaSortKey": -80,
+      "description": "Adiciona uma peça avulsa. O orçamento é criado sob demanda no primeiro item. Requer status IN_DIAGNOSIS."
     },
     {
       "_id": "req_budget_add_service",
@@ -451,8 +554,14 @@
       "method": "POST",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/services",
       "headers": [
-        { "name": "Content-Type", "value": "application/json" },
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {
         "mimeType": "application/json",
@@ -460,18 +569,22 @@
       },
       "authentication": {},
       "parameters": [],
-      "metaSortKey": -70
+      "metaSortKey": -70,
+      "description": "Adiciona um serviço avulso. O orçamento é criado sob demanda no primeiro item. Requer status IN_DIAGNOSIS."
     },
     {
       "_id": "req_budget_finalize",
       "_type": "request",
       "parentId": "fld_budget",
-      "name": "05 - Finalize Budget",
-      "description": "Requer ao menos 1 item no orçamento.",
+      "name": "05 - Finalize Budget (opcional)",
+      "description": "Fecha o orçamento para edição. Opcional: 'Finalize Diagnosis' já finaliza o orçamento automaticamente. Requer ao menos 1 item no orçamento.",
       "method": "PATCH",
       "url": "{{ baseUrl }}/service-orders/{{ serviceOrderId }}/budget/finalize",
       "headers": [
-        { "name": "Authorization", "value": "Bearer {{ token }}" }
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
       ],
       "body": {},
       "authentication": {},
