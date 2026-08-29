@@ -7,7 +7,13 @@ metadata:
   name: api
   namespace: prod
 spec:
-  replicas: 1
+  # replicas fica fora de propósito: quem controla a escala é o api-hpa (min 2).
+  # Declarar aqui faria cada terraform apply derrubar a escala para 1.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0   # nenhum pod antigo sai antes de um novo estar Ready
   selector:
     matchLabels:
       app: api       
@@ -27,6 +33,26 @@ spec:
         envFrom:
         - secretRef:
             name: api-secret
+        startupProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          periodSeconds: 5
+          failureThreshold: 30   # tolera até 150s de boot
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
         resources:
           requests:
             cpu: "250m"      # 100 millicores (0.1 CPU)

@@ -46,7 +46,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/login", "/auth/register", "/auth/register-account","/actuator/health").permitAll()
+                        .requestMatchers("/", "/auth/login", "/auth/register", "/auth/register-account").permitAll()
+                        // "/**" cobre também os grupos /actuator/health/{liveness,readiness}
+                        // usados pelas probes do Kubernetes; sem isso elas tomam 401.
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
