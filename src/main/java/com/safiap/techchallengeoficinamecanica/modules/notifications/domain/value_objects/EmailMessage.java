@@ -57,6 +57,7 @@ public record EmailMessage(String to, String subject, String body) {
             case RECEIVED -> "recebida";
             case IN_DIAGNOSIS -> "em diagnóstico";
             case AWAITING_APPROVAL -> "orçamento aguardando aprovação";
+            case CANCELED -> "cancelada";
             case IN_EXECUTION -> "em execução";
             case FINALIZED -> "concluída";
             case DELIVERED -> "veículo entregue";
@@ -68,6 +69,7 @@ public record EmailMessage(String to, String subject, String body) {
             case RECEIVED -> "Sua ordem de serviço foi recebida.";
             case IN_DIAGNOSIS -> "Iniciamos o diagnóstico do seu veículo.";
             case AWAITING_APPROVAL -> "Seu orçamento está pronto e aguarda aprovação.";
+            case CANCELED -> "O orçamento foi recusado e a ordem de serviço foi cancelada.";
             case IN_EXECUTION -> "O serviço no seu veículo foi iniciado.";
             case FINALIZED -> "O serviço foi concluído e seu veículo está pronto.";
             case DELIVERED -> "Seu veículo foi entregue. Obrigado pela preferência!";

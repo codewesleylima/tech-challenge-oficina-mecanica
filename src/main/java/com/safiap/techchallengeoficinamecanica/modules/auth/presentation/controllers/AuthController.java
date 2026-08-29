@@ -12,6 +12,8 @@ import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_case
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.RegisterAccountDto;
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.UserLoginDto;
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.AddUserDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +46,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserTokenResponse> login(@Valid @RequestBody UserLoginDto dto){
+    public ResponseEntity<UserTokenResponse> login(@RequestBody UserLoginDto dto){
+        log.info("1 - User login: {}", dto.email());
         return ResponseEntity.ok(loginUseCase.execute(new UserLoginCommand(dto.email(), dto.password())));
     }
 }

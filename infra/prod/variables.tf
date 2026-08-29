@@ -48,3 +48,26 @@ variable "clusterLogTypes" {
   default     = ["api", "audit", "authenticator"]
   description = "Logs do control plane. controllerManager e scheduler ficam de fora por serem os mais verbosos"
 }
+variable "mailHost" {
+  type        = string
+  default     = "smtp.gmail.com"
+  description = "Host SMTP usado para as notificações por e-mail"
+}
+variable "mailPort" {
+  type        = number
+  default     = 587
+  description = "Porta SMTP. 587 = STARTTLS (a porta 25 é bloqueada na saída da AWS)"
+}
+variable "mailUsername" {
+  type        = string
+  description = "Conta que autentica no SMTP. No Gmail, o endereço completo (ex: oficina@gmail.com)"
+}
+variable "mailPassword" {
+  type        = string
+  sensitive   = true
+  description = "Senha SMTP. No Gmail, a App Password de 16 caracteres (exige verificação em duas etapas)"
+}
+variable "notificationsEmailFrom" {
+  type        = string
+  description = "Remetente dos e-mails. No Gmail precisa ser a própria conta autenticada ou um alias verificado nela"
+}

@@ -37,9 +37,16 @@ A OS percorre os estados abaixo, com transição automática conforme as ações
 ```
 RECEBIDA ──► EM_DIAGNÓSTICO ──► AGUARDANDO_APROVAÇÃO ──► EM_EXECUÇÃO ──► FINALIZADA ──► ENTREGUE
 (RECEIVED)   (IN_DIAGNOSIS)     (AWAITING_APPROVAL)       (IN_EXECUTION)   (FINALIZED)    (DELIVERED)
-                   ▲                     │
-                   └──── rejeitar ◄──────┘
+                                         │
+                                    rejeitar
+                                         ▼
+                                    CANCELADA
+                                    (CANCELED)
 ```
+
+A recusa do orçamento encerra a OS em CANCELED — estado final, nenhuma transição sai dele. O próprio
+cliente (role `CUSTOMER`) pode recusar o orçamento da sua OS; a oficina (`USER`/`ADMIN`) também pode
+registrar a recusa.
 
 **Caminho curto (3 chamadas até a aprovação):** o orçamento é criado sob demanda no primeiro item
 adicionado e é finalizado junto com o diagnóstico, então não existem endpoints separados para
