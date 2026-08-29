@@ -9,6 +9,7 @@ import com.safiap.techchallengeoficinamecanica.modules.register.application.resp
 import com.safiap.techchallengeoficinamecanica.modules.register.application.use_cases.customer.*;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.RegisterCustomerDTO;
 import com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer.AlterCustomerDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,7 +46,7 @@ public class CustomerController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterCustomerResponse> registerCustomer(
-            @RequestBody RegisterCustomerDTO request) {
+            @Valid @RequestBody RegisterCustomerDTO request) {
 
         RegisterCustomerCommand command = new RegisterCustomerCommand(
                 request.name(),
@@ -61,7 +62,7 @@ public class CustomerController {
     @PutMapping("/alter/{id}")
     public ResponseEntity<AlterCustomerResponse> alterCustomer(
             @PathVariable UUID id,
-            @RequestBody AlterCustomerDTO request) {
+            @Valid @RequestBody AlterCustomerDTO request) {
 
         AlterCustomerCommand command = new AlterCustomerCommand(
                 id,

@@ -49,45 +49,45 @@ Diminui a prioridade da OS na fila.
 Inicia o diagnóstico da OS.
 Status: **RECEIVED → IN_DIAGNOSIS**
 
-### 13. Budget → 01 - Open Budget
-Abre o orçamento da OS. Deve ser chamado com a OS em **IN_DIAGNOSIS**.
+### 13. Budget → 01 - Add Items (Batch)
+Adiciona peças e serviços ao orçamento em **uma única chamada**. Não existe um endpoint para "abrir"
+o orçamento: ele é criado sob demanda no primeiro item adicionado. Requer a OS em **IN_DIAGNOSIS**.
+Os preços vêm do catálogo — o corpo envia apenas `type`, `itemId`, `description` e `quantity`.
 
-### 14. Budget → 03 - Add Part
-Adiciona uma peça ao orçamento.
+> Para adicionar itens avulsos, use `03 - Add Part` e `04 - Add Service`.
 
-### 15. Budget → 04 - Add Service
-Adiciona um serviço ao orçamento.
-
-### 16. Budget → 02 - Get Budget
+### 14. Budget → 02 - Get Budget
 Consulta o orçamento com os itens adicionados e o total calculado.
 
-### 17. Budget → 05 - Finalize Budget
-Finaliza o orçamento. Requer ao menos 1 item cadastrado.
-
-### 18. Service Orders → 09 - Finalize Diagnosis
-Finaliza o diagnóstico e envia para aprovação do cliente. Requer orçamento finalizado com itens.
+### 15. Service Orders → 09 - Finalize Diagnosis
+Finaliza o diagnóstico e envia para aprovação do cliente. **Finaliza o orçamento automaticamente** e
+aceita os itens no corpo (campo `items`, opcional) — o que permite montar e fechar o orçamento na
+mesma chamada. Se o orçamento já foi montado nos passos anteriores, envie apenas `diagnosis`.
+Exige ao menos um item no orçamento.
 Status: **IN_DIAGNOSIS → AWAITING_APPROVAL**
 
-### 19. Service Orders → 10 - Execute Order _(cliente aprova)_
-Aprova o orçamento e inicia a execução.
+> `05 - Finalize Budget` continua disponível para quem quiser fechar o orçamento antes, mas é opcional.
+
+### 16. Service Orders → 10 - Execute Order _(cliente aprova)_
+Aprova o orçamento e inicia a execução (baixa o estoque das peças).
 Status: **AWAITING_APPROVAL → IN_EXECUTION**
 
 > **Caminho alternativo — cliente rejeita:**
-> Chame `11 - Reject Budget` no lugar do passo 19.
+> Chame `11 - Reject Budget` no lugar do passo 16.
 > Status: **AWAITING_APPROVAL → IN_DIAGNOSIS**
 > Retorne ao passo 13 para revisar o orçamento.
 
-### 20. Service Orders → 12 - Complete Service Item
+### 17. Service Orders → 12 - Complete Service Item
 Conclui a execução de um item de serviço (grava a data de fim). Requer status **IN_EXECUTION**.
 Copie o `budgetItemId` do item do tipo `SERVICE` retornado em **Budget → Get Budget** para a variável `serviceBudgetItemId` do environment.
 
-### 21. Service Orders → 13 - Finalize Order
+### 18. Service Orders → 13 - Finalize Order
 Finaliza a execução da OS. **Só é permitido quando todos os itens de serviço estão concluídos.**
 Status: **IN_EXECUTION → FINALIZED**
 
-### 22. Service Orders → 14 - Deliver
+### 19. Service Orders → 14 - Deliver
 Registra a entrega do veículo ao cliente.
 Status: **FINALIZED → DELIVERED**
 
-### 23. Service Orders → 15 - Average Execution Time (Metrics)
+### 20. Service Orders → 15 - Average Execution Time (Metrics)
 Retorna o **tempo médio de execução por tipo de serviço na OS** (em minutos), com a contagem de execuções concluídas consideradas.
