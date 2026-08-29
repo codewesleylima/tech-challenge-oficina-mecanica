@@ -1,0 +1,22 @@
+# Copie para terraform.tfvars e ajuste conforme o ambiente local.
+# terraform.tfvars NÃO deve ser versionado (contém segredos).
+
+cluster_name       = "oficina-dev"
+driver             = "docker"
+kubernetes_version = "v1.31.0"
+cpus               = "2"
+memory             = "4g"
+
+namespace = "oficina"
+
+# API
+api_image     = "timbeck97/tc-fiap:latest"
+api_node_port = 30080
+jwt_secret    = "troque-por-um-segredo-de-no-minimo-256-bits-em-dev"
+
+# Banco
+db_name         = "oficina_db"
+db_user         = "oficina"
+db_password     = "troque-esta-senha"
+db_node_port    = 30432
+db_storage_size = "2Gi"
