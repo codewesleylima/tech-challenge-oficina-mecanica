@@ -24,6 +24,7 @@ public class AuthController {
     private final RegisterUserUseCase registerUserUseCase;
     private final RegisterAccountUseCase registerAccountUseCase;
     private final LoginUseCase loginUseCase;
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     public AuthController(RegisterUserUseCase registerUserUseCase, RegisterAccountUseCase registerAccountUseCase, LoginUseCase loginUseCase) {
         this.registerUserUseCase = registerUserUseCase;
