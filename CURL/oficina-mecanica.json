@@ -622,7 +622,7 @@
                     {
                       "key": "status",
                       "value": "RECEIVED",
-                      "description": "Valores: RECEIVED, IN_DIAGNOSIS, AWAITING_APPROVAL, IN_EXECUTION, FINALIZED, DELIVERED"
+                      "description": "Valores: RECEIVED, IN_DIAGNOSIS, AWAITING_APPROVAL, CANCELED, IN_EXECUTION, FINALIZED, DELIVERED"
                     }
                   ]
                 }
@@ -754,7 +754,7 @@
                     "reject-budget"
                   ]
                 },
-                "description": "Cliente rejeita o orçamento: a OS volta para o diagnóstico e o orçamento é reaberto (volta para DRAFT), permitindo revisar os itens e chamar 'Finalizar Diagnóstico' novamente.\n\nStatus: AWAITING_APPROVAL → IN_DIAGNOSIS"
+                "description": "Recusa do orçamento: a OS é encerrada em CANCELED (estado final) e o orçamento permanece FINALIZED, preservando o histórico do que foi orçado.\n\nPode ser chamado pela oficina (USER/ADMIN) ou pelo próprio cliente (CUSTOMER) — nesse caso a OS precisa pertencer ao cliente do token, senão retorna 403.\n\nStatus: AWAITING_APPROVAL → CANCELED"
               },
               "response": []
             },

@@ -70,29 +70,27 @@ jobs:
           push: true
           tags: timbeck97/tc-fiap:latest, timbeck97/tc-fiap:${{ github.run_number }}
       - name: Configure AWS Credentials (OIDC)
-        if: github.ref == 'refs/heads/main'
+        if: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ROLE_TO_ASSUME != '' }}
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
-        # To use OIDC without long-lived keys:
-        # 1. Create an IAM Role trusting GitHub's OIDC provider (token.actions.githubusercontent.com) and allow sts:AssumeRoleWithWebIdentity.
-        # 2. Restrict trust using conditions (repo and ref).
-        # 3. Save the role ARN into repo secret AWS_ROLE_TO_ASSUME.
-        # Example trust policy:
-        # {
-        #   "Version": "2012-10-17",
-        #   "Statement": [
-        #     {
-        #       "Effect": "Allow",
-        #       "Principal": {"Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"},
-        #       "Action": "sts:AssumeRoleWithWebIdentity",
-        #       "Condition": {
-        #         "StringLike": {"token.actions.githubusercontent.com:sub": "repo:codewesleylima/tech-challenge-oficina-mecanica:ref:refs/heads/main"}
-        #       }
-        #     }
-        #   ]
-        # }
+        # Preferred: use OIDC role-to-assume. Ensure AWS_ROLE_TO_ASSUME secret contains the role ARN.
+
+      - name: Configure AWS Credentials (static fallback)
+        if: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ROLE_TO_ASSUME == '' && secrets.AWS_ACCESS_KEY_ID != '' }}
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+        # Fallback for environments (e.g., AWS Academy) that provide temporary credentials.
+
+      - name: Warn missing AWS credentials
+        if: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ROLE_TO_ASSUME == '' && secrets.AWS_ACCESS_KEY_ID == '' }}
+        run: |
+          echo "::warning::No AWS_ROLE_TO_ASSUME or AWS_ACCESS_KEY_ID found — deployment steps will likely fail."
 
       - name: Update Kubeconfig for EKS
         if: github.ref == 'refs/heads/main'
