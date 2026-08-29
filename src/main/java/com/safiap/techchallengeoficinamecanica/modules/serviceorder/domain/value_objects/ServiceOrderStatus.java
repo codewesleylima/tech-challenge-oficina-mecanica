@@ -4,6 +4,7 @@ public enum ServiceOrderStatus {
     RECEIVED,
     IN_DIAGNOSIS,
     AWAITING_APPROVAL,
+    CANCELED,
     IN_EXECUTION,
     FINALIZED,
     DELIVERED

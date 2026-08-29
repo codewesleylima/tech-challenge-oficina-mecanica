@@ -12,6 +12,7 @@ import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use
 import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use_cases.RegisterServiceUseCase;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.service.AlterServiceDTO;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.service.RegisterServiceDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,7 +53,7 @@ public class ServiceController {
 
     @PostMapping
     public ResponseEntity<RegisterServiceResponse> registerService(
-            @RequestBody RegisterServiceDTO request) {
+            @Valid @RequestBody RegisterServiceDTO request) {
         RegisterServiceCommand command = new RegisterServiceCommand(
                 request.name(),
                 request.description(),
@@ -76,7 +77,7 @@ public class ServiceController {
     @PutMapping("/{id}")
     public ResponseEntity<AlterServiceResponse> alterService(
             @PathVariable UUID id,
-            @RequestBody AlterServiceDTO request) {
+            @Valid @RequestBody AlterServiceDTO request) {
         AlterServiceCommand command = new AlterServiceCommand(
                 request.name(),
                 request.description(),

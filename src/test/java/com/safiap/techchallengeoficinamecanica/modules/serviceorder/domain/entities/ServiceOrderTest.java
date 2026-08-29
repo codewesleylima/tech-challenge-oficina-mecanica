@@ -79,13 +79,23 @@ class ServiceOrderTest {
     }
 
     @Test
-    @DisplayName("rejecting the budget returns the service order to IN_DIAGNOSIS")
-    void rejectBudgetReturnsToDiagnosis() {
+    @DisplayName("rejecting the budget cancels the service order")
+    void rejectBudgetCancelsOrder() {
         ServiceOrder order = newOrder();
         order.startDiagnosis();
         order.finalizeDiagnosis(new Diagnosis("ok"));
         order.rejectBudget();
-        assertThat(order.getStatus()).isEqualTo(ServiceOrderStatus.IN_DIAGNOSIS);
+        assertThat(order.getStatus()).isEqualTo(ServiceOrderStatus.CANCELED);
+    }
+
+    @Test
+    @DisplayName("fails to start the execution of a canceled service order")
+    void executionFailsWhenCanceled() {
+        ServiceOrder order = newOrder();
+        order.startDiagnosis();
+        order.finalizeDiagnosis(new Diagnosis("ok"));
+        order.rejectBudget();
+        assertThatThrownBy(order::startExecution).isInstanceOf(ConflictException.class);
     }
 
     @Test

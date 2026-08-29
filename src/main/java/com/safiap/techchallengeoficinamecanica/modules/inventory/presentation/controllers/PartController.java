@@ -15,6 +15,7 @@ import com.safiap.techchallengeoficinamecanica.modules.inventory.application.use
 import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.part.AlterPartDTO;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.part.RegisterPartDTO;
 import com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.part.StockMovementDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,7 +63,7 @@ public class PartController {
 
     @PostMapping
     public ResponseEntity<RegisterPartResponse> registerPart(
-            @RequestBody RegisterPartDTO request) {
+            @Valid @RequestBody RegisterPartDTO request) {
 
         RegisterPartCommand command = new RegisterPartCommand(
                 request.name(),
@@ -89,7 +90,7 @@ public class PartController {
     @PutMapping("/{id}")
     public ResponseEntity<AlterPartResponse> alterPart(
             @PathVariable UUID id,
-            @RequestBody AlterPartDTO request) {
+            @Valid @RequestBody AlterPartDTO request) {
 
         AlterPartCommand command = new AlterPartCommand(
                 request.name(),
@@ -103,7 +104,7 @@ public class PartController {
     @PatchMapping("/{id}/stock/increase")
     public ResponseEntity<AlterPartResponse> increaseStock(
             @PathVariable UUID id,
-            @RequestBody StockMovementDTO request) {
+            @Valid @RequestBody StockMovementDTO request) {
 
         return ResponseEntity.ok(increasePartStockUseCase.execute(id, request.amount()));
     }
@@ -111,7 +112,7 @@ public class PartController {
     @PatchMapping("/{id}/stock/decrease")
     public ResponseEntity<AlterPartResponse> decreaseStock(
             @PathVariable UUID id,
-            @RequestBody StockMovementDTO request) {
+            @Valid @RequestBody StockMovementDTO request) {
 
         return ResponseEntity.ok(decreasePartStockUseCase.execute(id, request.amount()));
     }

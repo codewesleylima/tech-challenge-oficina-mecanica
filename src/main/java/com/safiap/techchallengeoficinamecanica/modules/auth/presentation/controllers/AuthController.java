@@ -12,6 +12,9 @@ import com.safiap.techchallengeoficinamecanica.modules.auth.application.use_case
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.RegisterAccountDto;
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.UserLoginDto;
 import com.safiap.techchallengeoficinamecanica.modules.auth.presentation.dto.AddUserDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,7 @@ public class AuthController {
     private final RegisterUserUseCase registerUserUseCase;
     private final RegisterAccountUseCase registerAccountUseCase;
     private final LoginUseCase loginUseCase;
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     public AuthController(RegisterUserUseCase registerUserUseCase, RegisterAccountUseCase registerAccountUseCase, LoginUseCase loginUseCase) {
         this.registerUserUseCase = registerUserUseCase;
@@ -30,12 +34,12 @@ public class AuthController {
         this.loginUseCase = loginUseCase;
     }
     @PostMapping("/register")
-    public ResponseEntity<UserCreateResponse> register(@RequestBody AddUserDto dto){
+    public ResponseEntity<UserCreateResponse> register(@Valid @RequestBody AddUserDto dto){
         return ResponseEntity.status(201).body(registerUserUseCase.execute(new AddUserCommand(dto.email(),dto.password())));
     }
 
     @PostMapping("/register-account")
-    public ResponseEntity<RegisterAccountResponse> registerAccount(@RequestBody RegisterAccountDto dto){
+    public ResponseEntity<RegisterAccountResponse> registerAccount(@Valid @RequestBody RegisterAccountDto dto){
         return ResponseEntity.status(201).body(registerAccountUseCase.execute(
                 new RegisterAccountCommand(dto.email(), dto.password(), dto.name(), dto.phone(), dto.cnpjCpf())
         ));
@@ -43,6 +47,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserTokenResponse> login(@RequestBody UserLoginDto dto){
+        log.info("1 - User login: {}", dto.email());
         return ResponseEntity.ok(loginUseCase.execute(new UserLoginCommand(dto.email(), dto.password())));
     }
 }

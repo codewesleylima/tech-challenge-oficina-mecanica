@@ -1,6 +1,8 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.FinalizeDiagnosisCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.services.BudgetAssemblyService;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
@@ -15,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 public class FinalizeDiagnosisUseCase {
 
@@ -24,31 +24,40 @@ public class FinalizeDiagnosisUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final BudgetRepository budgetRepository;
+    private final BudgetAssemblyService budgetAssemblyService;
     private final DomainEventPublisher domainEventPublisher;
 
     public FinalizeDiagnosisUseCase(ServiceOrderRepository serviceOrderRepository,
                                     BudgetRepository budgetRepository,
+                                    BudgetAssemblyService budgetAssemblyService,
                                     DomainEventPublisher domainEventPublisher) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.budgetRepository = budgetRepository;
+        this.budgetAssemblyService = budgetAssemblyService;
         this.domainEventPublisher = domainEventPublisher;
     }
 
     @Transactional
-    public ServiceOrderResponse execute(UUID serviceOrderId, String diagnosis) {
-        ServiceOrder serviceOrder = serviceOrderRepository.findById(serviceOrderId)
-                .orElseThrow(() -> new NotFoundException("Service order not found: " + serviceOrderId));
+    public ServiceOrderResponse execute(FinalizeDiagnosisCommand command) {
+        ServiceOrder serviceOrder = serviceOrderRepository.findById(command.serviceOrderId())
+                .orElseThrow(() -> new NotFoundException("Service order not found: " + command.serviceOrderId()));
 
-        Budget budget = budgetRepository.findByServiceOrderId(serviceOrderId)
-                .filter(b -> b.getStatus() == BudgetStatus.FINALIZED && !b.getItems().isEmpty())
-                .orElseThrow(() -> new ConflictException("A finalized budget with items is required before closing diagnosis"));
+        Budget budget = budgetAssemblyService.getOrCreate(serviceOrder);
+        budgetAssemblyService.addItems(budget, command.items());
 
-        serviceOrder.finalizeDiagnosis(new Diagnosis(diagnosis));
+        if (budget.getItems().isEmpty())
+            throw new ConflictException("A budget with items is required before closing diagnosis");
+
+        if (budget.getStatus() != BudgetStatus.FINALIZED)
+            budget.finalize();
+        budgetRepository.save(budget);
+
+        serviceOrder.finalizeDiagnosis(new Diagnosis(command.diagnosis()));
         serviceOrderRepository.save(serviceOrder);
         domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
 
         log.info("Service order {} awaiting customer approval - final budget total {} ({} item(s))",
-                serviceOrderId, budget.calculateTotal(), budget.getItems().size());
+                command.serviceOrderId(), budget.calculateTotal(), budget.getItems().size());
 
         return ServiceOrderResponse.from(serviceOrder);
     }

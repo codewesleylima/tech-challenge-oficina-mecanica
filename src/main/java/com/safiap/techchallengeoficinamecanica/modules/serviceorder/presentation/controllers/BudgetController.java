@@ -1,11 +1,15 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.controllers;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddBudgetItemsCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddPartCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddServiceCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddBudgetItemsDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddPartDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddServiceDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.BudgetItemMapper;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,20 +22,20 @@ import java.util.UUID;
 @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class BudgetController {
 
-    private final OpenBudgetUseCase openBudgetUseCase;
+    private final AddItemsToBudgetUseCase addItemsToBudgetUseCase;
     private final AddPartToBudgetUseCase addPartToBudgetUseCase;
     private final AddServiceToBudgetUseCase addServiceToBudgetUseCase;
     private final GetBudgetUseCase getBudgetUseCase;
     private final FinalizeBudgetUseCase finalizeBudgetUseCase;
     private final CompleteServiceItemUseCase completeServiceItemUseCase;
 
-    public BudgetController(OpenBudgetUseCase openBudgetUseCase,
+    public BudgetController(AddItemsToBudgetUseCase addItemsToBudgetUseCase,
                             AddPartToBudgetUseCase addPartToBudgetUseCase,
                             AddServiceToBudgetUseCase addServiceToBudgetUseCase,
                             GetBudgetUseCase getBudgetUseCase,
                             FinalizeBudgetUseCase finalizeBudgetUseCase,
                             CompleteServiceItemUseCase completeServiceItemUseCase) {
-        this.openBudgetUseCase = openBudgetUseCase;
+        this.addItemsToBudgetUseCase = addItemsToBudgetUseCase;
         this.addPartToBudgetUseCase = addPartToBudgetUseCase;
         this.addServiceToBudgetUseCase = addServiceToBudgetUseCase;
         this.getBudgetUseCase = getBudgetUseCase;
@@ -39,19 +43,22 @@ public class BudgetController {
         this.completeServiceItemUseCase = completeServiceItemUseCase;
     }
 
-    @PostMapping
-    public ResponseEntity<BudgetResponse> openBudget(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(openBudgetUseCase.execute(serviceOrderId));
-    }
-
     @GetMapping
     public ResponseEntity<BudgetResponse> getBudget(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(getBudgetUseCase.execute(serviceOrderId));
     }
 
+    @PostMapping("/items")
+    public ResponseEntity<BudgetResponse> addItems(
+            @PathVariable UUID serviceOrderId, @Valid @RequestBody AddBudgetItemsDTO request) {
+        AddBudgetItemsCommand command = new AddBudgetItemsCommand(
+                serviceOrderId, BudgetItemMapper.toInputs(request.items()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(addItemsToBudgetUseCase.execute(command));
+    }
+
     @PostMapping("/parts")
     public ResponseEntity<BudgetResponse> addPart(
-            @PathVariable UUID serviceOrderId, @RequestBody AddPartDTO request) {
+            @PathVariable UUID serviceOrderId, @Valid @RequestBody AddPartDTO request) {
         AddPartCommand command = new AddPartCommand(
                 serviceOrderId, request.itemId(), request.description(), request.quantity());
         return ResponseEntity.status(HttpStatus.CREATED).body(addPartToBudgetUseCase.execute(command));
@@ -59,7 +66,7 @@ public class BudgetController {
 
     @PostMapping("/services")
     public ResponseEntity<BudgetResponse> addService(
-            @PathVariable UUID serviceOrderId, @RequestBody AddServiceDTO request) {
+            @PathVariable UUID serviceOrderId, @Valid @RequestBody AddServiceDTO request) {
         AddServiceCommand command = new AddServiceCommand(
                 serviceOrderId, request.itemId(), request.description(), request.quantity());
         return ResponseEntity.status(HttpStatus.CREATED).body(addServiceToBudgetUseCase.execute(command));

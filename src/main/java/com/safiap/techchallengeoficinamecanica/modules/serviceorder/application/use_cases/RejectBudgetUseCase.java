@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.Doma
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,16 +27,36 @@ public class RejectBudgetUseCase {
         this.domainEventPublisher = domainEventPublisher;
     }
 
+    /** Recusa registrada pela oficina (USER/ADMIN) em nome do cliente. */
     @Transactional
     public ServiceOrderResponse execute(UUID serviceOrderId) {
+        return reject(serviceOrderId, null);
+    }
+
+    /** Recusa feita pelo próprio cliente: só pode atingir uma OS que pertença a ele. */
+    @Transactional
+    public ServiceOrderResponse executeAsCustomer(UUID serviceOrderId, UUID requesterCustomerId) {
+        return reject(serviceOrderId, requesterCustomerId);
+    }
+
+    private ServiceOrderResponse reject(UUID serviceOrderId, UUID requesterCustomerId) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(serviceOrderId)
                 .orElseThrow(() -> new NotFoundException("Service order not found: " + serviceOrderId));
 
+        if (requesterCustomerId != null && !requesterCustomerId.equals(serviceOrder.getCustomerId())) {
+            log.warn("Customer {} tried to reject the budget of service order {}, which belongs to another customer",
+                    requesterCustomerId, serviceOrderId);
+            throw new AccessDeniedException("Service order does not belong to the authenticated customer");
+        }
+
+        // O orçamento recusado permanece FINALIZED: a OS é encerrada e o histórico do que foi
+        // orçado precisa continuar íntegro para consulta.
         serviceOrder.rejectBudget();
         serviceOrderRepository.save(serviceOrder);
+
         domainEventPublisher.publishAll(serviceOrder.pullDomainEvents());
 
-        log.warn("Budget rejected by customer for service order {} - returned to diagnosis", serviceOrderId);
+        log.warn("Budget rejected for service order {} - order canceled", serviceOrderId);
 
         return ServiceOrderResponse.from(serviceOrder);
     }

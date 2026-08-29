@@ -16,7 +16,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -89,17 +91,14 @@ class ServiceOrderFlowIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("IN_DIAGNOSIS"));
 
-        mockMvc.perform(authPost("/service-orders/" + serviceOrderId + "/budget", null, token))
-                .andExpect(status().isCreated());
-
         Map<String, Object> addPart = body("addPart");
         addPart.put("itemId", partId);
         mockMvc.perform(authPost("/service-orders/" + serviceOrderId + "/budget/parts", addPart, token))
                 .andExpect(status().isCreated());
 
-        Map<String, Object> addService = body("addService");
-        addService.put("itemId", serviceId);
-        mockMvc.perform(authPost("/service-orders/" + serviceOrderId + "/budget/services", addService, token))
+        Map<String, Object> budgetItems = body("budgetItems");
+        itemsOf(budgetItems).get(0).put("itemId", serviceId);
+        mockMvc.perform(authPost("/service-orders/" + serviceOrderId + "/budget/items", budgetItems, token))
                 .andExpect(status().isCreated());
 
         MvcResult budgetResult = mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/budget", token))
@@ -115,9 +114,6 @@ class ServiceOrderFlowIntegrationTest {
             }
         }
         assertThat(serviceBudgetItemId).isNotNull();
-
-        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/budget/finalize", null, token))
-                .andExpect(status().isOk());
 
         String expectedDiagnosis = fixtures().get("finalizeDiagnosis").get("diagnosis").asText();
         mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/finalize-diagnosis", body("finalizeDiagnosis"), token))
@@ -154,6 +150,113 @@ class ServiceOrderFlowIntegrationTest {
             }
         }
         assertThat(serviceMetricFound).isTrue();
+
+        walkShortPath(token, customerId, vehicleId, partId, serviceId);
+    }
+
+    /**
+     * Caminho curto: a OS vai de aberta a aguardando aprovação em 3 chamadas, com o orçamento
+     * montado e finalizado junto do diagnóstico.
+     */
+    private void walkShortPath(String token, String customerId, String vehicleId,
+                               String partId, String serviceId) throws Exception {
+        Map<String, Object> openSo = body("openServiceOrder");
+        openSo.put("customerId", customerId);
+        openSo.put("vehicleId", vehicleId);
+        MvcResult soResult = mockMvc.perform(authPost("/service-orders", openSo, token))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String serviceOrderId = field(soResult, "serviceOrderId");
+
+        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/start-diagnosis", null, token))
+                .andExpect(status().isOk());
+
+        Map<String, Object> finalizeDiagnosis = body("finalizeDiagnosisWithItems");
+        itemsOf(finalizeDiagnosis).get(0).put("itemId", partId);
+        itemsOf(finalizeDiagnosis).get(1).put("itemId", serviceId);
+        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/finalize-diagnosis", finalizeDiagnosis, token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("AWAITING_APPROVAL"));
+
+        MvcResult budgetResult = mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/budget", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("FINALIZED"))
+                .andReturn();
+        JsonNode budget = objectMapper.readTree(budgetResult.getResponse().getContentAsString());
+        assertThat(budget.get("totalAmount").decimalValue()).isEqualByComparingTo(new BigDecimal("239.90"));
+
+        String serviceBudgetItemId = null;
+        for (JsonNode item : budget.get("items")) {
+            if ("SERVICE".equals(item.get("type").asText())) {
+                serviceBudgetItemId = item.get("budgetItemId").asText();
+            }
+        }
+        assertThat(serviceBudgetItemId).isNotNull();
+
+        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/execute", null, token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("IN_EXECUTION"));
+
+        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/budget/items/" + serviceBudgetItemId + "/complete", null, token))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/finalize", null, token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("FINALIZED"));
+
+        mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/deliver", null, token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DELIVERED"));
+    }
+
+    @Test
+    @DisplayName("answers 400 with field errors instead of 500 when the payload is invalid")
+    void invalidPayloadsAreRejectedWithBadRequest() throws Exception {
+        Map<String, Object> account = Map.of("email", "validation@oficina.com", "password", "senha123");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(account)))
+                .andExpect(status().isCreated());
+
+        MvcResult loginResult = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(account)))
+                .andExpect(status().isOk())
+                .andReturn();
+        String token = field(loginResult, "accessToken");
+
+        // ids ausentes: antes estourava 500 (The given id must not be null) no repositório
+        Map<String, Object> orderWithoutIds = new java.util.HashMap<>();
+        orderWithoutIds.put("problemDescription", "Carro fazendo barulho ao frear");
+        mockMvc.perform(authPost("/service-orders", orderWithoutIds, token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'customerId')]").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'vehicleId')]").exists());
+
+        // uuid malformado no path
+        mockMvc.perform(authGet("/service-orders/nao-e-um-uuid", token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Parameter 'serviceOrderId' must be a valid UUID"));
+
+        UUID anyOrder = UUID.randomUUID();
+        mockMvc.perform(authPost("/service-orders/" + anyOrder + "/budget/items", Map.of("items", List.of()), token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'items')]").exists());
+
+        Map<String, Object> itemWithoutType = new java.util.HashMap<>();
+        itemWithoutType.put("itemId", UUID.randomUUID().toString());
+        itemWithoutType.put("description", "Peça sem tipo");
+        itemWithoutType.put("quantity", 0);
+        mockMvc.perform(authPost("/service-orders/" + anyOrder + "/budget/items",
+                        Map.of("items", List.of(itemWithoutType)), token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'items[0].type')]").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'items[0].quantity')]").exists());
+
+        mockMvc.perform(authPatch("/service-orders/" + anyOrder + "/finalize-diagnosis", Map.of(), token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'diagnosis')]").exists());
     }
 
     @Test
@@ -170,6 +273,11 @@ class ServiceOrderFlowIntegrationTest {
             }
         }
         return fixtures;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> itemsOf(Map<String, Object> body) {
+        return (List<Map<String, Object>>) body.get("items");
     }
 
     @SuppressWarnings("unchecked")

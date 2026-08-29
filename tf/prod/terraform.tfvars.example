@@ -1,4 +1,0 @@
-postgresDb       = "oficina_db"
-postgresUser     = "oficina"
-postgresPassword = "troque-esta-senha"
-jwtSecret        = "chave-secreta-com-no-minimo-256-bits-de-comprimento"

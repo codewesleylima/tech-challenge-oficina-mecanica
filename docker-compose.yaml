@@ -24,6 +24,14 @@ services:
     networks:
       - oficina-network
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: oficina-mailhog
+    ports:
+      - "${MAIL_PORT:-1025}:1025"
+      - "${MAIL_UI_PORT:-8025}:8025"
+    networks:
+      - oficina-network
   sonarqube:
     image: sonarqube:latest
     container_name: sonar-qube
@@ -59,6 +67,14 @@ services:
       JWT_SECRET: ${JWT_SECRET:-chave-dev-minimo-256-bits-dev-dev-dev-dev-dev-dev-dev}
       JWT_EXPIRATION: 3600
       LOGGING_LEVEL_ROOT: ${LOGGING_LEVEL:-INFO}
+      MAIL_HOST: ${MAIL_HOST:-mailhog}
+      MAIL_PORT: 1025
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-false}
+      MAIL_SMTP_STARTTLS: ${MAIL_SMTP_STARTTLS:-false}
+      NOTIFICATIONS_EMAIL_ENABLED: ${NOTIFICATIONS_EMAIL_ENABLED:-true}
+      NOTIFICATIONS_EMAIL_FROM: ${NOTIFICATIONS_EMAIL_FROM:-nao-responda@oficina.local}
 
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
@@ -70,6 +86,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      mailhog:
+        condition: service_started
 
     networks:
       - oficina-network

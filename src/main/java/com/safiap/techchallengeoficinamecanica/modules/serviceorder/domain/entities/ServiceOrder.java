@@ -91,7 +91,7 @@ public class ServiceOrder extends AggregateRoot {
     public void rejectBudget() {
         if (this.status != ServiceOrderStatus.AWAITING_APPROVAL)
             throw new ConflictException("Service order must be in AWAITING_APPROVAL status to reject budget");
-        changeStatus(ServiceOrderStatus.IN_DIAGNOSIS);
+        changeStatus(ServiceOrderStatus.CANCELED);
     }
 
     public void finalizeOrder() {
