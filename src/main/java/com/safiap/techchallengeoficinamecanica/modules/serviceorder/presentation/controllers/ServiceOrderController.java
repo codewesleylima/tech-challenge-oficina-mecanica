@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,8 @@ import java.util.UUID;
 @RequestMapping("/service-orders")
 @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class ServiceOrderController {
+
+    private static final String ROLE_CUSTOMER = "ROLE_CUSTOMER";
 
     private final OpenServiceOrderUseCase openServiceOrderUseCase;
     private final GetServiceOrderByIdUseCase getServiceOrderByIdUseCase;
@@ -122,9 +125,25 @@ public class ServiceOrderController {
         return ResponseEntity.ok(startServiceOrderExecutionUseCase.execute(serviceOrderId));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'CUSTOMER')")
     @PatchMapping("/{serviceOrderId}/reject-budget")
-    public ResponseEntity<ServiceOrderResponse> rejectBudget(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(rejectBudgetUseCase.execute(serviceOrderId));
+    public ResponseEntity<ServiceOrderResponse> rejectBudget(@PathVariable UUID serviceOrderId,
+                                                             Authentication authentication) {
+        if (!isCustomer(authentication)) {
+            return ResponseEntity.ok(rejectBudgetUseCase.execute(serviceOrderId));
+        }
+
+        String customerId = ((Jwt) authentication.getPrincipal()).getClaimAsString("customerId");
+        if (customerId == null) {
+            throw new AuthException("Authenticated user is not linked to a customer");
+        }
+        return ResponseEntity.ok(
+                rejectBudgetUseCase.executeAsCustomer(serviceOrderId, UUID.fromString(customerId)));
+    }
+
+    private boolean isCustomer(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> ROLE_CUSTOMER.equals(authority.getAuthority()));
     }
 
     @PatchMapping("/{serviceOrderId}/finalize")
