@@ -36,18 +36,6 @@ jobs:
       - name: Run tests
         run: ./gradlew test --no-daemon
 
-      # Temporarily disabled while the SonarQube configuration is being finalized.
-      # - name: SonarQube Analysis
-      #   run: |
-      #     chmod +x gradlew
-      #     ./gradlew sonarqube \
-      #       -Dsonar.projectKey=tech-challenge-oficina-mecanica \
-      #       -Dsonar.sources=src \
-      #       -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-      #       -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Publish test report
         if: always()
         uses: actions/upload-artifact@v7
@@ -57,25 +45,27 @@ jobs:
             build/reports/tests/test
             build/test-results/test
           if-no-files-found: ignore
+
       - name: Docker Login
         if: github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build and push Docker image backend
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: timbeck97/tc-fiap:latest, timbeck97/tc-fiap:${{ github.run_number }}
+
       - name: Configure AWS Credentials (OIDC)
         if: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ROLE_TO_ASSUME != '' }}
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
-        # Preferred: use OIDC role-to-assume. Ensure AWS_ROLE_TO_ASSUME secret contains the role ARN.
 
       - name: Configure AWS Credentials (static fallback)
         if: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ROLE_TO_ASSUME == '' && secrets.AWS_ACCESS_KEY_ID != '' }}
@@ -85,7 +75,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
-        # Fallback for environments (e.g., AWS Academy) that provide temporary credentials.
 
       - name: Warn missing AWS credentials
         if: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ROLE_TO_ASSUME == '' && secrets.AWS_ACCESS_KEY_ID == '' }}
@@ -96,8 +85,8 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+
       - name: Restart EKS Pods
         if: github.ref == 'refs/heads/main'
         run: |
           kubectl rollout restart deployment/api -n prod
-  
