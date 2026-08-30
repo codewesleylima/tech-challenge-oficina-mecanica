@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentatio
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.FinalizeDiagnosisCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.OpenServiceOrderCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderStatusResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.BudgetItemMapper;
@@ -41,6 +42,8 @@ public class ServiceOrderController {
     private final RejectBudgetUseCase rejectBudgetUseCase;
     private final FinalizeServiceOrderUseCase finalizeServiceOrderUseCase;
     private final DeliverServiceOrderUseCase deliverServiceOrderUseCase;
+    private final GetServiceOrderStatusUseCase getServiceOrderStatusUseCase;
+    private final GetAllServiceOrdersUseCase getAllServiceOrdersUseCase;
 
     public ServiceOrderController(OpenServiceOrderUseCase openServiceOrderUseCase,
                                   GetServiceOrderByIdUseCase getServiceOrderByIdUseCase,
@@ -54,7 +57,9 @@ public class ServiceOrderController {
                                   StartServiceOrderExecutionUseCase startServiceOrderExecutionUseCase,
                                   RejectBudgetUseCase rejectBudgetUseCase,
                                   FinalizeServiceOrderUseCase finalizeServiceOrderUseCase,
-                                  DeliverServiceOrderUseCase deliverServiceOrderUseCase) {
+                                  DeliverServiceOrderUseCase deliverServiceOrderUseCase,
+                                  GetServiceOrderStatusUseCase getServiceOrderStatusUseCase,
+                                  GetAllServiceOrdersUseCase getAllServiceOrdersUseCase) {
         this.openServiceOrderUseCase = openServiceOrderUseCase;
         this.getServiceOrderByIdUseCase = getServiceOrderByIdUseCase;
         this.listServiceOrdersByCustomerUseCase = listServiceOrdersByCustomerUseCase;
@@ -68,6 +73,8 @@ public class ServiceOrderController {
         this.rejectBudgetUseCase = rejectBudgetUseCase;
         this.finalizeServiceOrderUseCase = finalizeServiceOrderUseCase;
         this.deliverServiceOrderUseCase = deliverServiceOrderUseCase;
+        this.getServiceOrderStatusUseCase = getServiceOrderStatusUseCase;
+        this.getAllServiceOrdersUseCase = getAllServiceOrdersUseCase;
     }
 
     @PostMapping
@@ -93,8 +100,13 @@ public class ServiceOrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ServiceOrderResponse>> listByStatus(@RequestParam ServiceOrderStatus status) {
+    public ResponseEntity<List<ServiceOrderResponse>> listAllByStatus(@RequestParam ServiceOrderStatus status) {
         return ResponseEntity.ok(listServiceOrdersByStatusUseCase.execute(status));
+    }
+
+    @GetMapping("/status/{serviceOrderId}")
+    public ResponseEntity<ServiceOrderStatusResponse> getServiceOrderStatus(@PathVariable UUID serviceOrderId) {
+        return ResponseEntity.ok(getServiceOrderStatusUseCase.execute(serviceOrderId));
     }
 
     @PatchMapping("/{serviceOrderId}/priority/increase")
@@ -163,5 +175,11 @@ public class ServiceOrderController {
             throw new AuthException("Authenticated user is not linked to a customer");
         }
         return ResponseEntity.ok(listServiceOrdersByCustomerUseCase.execute(UUID.fromString(customerId)));
+    }
+
+    @GetMapping("/all-orders")
+    public ResponseEntity<List<ServiceOrderResponse>> getAllServiceOrders(@AuthenticationPrincipal Jwt jwt) {
+
+        return ResponseEntity.ok(getAllServiceOrdersUseCase.execute());
     }
 }

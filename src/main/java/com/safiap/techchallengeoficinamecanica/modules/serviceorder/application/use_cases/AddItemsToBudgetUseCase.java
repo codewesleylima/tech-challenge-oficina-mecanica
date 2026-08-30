@@ -27,7 +27,6 @@ public class AddItemsToBudgetUseCase {
             throw new DomainException("At least one budget item is required");
 
         Budget budget = budgetAssemblyService.getOrCreate(command.serviceOrderId());
-        budgetAssemblyService.addItems(budget, command.items());
         budgetRepository.save(budget);
 
         return BudgetResponse.from(budget);
