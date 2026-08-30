@@ -52,7 +52,7 @@ variable "namespace" {
 
 variable "api_image" {
   type        = string
-  default     = "timbeck97/tc-fiap:latest"
+  default     = "wzzylima/tc-fiap:latest"
   description = "Imagem da API (mesma usada em k8s/api/api-deployment.yml)"
 }
 

@@ -10,7 +10,7 @@ memory             = "4g"
 namespace = "oficina"
 
 # API
-api_image     = "timbeck97/tc-fiap:latest"
+api_image     = "wzzylima/tc-fiap:latest"
 api_node_port = 30080
 jwt_secret    = "troque-por-um-segredo-de-no-minimo-256-bits-em-dev"
 

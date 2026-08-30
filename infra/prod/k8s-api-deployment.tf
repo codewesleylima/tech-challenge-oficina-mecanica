@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: api-container
-        image: timbeck97/tc-fiap:latest
+        image: wzzylima/tc-fiap:latest
         ports:
         - containerPort: 8080
         env:
