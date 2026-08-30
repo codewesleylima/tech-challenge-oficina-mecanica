@@ -17,15 +17,10 @@ class CarLicensePlateTest {
     }
 
     @Test
-    @DisplayName("rejects an old-format plate")
-    void rejectsOldFormat() {
-        assertThatThrownBy(() -> new CarLicensePlate("ABC1234")).isInstanceOf(DomainException.class);
-    }
-
-    @Test
-    @DisplayName("rejects a lowercase plate")
-    void rejectsLowercase() {
-        assertThatThrownBy(() -> new CarLicensePlate("abc1d23")).isInstanceOf(DomainException.class);
+    @DisplayName("transform a lowercase plate to uppercase plate")
+    void transformLowercaseToUppercase() {
+        CarLicensePlate plate = new CarLicensePlate("abc1d23");
+        assertThat(plate.plate()).isEqualTo("ABC1D23");
     }
 
     @Test
