@@ -355,6 +355,17 @@ infraestrutura descrita como código (**Terraform**) e um caminho de deploy auto
 **AWS (EKS)**. O código da aplicação não mudou: o mesmo container passou a ser orquestrado,
 escalado automaticamente e monitorado.
 
+### Arquitetura na AWS
+
+![Arquitetura da stack de produção na AWS](docs/arquitetura-fase2.svg)
+
+O tráfego entra pelo Load Balancer criado a partir do `Service api-service` e chega aos pods da API,
+que rodam nos nós do node group dentro do cluster EKS. O PostgreSQL fica no mesmo namespace, exposto
+apenas internamente por um `Service` do tipo `ClusterIP`.
+
+> Fonte editável do diagrama: [`docs/arquitetura-fase2.excalidraw`](docs/arquitetura-fase2.excalidraw)
+> (abra em [excalidraw.com](https://excalidraw.com)).
+
 ### Os três caminhos de deploy
 
 | Caminho | Onde | Como se sobe | Para quê |
