@@ -3,7 +3,6 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderStatusResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
 

@@ -178,8 +178,7 @@ public class ServiceOrderController {
     }
 
     @GetMapping("/all-orders")
-    public ResponseEntity<List<ServiceOrderResponse>> getAllServiceOrders(@AuthenticationPrincipal Jwt jwt) {
-
+    public ResponseEntity<List<ServiceOrderResponse>> getAllServiceOrders() {
         return ResponseEntity.ok(getAllServiceOrdersUseCase.execute());
     }
 }
