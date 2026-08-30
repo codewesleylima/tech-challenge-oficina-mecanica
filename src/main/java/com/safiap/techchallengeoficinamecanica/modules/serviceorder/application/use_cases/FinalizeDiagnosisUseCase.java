@@ -49,7 +49,7 @@ public class FinalizeDiagnosisUseCase {
             throw new ConflictException("A budget with items is required before closing diagnosis");
 
         if (budget.getStatus() != BudgetStatus.FINALIZED)
-            budget.finalize();
+            budget.finalizeBudget();
         budgetRepository.save(budget);
 
         serviceOrder.finalizeDiagnosis(new Diagnosis(command.diagnosis()));

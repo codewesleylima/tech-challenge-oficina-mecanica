@@ -107,7 +107,7 @@ class FinalizeDiagnosisUseCaseTest {
     void keepsFinalizedBudget() {
         UUID soId = UUID.randomUUID();
         Budget budget = budgetWithItems(soId);
-        budget.finalize();
+        budget.finalizeBudget();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.of(orderInDiagnosis(soId)));
         when(budgetRepository.findByServiceOrderId(soId)).thenReturn(Optional.of(budget));
 

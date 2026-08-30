@@ -70,7 +70,7 @@ public class Budget {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void finalize() {
+    public void finalizeBudget() {
         if (this.status == BudgetStatus.FINALIZED)
             throw new ConflictException("Budget is already finalized");
         if (items.isEmpty())

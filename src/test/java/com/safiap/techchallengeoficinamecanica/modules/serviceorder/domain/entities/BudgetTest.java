@@ -43,18 +43,18 @@ class BudgetTest {
 
     @Test
     @DisplayName("fails to finalize a budget with no items")
-    void finalizeFailsWhenEmpty() {
+    void finalizeBudgetFailsWhenEmpty() {
         Budget budget = draft();
-        assertThatThrownBy(budget::finalize)
+        assertThatThrownBy(budget::finalizeBudget)
                 .isInstanceOf(ConflictException.class);
     }
 
     @Test
     @DisplayName("finalizes the budget marking it as FINALIZED")
-    void finalizeMarksAsFinalized() {
+    void finalizeBudgetMarksAsFinalized() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
-        budget.finalize();
+        budget.finalizeBudget();
         assertThat(budget.getStatus()).isEqualTo(BudgetStatus.FINALIZED);
     }
 
@@ -63,11 +63,11 @@ class BudgetTest {
     void cannotModifyOrRefinalizeAfterFinalized() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
-        budget.finalize();
+        budget.finalizeBudget();
 
         assertThatThrownBy(() -> budget.addPart(UUID.randomUUID(), "Outra", 1, BigDecimal.TEN))
                 .isInstanceOf(ConflictException.class);
-        assertThatThrownBy(budget::finalize)
+        assertThatThrownBy(budget::finalizeBudget)
                 .isInstanceOf(ConflictException.class);
     }
 

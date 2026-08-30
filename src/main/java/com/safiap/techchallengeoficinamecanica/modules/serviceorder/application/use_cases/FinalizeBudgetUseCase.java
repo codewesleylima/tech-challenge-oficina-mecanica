@@ -23,7 +23,7 @@ public class FinalizeBudgetUseCase {
         Budget budget = budgetRepository.findByServiceOrderId(serviceOrderId)
                 .orElseThrow(() -> new NotFoundException("Budget not found for service order: " + serviceOrderId));
 
-        budget.finalize();
+        budget.finalizeBudget();
         budgetRepository.save(budget);
 
         return BudgetResponse.from(budget);
