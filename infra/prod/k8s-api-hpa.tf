@@ -10,7 +10,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: api                   # nome do Deployment em k8s-api-deployment.tf
+    name: api                  
   minReplicas: 2                
   maxReplicas: 5                
   metrics:
@@ -23,6 +23,12 @@ spec:
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 30 
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 60
       policies:
       - type: Percent
         value: 100

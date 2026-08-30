@@ -7,8 +7,6 @@ metadata:
   name: api
   namespace: prod
 spec:
-  # replicas fica fora de propósito: quem controla a escala é o api-hpa (min 2).
-  # Declarar aqui faria cada terraform apply derrubar a escala para 1.
   strategy:
     type: RollingUpdate
     rollingUpdate:

@@ -35,7 +35,7 @@ stringData:
   MAIL_SMTP_AUTH: "true"
   MAIL_SMTP_STARTTLS: "true"
   NOTIFICATIONS_EMAIL_ENABLED: "true"
-  NOTIFICATIONS_EMAIL_FROM: "${var.notificationsEmailFrom}"
+  NOTIFICATIONS_EMAIL_FROM: "${var.notificationsEmailFrom != "" ? var.notificationsEmailFrom : var.mailUsername}"
 
 YAML
 }

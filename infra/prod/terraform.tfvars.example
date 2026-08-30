@@ -7,4 +7,4 @@ mailHost               = "smtp.gmail.com"
 mailPort               = 587
 mailUsername           = "sua-conta@gmail.com"
 mailPassword           = "app-password-de-16-caracteres"
-notificationsEmailFrom = "sua-conta@gmail.com"
+# notificationsEmailFrom = "alias@gmail.com"   # opcional: vazio usa o mailUsername
