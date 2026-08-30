@@ -348,6 +348,103 @@ export NVD_API_KEY=<sua-chave>   # https://nvd.nist.gov/developers/request-an-ap
 
 É iniciado junto da aplicação e pode ser acessado pela rota `http://localhost:9000`
 
+## Fase 2 — Kubernetes, Terraform e AWS EKS
+
+A Fase 2 tirou a aplicação do Docker Compose e a levou para **Kubernetes**, com toda a
+infraestrutura descrita como código (**Terraform**) e um caminho de deploy automatizado até a
+**AWS (EKS)**. O código da aplicação não mudou: o mesmo container passou a ser orquestrado,
+escalado automaticamente e monitorado.
+
+### Os três caminhos de deploy
+
+| Caminho | Onde | Como se sobe | Para quê |
+|---|---|---|---|
+| Manifestos `kubectl` | `k8s/` | `kubectl apply -f k8s/...` | Aplicação manual em qualquer cluster (minikube ou EKS já existente) |
+| Terraform + minikube | `infra/dev/` | `terraform apply` | Ambiente local completo (cria o próprio cluster) |
+| Terraform + AWS EKS | `infra/prod/` | `terraform apply` | Ambiente de produção na AWS, do zero (VPC → cluster → workloads) |
+
+### Kubernetes (`k8s/`)
+
+Manifestos aplicáveis com `kubectl`, divididos em dois conjuntos:
+
+- **Raiz (`k8s/*.yaml`)** — voltados a um cluster gerenciado: `Namespace prod`, `Deployment` da API
+  com 2 réplicas, `RollingUpdate` (`maxUnavailable: 0`), *pod anti-affinity*, `Service` do tipo
+  `LoadBalancer`, `HPA` (CPU 70% / memória 80%) e o PostgreSQL com `PersistentVolumeClaim` de 20Gi.
+- **`k8s/api/` e `k8s/db/`** — versão enxuta para cluster local, com `Service` do tipo `NodePort`
+  (`30080` para a API e `30432` para o banco).
+
+Objetos usados: `Namespace`, `Deployment`, `Service`, `Secret`, `PersistentVolumeClaim` e
+`HorizontalPodAutoscaler`. Todas as credenciais (datasource, `JWT_SECRET`, SMTP) chegam ao pod via
+`envFrom.secretRef` — nada de senha em `ConfigMap` ou na imagem.
+
+### Terraform — ambiente local (`infra/dev/`)
+
+Um único `terraform apply` cria o **cluster minikube** e implanta a aplicação nele, usando os
+providers `scott-the-programmer/minikube` e `hashicorp/kubernetes`. As credenciais do provider
+`kubernetes` vêm dos atributos do próprio `minikube_cluster`, o que permite criar cluster e
+workloads no mesmo apply.
+
+```bash
+cd infra/dev
+cp terraform.tfvars.example terraform.tfvars   # ajuste segredos e portas
+terraform init && terraform apply
+
+minikube -p oficina-dev service api-service -n oficina --url   # URL da API
+```
+
+O que a stack adiciona em relação aos manifestos crus: namespace dedicado (`oficina`), volume
+persistente para o Postgres, *probes* de `startup`/`readiness`/`liveness`, limites de recursos e
+ordem de subida (a API só sobe depois do rollout do banco). Detalhes em
+[`infra/dev/README.md`](infra/dev/README.md).
+
+### Terraform — AWS EKS (`infra/prod/`)
+
+Provisiona a infraestrutura inteira na AWS e, no mesmo apply, aplica os workloads no cluster
+(provider `gavinbunney/kubectl`):
+
+| Camada | Recursos |
+|---|---|
+| Rede | `aws_vpc` (10.0.0.0/16), subnets pública e privada, `internet_gateway`, route tables |
+| Segurança | `aws_security_group` com ingress para a API (8080), Postgres (5432), NodePorts e tráfego interno do metrics-server |
+| Cluster | `aws_eks_cluster` (authentication mode `API`), `aws_eks_node_group` (2× `t3.medium`, 1–3 nós) |
+| Acesso | `aws_eks_access_entry` + `access_policy_association` para a role do AWS Academy (`LabRole`/`voclabs`) |
+| Addons | `metrics-server` (requisito do HPA) e `amazon-cloudwatch-observability` |
+| Observabilidade | `aws_cloudwatch_log_group` do control plane e do Container Insights, com retenção configurável |
+| Workloads | Namespace `prod`, Secrets da API e do banco, Deployments da API e do Postgres, `Service` `LoadBalancer` para a API, `ClusterIP` para o banco e o `HPA` |
+
+```bash
+cd infra/prod
+cp terraform.tfvars.example terraform.tfvars   # senha do banco, JWT_SECRET e SMTP
+terraform init && terraform apply
+
+kubectl get svc api-service -n prod             # EXTERNAL-IP do Load Balancer
+```
+
+> O `terraform.tfvars` real não é versionado. As variáveis sensíveis (`postgresPassword`,
+> `jwtSecret`, `mailPassword`) estão marcadas como `sensitive` e viram `Secret` no cluster.
+
+O passo a passo de criação do cluster e dos secrets do GitHub está em
+[`DEPLOY_AWS_EKS.md`](DEPLOY_AWS_EKS.md).
+
+### Escalabilidade automática (HPA)
+
+A API escala de **2 a 5 réplicas** com alvo de **70% de CPU**, com janela de estabilização de 30s
+na subida e política de até 100% de aumento a cada 15s — sobe rápido sob carga e desce devagar.
+O HPA depende do addon `metrics-server`, provisionado nas duas stacks.
+
+```bash
+kubectl get hpa api-hpa -n prod -w     # acompanha réplicas e uso de CPU
+```
+
+### CI/CD
+
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda em todo push/PR para
+`develop`, `hom` e `main`: executa a suíte de testes e publica o relatório. Somente em `main`
+segue para o deploy — build e push da imagem para o Docker Hub
+(`timbeck97/tc-fiap:latest` e `:<run_number>`), autenticação na AWS (OIDC com fallback para chaves
+estáticas), `aws eks update-kubeconfig` e `kubectl rollout restart deployment/api -n prod`.
+Como o Deployment usa `RollingUpdate` com `maxUnavailable: 0`, a troca de versão é sem downtime.
+
 ## Membros da Equipe
 
 Agradecemos às seguintes pessoas que contribuíram para este projeto:
