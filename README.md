@@ -305,7 +305,9 @@ Os endpoints são RESTful e, exceto `POST /auth/register` e `POST /auth/login`, 
 | Métricas | `GET /service-orders/{id}/metrics/average-execution-time` (tempo médio de execução por tipo de serviço na OS) |
 
 A descrição completa, com corpo de cada requisição e a ordem de execução do fluxo, está em
-[`CURL/README.md`](CURL/README.md). Uma collection pronta para o Insomnia está em
+[`CURL/oficina-mecanica.json`](CURL/oficina-mecanica.json). As instruções da collection
+estão em [`.github/skills/testing/references/CURL-README.md`](.github/skills/testing/references/CURL-README.md).
+Uma collection pronta para o Insomnia está em
 [`CURL/oficina-mecanica.json`](CURL/oficina-mecanica.json).
 
 ## Testes
