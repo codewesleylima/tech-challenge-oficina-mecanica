@@ -5,7 +5,11 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainE
 
 import java.util.UUID;
 
-public record EmailMessage(String to, String subject, String body) {
+public record EmailMessage(String to, String subject, String body, boolean html) {
+
+    private static final String APPROVE_URL = "http://localhost:8080/service-orders/%s/budget/approve";
+    private static final String REJECT_URL = "http://localhost:8080/service-orders/%s/reject-budget";
+    private static final String GET_BUDGET_URL = "http://localhost:8080/service-orders/%s/budget";
 
     public EmailMessage {
         if (to == null || to.isBlank()) {
@@ -26,10 +30,22 @@ public record EmailMessage(String to, String subject, String body) {
                                                          String vehicleLabel,
                                                          ServiceOrderStatus status) {
         String shortId = shortId(serviceOrderId);
-
         String subject = "Ordem de serviço #%s — %s".formatted(shortId, titleFor(status));
 
-        String body = """
+        boolean awaitingApproval = status == ServiceOrderStatus.AWAITING_APPROVAL;
+
+        String body = awaitingApproval
+                ? approvalBody(recipient, serviceOrderId, shortId, vehicleLabel)
+                : plainBody(recipient, shortId, vehicleLabel, status);
+
+        return new EmailMessage(recipient.email(), subject, body, awaitingApproval);
+    }
+
+    private static String plainBody(NotificationRecipient recipient,
+                                    String shortId,
+                                    String vehicleLabel,
+                                    ServiceOrderStatus status) {
+        return """
                 Olá, %s!
 
                 %s
@@ -41,8 +57,37 @@ public record EmailMessage(String to, String subject, String body) {
 
                 Oficina Mecânica"""
                 .formatted(recipient.name(), messageFor(status), shortId, vehicleLabel);
+    }
 
-        return new EmailMessage(recipient.email(), subject, body);
+    private static String approvalBody(NotificationRecipient recipient,
+                                       UUID serviceOrderId,
+                                       String shortId,
+                                       String vehicleLabel) {
+        String approveUrl = APPROVE_URL.formatted(serviceOrderId);
+        String rejectUrl = REJECT_URL.formatted(serviceOrderId);
+        String getBudgetUrl = GET_BUDGET_URL.formatted(serviceOrderId);
+
+        return """
+                <html>
+                  <body>
+                    <p>Olá, %s!</p>
+                    <p>%s</p>
+                    <p>
+                      Ordem de serviço: #%s<br>
+                      Veículo: %s
+                    </p>
+                    <p>
+                        Confira o orçamento aqui: <a href="%s">Orçamento</a>
+                    </p>
+                    <p>
+                      <a href="%s">Aceitar</a> | <a href="%s">Rejeitar</a>
+                    </p>
+                    <p>Esta é uma mensagem automática, não é necessário respondê-la.</p>
+                    <p>Oficina Mecânica</p>
+                  </body>
+                </html>
+                """.formatted(recipient.name(), messageFor(ServiceOrderStatus.AWAITING_APPROVAL),
+                shortId, vehicleLabel, getBudgetUrl, approveUrl, rejectUrl);
     }
 
     private static String shortId(UUID serviceOrderId) {
