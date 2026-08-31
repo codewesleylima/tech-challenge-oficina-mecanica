@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentatio
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddBudgetItemsCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddPartCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddServiceCommand;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.ApproveBudgetCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddBudgetItemsDTO;
@@ -28,21 +29,25 @@ public class BudgetController {
     private final GetBudgetUseCase getBudgetUseCase;
     private final FinalizeBudgetUseCase finalizeBudgetUseCase;
     private final CompleteServiceItemUseCase completeServiceItemUseCase;
+    private final ApproveBudgetUseCase approveBudgetUseCase;
 
     public BudgetController(AddItemsToBudgetUseCase addItemsToBudgetUseCase,
                             AddPartToBudgetUseCase addPartToBudgetUseCase,
                             AddServiceToBudgetUseCase addServiceToBudgetUseCase,
                             GetBudgetUseCase getBudgetUseCase,
                             FinalizeBudgetUseCase finalizeBudgetUseCase,
-                            CompleteServiceItemUseCase completeServiceItemUseCase) {
+                            CompleteServiceItemUseCase completeServiceItemUseCase,
+                            ApproveBudgetUseCase approveBudgetUseCase) {
         this.addItemsToBudgetUseCase = addItemsToBudgetUseCase;
         this.addPartToBudgetUseCase = addPartToBudgetUseCase;
         this.addServiceToBudgetUseCase = addServiceToBudgetUseCase;
         this.getBudgetUseCase = getBudgetUseCase;
         this.finalizeBudgetUseCase = finalizeBudgetUseCase;
         this.completeServiceItemUseCase = completeServiceItemUseCase;
+        this.approveBudgetUseCase = approveBudgetUseCase;
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping
     public ResponseEntity<BudgetResponse> getBudget(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(getBudgetUseCase.execute(serviceOrderId));
@@ -82,4 +87,11 @@ public class BudgetController {
             @PathVariable UUID serviceOrderId, @PathVariable UUID budgetItemId) {
         return ResponseEntity.ok(completeServiceItemUseCase.execute(serviceOrderId, budgetItemId));
     }
+
+    @GetMapping("/approve")
+    public ResponseEntity<BudgetResponse> approve( @PathVariable UUID serviceOrderId) {
+        return ResponseEntity.ok(approveBudgetUseCase.execute(new ApproveBudgetCommand(serviceOrderId)));
+    }
+
+
 }

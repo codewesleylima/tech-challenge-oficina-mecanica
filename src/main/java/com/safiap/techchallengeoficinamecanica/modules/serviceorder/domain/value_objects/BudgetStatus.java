@@ -2,5 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.valu
 
 public enum BudgetStatus {
     DRAFT,
-    FINALIZED
+    FINALIZED,
+    DECLINED,
+    APPROVED,
 }

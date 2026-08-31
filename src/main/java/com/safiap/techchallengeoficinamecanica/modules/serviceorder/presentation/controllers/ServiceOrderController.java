@@ -138,7 +138,7 @@ public class ServiceOrderController {
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'CUSTOMER')")
-    @PatchMapping("/{serviceOrderId}/reject-budget")
+    @GetMapping("/{serviceOrderId}/reject-budget")
     public ResponseEntity<ServiceOrderResponse> rejectBudget(@PathVariable UUID serviceOrderId,
                                                              Authentication authentication) {
         if (!isCustomer(authentication)) {
