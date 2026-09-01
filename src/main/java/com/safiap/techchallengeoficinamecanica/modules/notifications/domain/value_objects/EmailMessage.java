@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public record EmailMessage(String to, String subject, String body, boolean html) {
 
-    private static final String APPROVE_URL = "http://localhost:8080/service-orders/%s/budget/approve";
-    private static final String REJECT_URL = "http://localhost:8080/service-orders/%s/reject-budget";
-    private static final String GET_BUDGET_URL = "http://localhost:8080/service-orders/%s/budget";
+    private static final String APPROVE_PATH = "%s/service-orders/%s/budget/approve";
+    private static final String REJECT_PATH = "%s/service-orders/%s/budget/reject";
+    private static final String GET_BUDGET_PATH = "%s/service-orders/%s/budget";
 
     public EmailMessage {
         if (to == null || to.isBlank()) {
@@ -28,14 +28,15 @@ public record EmailMessage(String to, String subject, String body, boolean html)
     public static EmailMessage serviceOrderStatusChanged(NotificationRecipient recipient,
                                                          UUID serviceOrderId,
                                                          String vehicleLabel,
-                                                         ServiceOrderStatus status) {
+                                                         ServiceOrderStatus status,
+                                                         String publicBaseUrl) {
         String shortId = shortId(serviceOrderId);
         String subject = "Ordem de serviço #%s — %s".formatted(shortId, titleFor(status));
 
         boolean awaitingApproval = status == ServiceOrderStatus.AWAITING_APPROVAL;
 
         String body = awaitingApproval
-                ? approvalBody(recipient, serviceOrderId, shortId, vehicleLabel)
+                ? approvalBody(recipient, serviceOrderId, shortId, vehicleLabel, baseUrl(publicBaseUrl))
                 : plainBody(recipient, shortId, vehicleLabel, status);
 
         return new EmailMessage(recipient.email(), subject, body, awaitingApproval);
@@ -62,10 +63,12 @@ public record EmailMessage(String to, String subject, String body, boolean html)
     private static String approvalBody(NotificationRecipient recipient,
                                        UUID serviceOrderId,
                                        String shortId,
-                                       String vehicleLabel) {
-        String approveUrl = APPROVE_URL.formatted(serviceOrderId);
-        String rejectUrl = REJECT_URL.formatted(serviceOrderId);
-        String getBudgetUrl = GET_BUDGET_URL.formatted(serviceOrderId);
+                                       String vehicleLabel,
+                                       String baseUrl) {
+        String approveUrl = APPROVE_PATH.formatted(baseUrl, serviceOrderId);
+        String rejectUrl = REJECT_PATH.formatted(baseUrl, serviceOrderId);
+        String getBudgetUrl = GET_BUDGET_PATH.formatted(baseUrl, serviceOrderId);
+
 
         return """
                 <html>
@@ -77,7 +80,7 @@ public record EmailMessage(String to, String subject, String body, boolean html)
                       Veículo: %s
                     </p>
                     <p>
-                        Confira o orçamento aqui: <a href="%s">Orçamento</a>
+                      Confira o orçamento aqui: <a href="%s">Orçamento</a>
                     </p>
                     <p>
                       <a href="%s">Aceitar</a> | <a href="%s">Rejeitar</a>
@@ -88,6 +91,14 @@ public record EmailMessage(String to, String subject, String body, boolean html)
                 </html>
                 """.formatted(recipient.name(), messageFor(ServiceOrderStatus.AWAITING_APPROVAL),
                 shortId, vehicleLabel, getBudgetUrl, approveUrl, rejectUrl);
+    }
+
+    /** Sem a base configurada o e-mail sairia com links quebrados; melhor falhar no envio. */
+    private static String baseUrl(String publicBaseUrl) {
+        if (publicBaseUrl == null || publicBaseUrl.isBlank()) {
+            throw new DomainException("Public base URL is required to build the approval links.");
+        }
+        return publicBaseUrl.strip().replaceAll("/+$", "");
     }
 
     private static String shortId(UUID serviceOrderId) {
