@@ -43,13 +43,12 @@ public class FinalizeDiagnosisUseCase {
                 .orElseThrow(() -> new NotFoundException("Service order not found: " + command.serviceOrderId()));
 
         Budget budget = budgetAssemblyService.getOrCreate(serviceOrder);
-        budgetAssemblyService.addItems(budget, command.items());
 
         if (budget.getItems().isEmpty())
             throw new ConflictException("A budget with items is required before closing diagnosis");
 
         if (budget.getStatus() != BudgetStatus.FINALIZED)
-            budget.finalize();
+            budget.finalizeBudget();
         budgetRepository.save(budget);
 
         serviceOrder.finalizeDiagnosis(new Diagnosis(command.diagnosis()));

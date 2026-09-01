@@ -7,6 +7,7 @@ import com.safiap.techchallengeoficinamecanica.modules.notifications.domain.valu
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.events.ServiceOrderStatusChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,11 +21,14 @@ public class SendServiceOrderStatusNotificationUseCase {
 
     private final NotificationRecipientPort notificationRecipientPort;
     private final EmailSenderPort emailSenderPort;
+    private final String publicBaseUrl;
 
     public SendServiceOrderStatusNotificationUseCase(NotificationRecipientPort notificationRecipientPort,
-                                                     EmailSenderPort emailSenderPort) {
+                                                     EmailSenderPort emailSenderPort,
+                                                     @Value("${app.public-url}") String publicBaseUrl) {
         this.notificationRecipientPort = notificationRecipientPort;
         this.emailSenderPort = emailSenderPort;
+        this.publicBaseUrl = publicBaseUrl;
     }
 
     public void execute(ServiceOrderStatusChangedEvent event) {
@@ -40,7 +44,7 @@ public class SendServiceOrderStatusNotificationUseCase {
                 .orElse(UNKNOWN_VEHICLE);
 
         EmailMessage message = EmailMessage.serviceOrderStatusChanged(
-                recipient.get(), event.serviceOrderId(), vehicleLabel, event.newStatus());
+                recipient.get(), event.serviceOrderId(), vehicleLabel, event.newStatus(), publicBaseUrl);
 
         emailSenderPort.send(message);
 

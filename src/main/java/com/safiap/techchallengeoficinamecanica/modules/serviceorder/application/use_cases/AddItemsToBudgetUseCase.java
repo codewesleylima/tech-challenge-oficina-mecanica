@@ -1,5 +1,6 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases;
 
+import com.safiap.techchallengeoficinamecanica.modules.notifications.application.handlers.ServiceOrderStatusChangedNotificationHandler;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddBudgetItemsCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.services.BudgetAssemblyService;
@@ -23,6 +24,7 @@ public class AddItemsToBudgetUseCase {
 
     @Transactional
     public BudgetResponse execute(AddBudgetItemsCommand command) {
+
         if (command.items() == null || command.items().isEmpty())
             throw new DomainException("At least one budget item is required");
 

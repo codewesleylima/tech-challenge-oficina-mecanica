@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class BudgetTest {
@@ -43,18 +44,18 @@ class BudgetTest {
 
     @Test
     @DisplayName("fails to finalize a budget with no items")
-    void finalizeFailsWhenEmpty() {
+    void finalizeBudgetFailsWhenEmpty() {
         Budget budget = draft();
-        assertThatThrownBy(budget::finalize)
+        assertThatThrownBy(budget::finalizeBudget)
                 .isInstanceOf(ConflictException.class);
     }
 
     @Test
     @DisplayName("finalizes the budget marking it as FINALIZED")
-    void finalizeMarksAsFinalized() {
+    void finalizeBudgetMarksAsFinalized() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
-        budget.finalize();
+        budget.finalizeBudget();
         assertThat(budget.getStatus()).isEqualTo(BudgetStatus.FINALIZED);
     }
 
@@ -63,11 +64,11 @@ class BudgetTest {
     void cannotModifyOrRefinalizeAfterFinalized() {
         Budget budget = draft();
         budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
-        budget.finalize();
+        budget.finalizeBudget();
 
         assertThatThrownBy(() -> budget.addPart(UUID.randomUUID(), "Outra", 1, BigDecimal.TEN))
                 .isInstanceOf(ConflictException.class);
-        assertThatThrownBy(budget::finalize)
+        assertThatThrownBy(budget::finalizeBudget)
                 .isInstanceOf(ConflictException.class);
     }
 
@@ -151,4 +152,60 @@ class BudgetTest {
 
         assertThat(budget.allServiceItemsCompleted()).isTrue();
     }
+    // --- decisao do cliente sobre o orcamento (aprovar / recusar) ---
+
+    private Budget finalized() {
+        Budget budget = draft();
+        budget.addPart(UUID.randomUUID(), "Pastilha", 1, new BigDecimal("89.90"));
+        budget.finalizeBudget();
+        return budget;
+    }
+
+    @Test
+    @DisplayName("approves a finalized budget marking it as APPROVED")
+    void approvesFinalizedBudget() {
+        Budget budget = finalized();
+        budget.approvedBudget();
+        assertThat(budget.getStatus()).isEqualTo(BudgetStatus.APPROVED);
+    }
+
+    @Test
+    @DisplayName("declines a finalized budget marking it as DECLINED")
+    void declinesFinalizedBudget() {
+        Budget budget = finalized();
+        budget.declinedBudget();
+        assertThat(budget.getStatus()).isEqualTo(BudgetStatus.DECLINED);
+    }
+
+    @Test
+    @DisplayName("cannot approve or decline a budget still in DRAFT")
+    void cannotDecideOnDraft() {
+        assertThatThrownBy(draft()::approvedBudget).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(draft()::declinedBudget).isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("the customer decision is final: an approved budget cannot be declined afterwards")
+    void decisionIsFinal() {
+        Budget approved = finalized();
+        approved.approvedBudget();
+        assertThatThrownBy(approved::declinedBudget).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(approved::approvedBudget).isInstanceOf(ConflictException.class);
+
+        Budget declined = finalized();
+        declined.declinedBudget();
+        assertThatThrownBy(declined::approvedBudget).isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("isBudgetApproved only lets an APPROVED budget through")
+    void isBudgetApprovedGuard() {
+        Budget approved = finalized();
+        approved.approvedBudget();
+        assertThatCode(approved::isBudgetApproved).doesNotThrowAnyException();
+
+        assertThatThrownBy(finalized()::isBudgetApproved).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(draft()::isBudgetApproved).isInstanceOf(ConflictException.class);
+    }
+
 }

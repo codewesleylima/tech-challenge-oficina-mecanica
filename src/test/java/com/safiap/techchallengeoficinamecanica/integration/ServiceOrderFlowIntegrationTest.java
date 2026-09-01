@@ -21,9 +21,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -121,6 +123,13 @@ class ServiceOrderFlowIntegrationTest {
                 .andExpect(jsonPath("$.status").value("AWAITING_APPROVAL"))
                 .andExpect(jsonPath("$.diagnosis").value(expectedDiagnosis));
 
+        // O cliente precisa aprovar o orcamento antes: sem isso o /execute responde 409.
+        // O link do e-mail devolve a pagina de confirmacao, nao JSON.
+        mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/budget/approve", token))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(content().string(containsString("Orçamento aprovado")));
+
         mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/execute", null, token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("IN_EXECUTION"));
@@ -155,8 +164,9 @@ class ServiceOrderFlowIntegrationTest {
     }
 
     /**
-     * Caminho curto: a OS vai de aberta a aguardando aprovação em 3 chamadas, com o orçamento
-     * montado e finalizado junto do diagnóstico.
+     * Segundo ciclo completo de OS. O orçamento é montado em uma chamada só (POST /budget/items)
+     * e finalizado junto do diagnóstico — os itens enviados no corpo do finalize-diagnosis são
+     * ignorados desde o fix de itens duplicados.
      */
     private void walkShortPath(String token, String customerId, String vehicleId,
                                String partId, String serviceId) throws Exception {
@@ -174,6 +184,11 @@ class ServiceOrderFlowIntegrationTest {
         Map<String, Object> finalizeDiagnosis = body("finalizeDiagnosisWithItems");
         itemsOf(finalizeDiagnosis).get(0).put("itemId", partId);
         itemsOf(finalizeDiagnosis).get(1).put("itemId", serviceId);
+
+        mockMvc.perform(authPost("/service-orders/" + serviceOrderId + "/budget/items",
+                Map.of("items", itemsOf(finalizeDiagnosis)), token))
+                .andExpect(status().isCreated());
+
         mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/finalize-diagnosis", finalizeDiagnosis, token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("AWAITING_APPROVAL"));
@@ -192,6 +207,13 @@ class ServiceOrderFlowIntegrationTest {
             }
         }
         assertThat(serviceBudgetItemId).isNotNull();
+
+        // O cliente precisa aprovar o orcamento antes: sem isso o /execute responde 409.
+        // O link do e-mail devolve a pagina de confirmacao, nao JSON.
+        mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/budget/approve", token))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(content().string(containsString("Orçamento aprovado")));
 
         mockMvc.perform(authPatch("/service-orders/" + serviceOrderId + "/execute", null, token))
                 .andExpect(status().isOk())

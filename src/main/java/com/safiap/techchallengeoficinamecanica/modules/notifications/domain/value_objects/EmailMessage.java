@@ -5,7 +5,10 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.DomainE
 
 import java.util.UUID;
 
-public record EmailMessage(String to, String subject, String body) {
+public record EmailMessage(String to, String subject, String body, boolean html) {
+
+    private static final String APPROVE_PATH = "%s/service-orders/%s/budget/approve";
+    private static final String REJECT_PATH = "%s/service-orders/%s/budget/reject";
 
     public EmailMessage {
         if (to == null || to.isBlank()) {
@@ -24,12 +27,25 @@ public record EmailMessage(String to, String subject, String body) {
     public static EmailMessage serviceOrderStatusChanged(NotificationRecipient recipient,
                                                          UUID serviceOrderId,
                                                          String vehicleLabel,
-                                                         ServiceOrderStatus status) {
+                                                         ServiceOrderStatus status,
+                                                         String publicBaseUrl) {
         String shortId = shortId(serviceOrderId);
-
         String subject = "Ordem de serviço #%s — %s".formatted(shortId, titleFor(status));
 
-        String body = """
+        boolean awaitingApproval = status == ServiceOrderStatus.AWAITING_APPROVAL;
+
+        String body = awaitingApproval
+                ? approvalBody(recipient, serviceOrderId, shortId, vehicleLabel, baseUrl(publicBaseUrl))
+                : plainBody(recipient, shortId, vehicleLabel, status);
+
+        return new EmailMessage(recipient.email(), subject, body, awaitingApproval);
+    }
+
+    private static String plainBody(NotificationRecipient recipient,
+                                    String shortId,
+                                    String vehicleLabel,
+                                    ServiceOrderStatus status) {
+        return """
                 Olá, %s!
 
                 %s
@@ -41,8 +57,43 @@ public record EmailMessage(String to, String subject, String body) {
 
                 Oficina Mecânica"""
                 .formatted(recipient.name(), messageFor(status), shortId, vehicleLabel);
+    }
 
-        return new EmailMessage(recipient.email(), subject, body);
+    private static String approvalBody(NotificationRecipient recipient,
+                                       UUID serviceOrderId,
+                                       String shortId,
+                                       String vehicleLabel,
+                                       String baseUrl) {
+        String approveUrl = APPROVE_PATH.formatted(baseUrl, serviceOrderId);
+        String rejectUrl = REJECT_PATH.formatted(baseUrl, serviceOrderId);
+
+
+        return """
+                <html>
+                  <body>
+                    <p>Olá, %s!</p>
+                    <p>%s</p>
+                    <p>
+                      Ordem de serviço: #%s<br>
+                      Veículo: %s
+                    </p>
+                    <p>
+                      <a href="%s">Aceitar</a> | <a href="%s">Rejeitar</a>
+                    </p>
+                    <p>Esta é uma mensagem automática, não é necessário respondê-la.</p>
+                    <p>Oficina Mecânica</p>
+                  </body>
+                </html>
+                """.formatted(recipient.name(), messageFor(ServiceOrderStatus.AWAITING_APPROVAL),
+                shortId, vehicleLabel, approveUrl, rejectUrl);
+    }
+
+    /** Sem a base configurada o e-mail sairia com links quebrados; melhor falhar no envio. */
+    private static String baseUrl(String publicBaseUrl) {
+        if (publicBaseUrl == null || publicBaseUrl.isBlank()) {
+            throw new DomainException("Public base URL is required to build the approval links.");
+        }
+        return publicBaseUrl.strip().replaceAll("/+$", "");
     }
 
     private static String shortId(UUID serviceOrderId) {

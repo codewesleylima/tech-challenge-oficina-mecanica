@@ -1,5 +1,6 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases;
 
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.ApproveBudgetCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
@@ -7,23 +8,21 @@ import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoun
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
-public class FinalizeBudgetUseCase {
+public class ApproveBudgetUseCase {
 
     private final BudgetRepository budgetRepository;
 
-    public FinalizeBudgetUseCase(BudgetRepository budgetRepository) {
+    public ApproveBudgetUseCase(BudgetRepository budgetRepository) {
         this.budgetRepository = budgetRepository;
     }
 
     @Transactional
-    public BudgetResponse execute(UUID serviceOrderId) {
-        Budget budget = budgetRepository.findByServiceOrderId(serviceOrderId)
-                .orElseThrow(() -> new NotFoundException("Budget not found for service order: " + serviceOrderId));
+    public BudgetResponse execute(ApproveBudgetCommand command) {
+        Budget budget = budgetRepository.findByServiceOrderId(command.ServiceOrderId())
+                .orElseThrow(() -> new NotFoundException("Budget not found, service order : " + command.ServiceOrderId()));
 
-        budget.finalizeBudget();
+        budget.approvedBudget();
         budgetRepository.save(budget);
 
         return BudgetResponse.from(budget);

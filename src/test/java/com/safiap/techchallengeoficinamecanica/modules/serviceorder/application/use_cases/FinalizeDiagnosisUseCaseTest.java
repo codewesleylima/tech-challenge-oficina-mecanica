@@ -79,27 +79,19 @@ class FinalizeDiagnosisUseCaseTest {
     }
 
     @Test
-    @DisplayName("accepts the budget items inline, building and finalizing the budget in one call")
-    void buildsBudgetFromInlineItems() {
+    @DisplayName("ignores the items sent inline: the budget must be assembled beforehand")
+    void ignoresInlineItems() {
         UUID soId = UUID.randomUUID();
-        UUID partId = UUID.randomUUID();
-        UUID serviceId = UUID.randomUUID();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.of(orderInDiagnosis(soId)));
         when(budgetRepository.findByServiceOrderId(soId)).thenReturn(Optional.empty());
-        when(inventoryCatalogPort.getPartPrice(partId)).thenReturn(new BigDecimal("89.90"));
-        when(inventoryCatalogPort.getServicePrice(serviceId)).thenReturn(new BigDecimal("150.00"));
 
-        ServiceOrderResponse response = useCase.execute(new FinalizeDiagnosisCommand(soId, "Pastilhas gastas", List.of(
-                new BudgetItemInput(BudgetItemType.PART, partId, "Pastilha de freio", 1),
-                new BudgetItemInput(BudgetItemType.SERVICE, serviceId, "Mão de obra", 1))));
+        // O payload traz itens, mas desde o fix de itens duplicados o use case nao os
+        // adiciona mais: sem orcamento montado antes, o diagnostico nao fecha.
+        assertThatThrownBy(() -> useCase.execute(new FinalizeDiagnosisCommand(soId, "Pastilhas gastas", List.of(
+                new BudgetItemInput(BudgetItemType.PART, UUID.randomUUID(), "Pastilha de freio", 1)))))
+                .isInstanceOf(ConflictException.class);
 
-        assertThat(response.status()).isEqualTo(ServiceOrderStatus.AWAITING_APPROVAL);
-
-        ArgumentCaptor<Budget> savedBudget = ArgumentCaptor.forClass(Budget.class);
-        verify(budgetRepository, times(1)).save(savedBudget.capture());
-        assertThat(savedBudget.getValue().getStatus()).isEqualTo(BudgetStatus.FINALIZED);
-        assertThat(savedBudget.getValue().getItems()).hasSize(2);
-        assertThat(savedBudget.getValue().calculateTotal()).isEqualByComparingTo("239.90");
+        verify(budgetRepository, never()).save(any());
     }
 
     @Test
@@ -107,7 +99,7 @@ class FinalizeDiagnosisUseCaseTest {
     void keepsFinalizedBudget() {
         UUID soId = UUID.randomUUID();
         Budget budget = budgetWithItems(soId);
-        budget.finalize();
+        budget.finalizeBudget();
         when(serviceOrderRepository.findById(soId)).thenReturn(Optional.of(orderInDiagnosis(soId)));
         when(budgetRepository.findByServiceOrderId(soId)).thenReturn(Optional.of(budget));
 

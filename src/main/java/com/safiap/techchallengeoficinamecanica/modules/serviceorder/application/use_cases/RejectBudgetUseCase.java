@@ -1,7 +1,9 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases;
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.shared.domain.events.DomainEventPublisher;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.NotFoundException;
@@ -19,12 +21,15 @@ public class RejectBudgetUseCase {
     private static final Logger log = LoggerFactory.getLogger(RejectBudgetUseCase.class);
 
     private final ServiceOrderRepository serviceOrderRepository;
+    private final BudgetRepository budgetRepository;
     private final DomainEventPublisher domainEventPublisher;
 
     public RejectBudgetUseCase(ServiceOrderRepository serviceOrderRepository,
-                               DomainEventPublisher domainEventPublisher) {
+                               DomainEventPublisher domainEventPublisher,
+                               BudgetRepository budgetRepository) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.domainEventPublisher = domainEventPublisher;
+        this.budgetRepository = budgetRepository;
     }
 
     /** Recusa registrada pela oficina (USER/ADMIN) em nome do cliente. */
@@ -42,6 +47,8 @@ public class RejectBudgetUseCase {
     private ServiceOrderResponse reject(UUID serviceOrderId, UUID requesterCustomerId) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(serviceOrderId)
                 .orElseThrow(() -> new NotFoundException("Service order not found: " + serviceOrderId));
+        Budget budget = budgetRepository.findByServiceOrderId(serviceOrder.getServiceOrderId())
+                .orElseThrow(() -> new NotFoundException("Budget not found for service order id: " + serviceOrderId));
 
         if (requesterCustomerId != null && !requesterCustomerId.equals(serviceOrder.getCustomerId())) {
             log.warn("Customer {} tried to reject the budget of service order {}, which belongs to another customer",
@@ -49,7 +56,9 @@ public class RejectBudgetUseCase {
             throw new AccessDeniedException("Service order does not belong to the authenticated customer");
         }
 
-        // O orçamento recusado permanece FINALIZED: a OS é encerrada e o histórico do que foi
+        budget.declinedBudget();
+        budgetRepository.save(budget);
+        // O orçamento recusado permanece DECLINED: a OS é encerrada e o histórico do que foi
         // orçado precisa continuar íntegro para consulta.
         serviceOrder.rejectBudget();
         serviceOrderRepository.save(serviceOrder);

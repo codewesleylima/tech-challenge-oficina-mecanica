@@ -19,6 +19,8 @@ spec:
     metadata:
       labels:
         app: api
+      annotations:
+        appPublicUrlHash: "${sha1(var.appPublicUrl)}"
     spec:
       containers:
       - name: api-container
