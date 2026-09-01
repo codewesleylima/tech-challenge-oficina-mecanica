@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/service-orders/*/budget",
                                 "/service-orders/*/budget/approve",
-                                "/service-orders/*/reject-budget").permitAll()
+                                "/service-orders/*/budget/reject").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))

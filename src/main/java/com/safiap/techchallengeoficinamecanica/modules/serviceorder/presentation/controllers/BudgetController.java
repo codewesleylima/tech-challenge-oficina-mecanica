@@ -3,7 +3,6 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentatio
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddBudgetItemsCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddPartCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddServiceCommand;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.ApproveBudgetCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddBudgetItemsDTO;
@@ -47,6 +46,7 @@ public class BudgetController {
         this.approveBudgetUseCase = approveBudgetUseCase;
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping
     public ResponseEntity<BudgetResponse> getBudget(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(getBudgetUseCase.execute(serviceOrderId));
@@ -87,11 +87,6 @@ public class BudgetController {
         return ResponseEntity.ok(completeServiceItemUseCase.execute(serviceOrderId, budgetItemId));
     }
 
-    @PreAuthorize("permitAll()")
-    @GetMapping("/approve")
-    public ResponseEntity<BudgetResponse> approve(@PathVariable UUID serviceOrderId) {
-        return ResponseEntity.ok(approveBudgetUseCase.execute(new ApproveBudgetCommand(serviceOrderId)));
-    }
 
 
 }
