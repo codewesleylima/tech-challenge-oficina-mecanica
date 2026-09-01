@@ -66,11 +66,11 @@ class EmailMessageTest {
     @Test
     @DisplayName("rejects blank recipient, subject or body")
     void rejectsBlankFields() {
-        assertThatThrownBy(() -> new EmailMessage(" ", "assunto", "corpo"))
+        assertThatThrownBy(() -> new EmailMessage(" ", "assunto", "corpo", false))
                 .isInstanceOf(DomainException.class);
-        assertThatThrownBy(() -> new EmailMessage("joao@email.com", null, "corpo"))
+        assertThatThrownBy(() -> new EmailMessage("joao@email.com", null, "corpo", false))
                 .isInstanceOf(DomainException.class);
-        assertThatThrownBy(() -> new EmailMessage("joao@email.com", "assunto", ""))
+        assertThatThrownBy(() -> new EmailMessage("joao@email.com", "assunto", "", false))
                 .isInstanceOf(DomainException.class);
     }
 

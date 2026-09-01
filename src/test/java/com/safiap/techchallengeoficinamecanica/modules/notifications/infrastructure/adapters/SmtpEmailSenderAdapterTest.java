@@ -20,7 +20,7 @@ class SmtpEmailSenderAdapterTest {
     @Test
     @DisplayName("maps the domain message to a SimpleMailMessage and sends it")
     void sendsSimpleMailMessage() {
-        adapter.send(new EmailMessage("joao@email.com", "Ordem de serviço #3f2504e0 — recebida", "Olá, João!"));
+        adapter.send(new EmailMessage("joao@email.com", "Ordem de serviço #3f2504e0 — recebida", "Olá, João!", false));
 
         ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(mailSender).send(captor.capture());

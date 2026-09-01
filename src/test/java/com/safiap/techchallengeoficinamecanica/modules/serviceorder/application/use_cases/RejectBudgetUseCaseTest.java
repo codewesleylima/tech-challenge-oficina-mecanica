@@ -2,6 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.ServiceOrder;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.ServiceOrderRepository;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderPriority;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
@@ -28,9 +29,10 @@ import static org.mockito.Mockito.when;
 class RejectBudgetUseCaseTest {
 
     private final ServiceOrderRepository serviceOrderRepository = mock(ServiceOrderRepository.class);
+    private final BudgetRepository budgetRepository = mock(BudgetRepository.class);
     private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
     private final RejectBudgetUseCase useCase =
-            new RejectBudgetUseCase(serviceOrderRepository, domainEventPublisher);
+            new RejectBudgetUseCase(serviceOrderRepository, domainEventPublisher, budgetRepository);
 
     private ServiceOrder order(UUID id, UUID customerId, ServiceOrderStatus status) {
         return ServiceOrder.build(id, customerId, UUID.randomUUID(), "problema", null,
