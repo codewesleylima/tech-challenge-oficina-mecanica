@@ -9,7 +9,6 @@ public record EmailMessage(String to, String subject, String body, boolean html)
 
     private static final String APPROVE_PATH = "%s/service-orders/%s/budget/approve";
     private static final String REJECT_PATH = "%s/service-orders/%s/budget/reject";
-    private static final String GET_BUDGET_PATH = "%s/service-orders/%s/budget";
 
     public EmailMessage {
         if (to == null || to.isBlank()) {
@@ -67,7 +66,6 @@ public record EmailMessage(String to, String subject, String body, boolean html)
                                        String baseUrl) {
         String approveUrl = APPROVE_PATH.formatted(baseUrl, serviceOrderId);
         String rejectUrl = REJECT_PATH.formatted(baseUrl, serviceOrderId);
-        String getBudgetUrl = GET_BUDGET_PATH.formatted(baseUrl, serviceOrderId);
 
 
         return """
@@ -80,9 +78,6 @@ public record EmailMessage(String to, String subject, String body, boolean html)
                       Veículo: %s
                     </p>
                     <p>
-                      Confira o orçamento aqui: <a href="%s">Orçamento</a>
-                    </p>
-                    <p>
                       <a href="%s">Aceitar</a> | <a href="%s">Rejeitar</a>
                     </p>
                     <p>Esta é uma mensagem automática, não é necessário respondê-la.</p>
@@ -90,7 +85,7 @@ public record EmailMessage(String to, String subject, String body, boolean html)
                   </body>
                 </html>
                 """.formatted(recipient.name(), messageFor(ServiceOrderStatus.AWAITING_APPROVAL),
-                shortId, vehicleLabel, getBudgetUrl, approveUrl, rejectUrl);
+                shortId, vehicleLabel, approveUrl, rejectUrl);
     }
 
     /** Sem a base configurada o e-mail sairia com links quebrados; melhor falhar no envio. */

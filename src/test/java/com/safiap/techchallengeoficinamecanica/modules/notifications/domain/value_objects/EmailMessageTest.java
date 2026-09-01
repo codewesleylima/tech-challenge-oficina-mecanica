@@ -86,7 +86,7 @@ class EmailMessageTest {
     // --- links de aprovacao: montados sobre a URL publica configurada ---
 
     @Test
-    @DisplayName("builds the approval email as HTML with the three action links")
+    @DisplayName("builds the approval email as HTML with the two action links")
     void buildsApprovalLinks() {
         EmailMessage message = EmailMessage.serviceOrderStatusChanged(
                 RECIPIENT, SERVICE_ORDER_ID, "Honda Civic (ABC1D23)",
@@ -95,8 +95,7 @@ class EmailMessageTest {
         assertThat(message.html()).isTrue();
         assertThat(message.body())
                 .contains(BASE_URL + "/service-orders/" + SERVICE_ORDER_ID + "/budget/approve")
-                .contains(BASE_URL + "/service-orders/" + SERVICE_ORDER_ID + "/budget/reject")
-                .contains(BASE_URL + "/service-orders/" + SERVICE_ORDER_ID + "/budget");
+                .contains(BASE_URL + "/service-orders/" + SERVICE_ORDER_ID + "/budget/reject");
     }
 
     @Test
@@ -159,8 +158,7 @@ class EmailMessageTest {
         // Trava o alinhamento dos %s: ja houve um bug em que "Rejeitar" apontava para o approve.
         assertThat(message.body())
                 .contains("<a href=\"" + base + "/budget/approve\">Aceitar</a>")
-                .contains("<a href=\"" + base + "/budget/reject\">Rejeitar</a>")
-                .contains("<a href=\"" + base + "/budget\">Orçamento</a>");
+                .contains("<a href=\"" + base + "/budget/reject\">Rejeitar</a>");
     }
 
 }
