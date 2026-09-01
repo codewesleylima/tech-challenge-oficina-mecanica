@@ -38,6 +38,19 @@ class StartServiceOrderExecutionUseCaseTest {
     private final StartServiceOrderExecutionUseCase useCase = new StartServiceOrderExecutionUseCase(
             serviceOrderRepository, budgetRepository, partStockPort, domainEventPublisher);
 
+    /** A execucao so e liberada com o orcamento APROVADO pelo cliente. */
+    private Budget approvedBudget(UUID serviceOrderId, UUID partId) {
+        Budget budget = Budget.create(serviceOrderId);
+        if (partId != null) {
+            budget.addPart(partId, "Filtro", 3, new BigDecimal("40.00"));
+        } else {
+            budget.addService(UUID.randomUUID(), "Mao de obra", 1, new BigDecimal("100.00"));
+        }
+        budget.finalizeBudget();
+        budget.approvedBudget();
+        return budget;
+    }
+
     private ServiceOrder order(UUID id, ServiceOrderStatus status) {
         return ServiceOrder.build(id, UUID.randomUUID(), UUID.randomUUID(), "problema", null,
                 status, LocalDateTime.now(), null, null, ServiceOrderPriority.LOW);
@@ -48,8 +61,7 @@ class StartServiceOrderExecutionUseCaseTest {
     void startsExecutionAndConsumesPartStock() {
         UUID serviceOrderId = UUID.randomUUID();
         UUID partId = UUID.randomUUID();
-        Budget budget = Budget.create(serviceOrderId);
-        budget.addPart(partId, "Filtro", 3, new BigDecimal("40.00"));
+        Budget budget = approvedBudget(serviceOrderId, partId);
         when(serviceOrderRepository.findById(serviceOrderId))
                 .thenReturn(Optional.of(order(serviceOrderId, ServiceOrderStatus.AWAITING_APPROVAL)));
         when(budgetRepository.findByServiceOrderId(serviceOrderId)).thenReturn(Optional.of(budget));
@@ -63,12 +75,27 @@ class StartServiceOrderExecutionUseCaseTest {
     }
 
     @Test
-    @DisplayName("starts execution without consuming stock when there is no budget")
-    void startsExecutionWithoutBudget() {
+    @DisplayName("fails to start execution when the order has no budget")
+    void failsWhenThereIsNoBudget() {
         UUID serviceOrderId = UUID.randomUUID();
         when(serviceOrderRepository.findById(serviceOrderId))
                 .thenReturn(Optional.of(order(serviceOrderId, ServiceOrderStatus.AWAITING_APPROVAL)));
         when(budgetRepository.findByServiceOrderId(serviceOrderId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> useCase.execute(serviceOrderId)).isInstanceOf(NotFoundException.class);
+
+        verify(partStockPort, never()).decreaseStock(any(), anyInt());
+        verify(serviceOrderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("starts execution without touching stock when the budget has only services")
+    void startsExecutionWithoutParts() {
+        UUID serviceOrderId = UUID.randomUUID();
+        when(serviceOrderRepository.findById(serviceOrderId))
+                .thenReturn(Optional.of(order(serviceOrderId, ServiceOrderStatus.AWAITING_APPROVAL)));
+        when(budgetRepository.findByServiceOrderId(serviceOrderId))
+                .thenReturn(Optional.of(approvedBudget(serviceOrderId, null)));
 
         ServiceOrderResponse response = useCase.execute(serviceOrderId);
 
@@ -77,11 +104,30 @@ class StartServiceOrderExecutionUseCaseTest {
     }
 
     @Test
+    @DisplayName("fails to start execution while the customer has not approved the budget")
+    void failsWhenBudgetNotApproved() {
+        UUID serviceOrderId = UUID.randomUUID();
+        Budget pending = Budget.create(serviceOrderId);
+        pending.addPart(UUID.randomUUID(), "Filtro", 1, new BigDecimal("40.00"));
+        pending.finalizeBudget();
+        when(serviceOrderRepository.findById(serviceOrderId))
+                .thenReturn(Optional.of(order(serviceOrderId, ServiceOrderStatus.AWAITING_APPROVAL)));
+        when(budgetRepository.findByServiceOrderId(serviceOrderId)).thenReturn(Optional.of(pending));
+
+        assertThatThrownBy(() -> useCase.execute(serviceOrderId)).isInstanceOf(ConflictException.class);
+
+        verify(partStockPort, never()).decreaseStock(any(), anyInt());
+        verify(serviceOrderRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("fails to start execution when the order is not awaiting approval")
     void failsWhenNotAwaitingApproval() {
         UUID serviceOrderId = UUID.randomUUID();
         when(serviceOrderRepository.findById(serviceOrderId))
                 .thenReturn(Optional.of(order(serviceOrderId, ServiceOrderStatus.RECEIVED)));
+        when(budgetRepository.findByServiceOrderId(serviceOrderId))
+                .thenReturn(Optional.of(approvedBudget(serviceOrderId, UUID.randomUUID())));
 
         assertThatThrownBy(() -> useCase.execute(serviceOrderId)).isInstanceOf(ConflictException.class);
 
