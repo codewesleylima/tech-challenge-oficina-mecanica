@@ -70,12 +70,29 @@ public class Budget {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void finalize() {
+    public void finalizeBudget() {
         if (this.status == BudgetStatus.FINALIZED)
             throw new ConflictException("Budget is already finalized");
         if (items.isEmpty())
             throw new ConflictException("Cannot finalize a budget with no items");
         this.status = BudgetStatus.FINALIZED;
+    }
+
+    public void declinedBudget() {
+        if (this.status != BudgetStatus.FINALIZED)
+            throw new ConflictException("Budget must be a finalized");
+        this.status = BudgetStatus.DECLINED;
+    }
+
+    public void approvedBudget() {
+        if (this.status != BudgetStatus.FINALIZED)
+            throw new ConflictException("Budget must be a finalized");
+        this.status = BudgetStatus.APPROVED;
+    }
+
+    public void isBudgetApproved () {
+        if (this.status != BudgetStatus.APPROVED)
+            throw new ConflictException("Budget must be approved by customer");
     }
 
     public UUID getBudgetId() { return budgetId; }

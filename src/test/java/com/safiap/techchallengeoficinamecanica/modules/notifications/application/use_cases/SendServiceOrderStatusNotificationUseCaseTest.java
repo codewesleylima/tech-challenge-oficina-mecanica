@@ -25,7 +25,7 @@ class SendServiceOrderStatusNotificationUseCaseTest {
     private final NotificationRecipientPort recipientPort = mock(NotificationRecipientPort.class);
     private final EmailSenderPort emailSenderPort = mock(EmailSenderPort.class);
     private final SendServiceOrderStatusNotificationUseCase useCase =
-            new SendServiceOrderStatusNotificationUseCase(recipientPort, emailSenderPort);
+            new SendServiceOrderStatusNotificationUseCase(recipientPort, emailSenderPort, "http://localhost:8080");
 
     private final UUID serviceOrderId = UUID.randomUUID();
     private final UUID customerId = UUID.randomUUID();

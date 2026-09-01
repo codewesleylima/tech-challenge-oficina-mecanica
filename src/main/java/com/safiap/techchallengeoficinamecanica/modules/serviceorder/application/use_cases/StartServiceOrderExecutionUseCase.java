@@ -41,6 +41,10 @@ public class StartServiceOrderExecutionUseCase {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(serviceOrderId)
                 .orElseThrow(() -> new NotFoundException("Service order not found: " + serviceOrderId));
 
+        Budget budget = budgetRepository.findByServiceOrderId(serviceOrderId)
+                .orElseThrow(() -> new NotFoundException("Budget not found: " + serviceOrderId));
+
+        budget.isBudgetApproved();
         serviceOrder.startExecution();
         consumePartStock(serviceOrderId);
         serviceOrderRepository.save(serviceOrder);

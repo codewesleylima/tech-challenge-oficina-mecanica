@@ -69,5 +69,11 @@ variable "mailPassword" {
 }
 variable "notificationsEmailFrom" {
   type        = string
-  description = "Remetente dos e-mails. No Gmail precisa ser a própria conta autenticada ou um alias verificado nela"
+  default     = ""
+  description = "Remetente dos e-mails. Vazio usa o mailUsername, que é o que o Gmail exige; preencha apenas para um alias verificado na conta"
+}
+
+variable "appPublicUrl" {
+  type        = string
+  default     = ""
 }
