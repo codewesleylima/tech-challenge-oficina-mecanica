@@ -97,4 +97,5 @@ jobs:
       - name: Restart EKS Pods
         if: github.ref == 'refs/heads/main'
         run: |
-          kubectl rollout restart deployment/api-deployment -n prod
+          kubectl rollout restart deployment/api -n prod
+          kubectl rollout status deployment/api -n prod --timeout=5m
