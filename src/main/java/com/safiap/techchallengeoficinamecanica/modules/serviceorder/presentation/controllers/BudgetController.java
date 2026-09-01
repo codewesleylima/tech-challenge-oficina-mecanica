@@ -47,7 +47,6 @@ public class BudgetController {
         this.approveBudgetUseCase = approveBudgetUseCase;
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping
     public ResponseEntity<BudgetResponse> getBudget(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(getBudgetUseCase.execute(serviceOrderId));
