@@ -36,6 +36,7 @@ stringData:
   MAIL_SMTP_STARTTLS: "true"
   NOTIFICATIONS_EMAIL_ENABLED: "true"
   NOTIFICATIONS_EMAIL_FROM: "${var.notificationsEmailFrom != "" ? var.notificationsEmailFrom : var.mailUsername}"
+  APP_PUBLIC_URL: "${var.appPublicUrl}"
 
 YAML
 }
