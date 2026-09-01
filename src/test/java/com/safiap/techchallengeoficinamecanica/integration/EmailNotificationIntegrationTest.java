@@ -3,6 +3,7 @@ package com.safiap.techchallengeoficinamecanica.integration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
-import org.springframework.mail.SimpleMailMessage;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +30,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,6 +67,13 @@ class EmailNotificationIntegrationTest {
 
     @MockBean
     private JavaMailSender javaMailSender;
+
+    /** O adapter monta um MimeMessage; sem isto o mock devolveria null. */
+    @BeforeEach
+    void stubMimeMessage() {
+        when(javaMailSender.createMimeMessage())
+                .thenAnswer(invocation -> new MimeMessage(Session.getInstance(new java.util.Properties())));
+    }
 
     @Test
     @DisplayName("sends an email to the customer when the service order changes status")
@@ -114,13 +124,13 @@ class EmailNotificationIntegrationTest {
                 .andReturn();
         String serviceOrderId = field(soResult, "serviceOrderId");
 
-        SimpleMailMessage opened = lastMailSent(1);
-        assertThat(opened.getFrom()).isEqualTo("nao-responda@oficina.local");
-        assertThat(opened.getTo()).containsExactly("maria@email.com");
-        assertThat(opened.getSubject())
+        MimeMessage opened = lastMailSent(1);
+        assertThat(opened.getFrom()[0].toString()).isEqualTo("nao-responda@oficina.local");
+        assertThat(opened.getAllRecipients()[0].toString()).isEqualTo("maria@email.com");
+        assertThat(subjectOf(opened))
                 .contains(serviceOrderId.substring(0, 8))
                 .contains("recebida");
-        assertThat(opened.getText())
+        assertThat(bodyOf(opened))
                 .contains("Olá, Maria Souza!")
                 .contains("Sua ordem de serviço foi recebida.")
                 .contains("Toyota Corolla (XYZ9K88)");
@@ -129,14 +139,30 @@ class EmailNotificationIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("IN_DIAGNOSIS"));
 
-        assertThat(lastMailSent(2).getSubject()).contains("em diagnóstico");
+        assertThat(subjectOf(lastMailSent(2))).contains("em diagnóstico");
     }
 
     /** Verifica o total de envios acumulados e devolve a última mensagem enviada. */
-    private SimpleMailMessage lastMailSent(int expectedTotal) {
-        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+    private MimeMessage lastMailSent(int expectedTotal) {
+        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
         verify(javaMailSender, times(expectedTotal)).send(captor.capture());
         return captor.getValue();
+    }
+
+    private String subjectOf(MimeMessage mail) {
+        try {
+            return mail.getSubject();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private String bodyOf(MimeMessage mail) {
+        try {
+            return mail.getContent().toString();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private Map<String, Object> map(Object... keyValues) {
