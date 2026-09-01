@@ -2,13 +2,16 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentatio
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.FinalizeDiagnosisCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.OpenServiceOrderCommand;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.OpenServiceOrderWithBudgetCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderStatusResponse;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.ServiceOrderWithBudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.ServiceOrderStatus;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.BudgetItemMapper;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.FinalizeDiagnosisDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.OpenServiceOrderWithBudgetDTO;
 import com.safiap.techchallengeoficinamecanica.modules.shared.exceptions.AuthException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -43,7 +46,8 @@ public class ServiceOrderController {
     private final FinalizeServiceOrderUseCase finalizeServiceOrderUseCase;
     private final DeliverServiceOrderUseCase deliverServiceOrderUseCase;
     private final GetServiceOrderStatusUseCase getServiceOrderStatusUseCase;
-    private final GetAllServiceOrdersUseCase getAllServiceOrdersUseCase;
+    private final GetAllServiceOrdersUseCase getAllServiceOrdersUseCase;;
+    private final OpenServiceOrderWithBudgetUseCase openServiceOrderWithBudgetUseCase;
 
     public ServiceOrderController(OpenServiceOrderUseCase openServiceOrderUseCase,
                                   GetServiceOrderByIdUseCase getServiceOrderByIdUseCase,
@@ -59,7 +63,8 @@ public class ServiceOrderController {
                                   FinalizeServiceOrderUseCase finalizeServiceOrderUseCase,
                                   DeliverServiceOrderUseCase deliverServiceOrderUseCase,
                                   GetServiceOrderStatusUseCase getServiceOrderStatusUseCase,
-                                  GetAllServiceOrdersUseCase getAllServiceOrdersUseCase) {
+                                  GetAllServiceOrdersUseCase getAllServiceOrdersUseCase,
+                                  OpenServiceOrderWithBudgetUseCase openServiceOrderWithBudgetUseCase) {
         this.openServiceOrderUseCase = openServiceOrderUseCase;
         this.getServiceOrderByIdUseCase = getServiceOrderByIdUseCase;
         this.listServiceOrdersByCustomerUseCase = listServiceOrdersByCustomerUseCase;
@@ -75,6 +80,7 @@ public class ServiceOrderController {
         this.deliverServiceOrderUseCase = deliverServiceOrderUseCase;
         this.getServiceOrderStatusUseCase = getServiceOrderStatusUseCase;
         this.getAllServiceOrdersUseCase = getAllServiceOrdersUseCase;
+        this.openServiceOrderWithBudgetUseCase = openServiceOrderWithBudgetUseCase;
     }
 
     @PostMapping
@@ -184,5 +190,15 @@ public class ServiceOrderController {
     @GetMapping("/all-orders")
     public ResponseEntity<List<ServiceOrderResponse>> getAllServiceOrders() {
         return ResponseEntity.ok(getAllServiceOrdersUseCase.execute());
+    }
+
+    @PostMapping("/with-budget")
+    public ResponseEntity<ServiceOrderWithBudgetResponse> openServiceOrderWithBudget(
+            @Valid @RequestBody OpenServiceOrderWithBudgetDTO request) {
+        OpenServiceOrderWithBudgetCommand command = new OpenServiceOrderWithBudgetCommand(
+                request.customerId(), request.vehicleId(), request.problemDescription(),
+                BudgetItemMapper.toInputs(request.items()));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(openServiceOrderWithBudgetUseCase.execute(command));
     }
 }
