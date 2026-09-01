@@ -87,8 +87,9 @@ public class BudgetController {
         return ResponseEntity.ok(completeServiceItemUseCase.execute(serviceOrderId, budgetItemId));
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/approve")
-    public ResponseEntity<BudgetResponse> approve( @PathVariable UUID serviceOrderId) {
+    public ResponseEntity<BudgetResponse> approve(@PathVariable UUID serviceOrderId) {
         return ResponseEntity.ok(approveBudgetUseCase.execute(new ApproveBudgetCommand(serviceOrderId)));
     }
 

@@ -137,7 +137,7 @@ public class ServiceOrderController {
         return ResponseEntity.ok(startServiceOrderExecutionUseCase.execute(serviceOrderId));
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'CUSTOMER')")
+    @PreAuthorize("permitAll()")
     @GetMapping("/{serviceOrderId}/reject-budget")
     public ResponseEntity<ServiceOrderResponse> rejectBudget(@PathVariable UUID serviceOrderId,
                                                              Authentication authentication) {
@@ -154,6 +154,10 @@ public class ServiceOrderController {
     }
 
     private boolean isCustomer(Authentication authentication) {
+        // A rota e publica (link do e-mail), entao pode chegar sem autenticacao.
+        if (authentication == null || !(authentication.getPrincipal() instanceof Jwt)) {
+            return false;
+        }
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> ROLE_CUSTOMER.equals(authority.getAuthority()));
     }
