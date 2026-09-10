@@ -165,7 +165,7 @@ class BudgetTest {
     @DisplayName("approves a finalized budget marking it as APPROVED")
     void approvesFinalizedBudget() {
         Budget budget = finalized();
-        budget.approvedBudget();
+        budget.approve();
         assertThat(budget.getStatus()).isEqualTo(BudgetStatus.APPROVED);
     }
 
@@ -173,35 +173,65 @@ class BudgetTest {
     @DisplayName("declines a finalized budget marking it as DECLINED")
     void declinesFinalizedBudget() {
         Budget budget = finalized();
-        budget.declinedBudget();
+        budget.decline();
         assertThat(budget.getStatus()).isEqualTo(BudgetStatus.DECLINED);
     }
 
     @Test
     @DisplayName("cannot approve or decline a budget still in DRAFT")
     void cannotDecideOnDraft() {
-        assertThatThrownBy(draft()::approvedBudget).isInstanceOf(ConflictException.class);
-        assertThatThrownBy(draft()::declinedBudget).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(draft()::approve).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(draft()::decline).isInstanceOf(ConflictException.class);
     }
 
     @Test
-    @DisplayName("the customer decision is final: an approved budget cannot be declined afterwards")
-    void decisionIsFinal() {
+    @DisplayName("repeating the same decision is a no-op: approve and decline are idempotent")
+    void repeatingTheSameDecisionIsIdempotent() {
         Budget approved = finalized();
-        approved.approvedBudget();
-        assertThatThrownBy(approved::declinedBudget).isInstanceOf(ConflictException.class);
-        assertThatThrownBy(approved::approvedBudget).isInstanceOf(ConflictException.class);
+        approved.approve();
+        assertThatCode(approved::approve).doesNotThrowAnyException();
+        assertThat(approved.getStatus()).isEqualTo(BudgetStatus.APPROVED);
 
         Budget declined = finalized();
-        declined.declinedBudget();
-        assertThatThrownBy(declined::approvedBudget).isInstanceOf(ConflictException.class);
+        declined.decline();
+        assertThatCode(declined::decline).doesNotThrowAnyException();
+        assertThat(declined.getStatus()).isEqualTo(BudgetStatus.DECLINED);
+    }
+
+    @Test
+    @DisplayName("the customer decision is final: the opposite decision is a conflict")
+    void oppositeDecisionIsRejected() {
+        Budget approved = finalized();
+        approved.approve();
+        assertThatThrownBy(approved::decline).isInstanceOf(ConflictException.class);
+        assertThat(approved.getStatus()).isEqualTo(BudgetStatus.APPROVED);
+
+        Budget declined = finalized();
+        declined.decline();
+        assertThatThrownBy(declined::approve).isInstanceOf(ConflictException.class);
+        assertThat(declined.getStatus()).isEqualTo(BudgetStatus.DECLINED);
+    }
+
+    @Test
+    @DisplayName("isDecided reports whether the customer has already answered")
+    void isDecidedReportsTheAnswer() {
+        assertThat(draft().isDecided()).isFalse();
+        assertThat(finalized().isDecided()).isFalse();
+
+        Budget approved = finalized();
+        approved.approve();
+        assertThat(approved.isDecided()).isTrue();
+
+        Budget declined = finalized();
+        declined.decline();
+        assertThat(declined.isDecided()).isTrue();
     }
 
     @Test
     @DisplayName("isBudgetApproved only lets an APPROVED budget through")
-    void isBudgetApprovedGuard() {
+    void ensureApprovedGuard() {
         Budget approved = finalized();
-        approved.approvedBudget();
+        approved.approve();
         assertThatCode(approved::isBudgetApproved).doesNotThrowAnyException();
 
         assertThatThrownBy(finalized()::isBudgetApproved).isInstanceOf(ConflictException.class);

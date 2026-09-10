@@ -78,17 +78,22 @@ class BudgetDecisionPublicAccessIntegrationTest {
     }
 
     @Test
-    @DisplayName("a decision already taken is not silently overwritten by a second click")
-    void secondClickIsRejected() throws Exception {
+    @DisplayName("repeating the decision is idempotent, but the opposite one is a conflict")
+    void secondClickIsIdempotentAndOppositeIsRejected() throws Exception {
         String serviceOrderId = givenOrderAwaitingApproval("duplo");
 
         mockMvc.perform(get("/service-orders/" + serviceOrderId + "/budget/approve"))
                 .andExpect(status().isOk());
 
+        // mesmo clique de novo: nada muda e nao e erro
         mockMvc.perform(get("/service-orders/" + serviceOrderId + "/budget/approve"))
-                .andExpect(status().isConflict());
+                .andExpect(status().isOk());
+        // decisao contraria: a primeira permanece
         mockMvc.perform(get("/service-orders/" + serviceOrderId + "/budget/reject"))
                 .andExpect(status().isConflict());
+
+        mockMvc.perform(get("/service-orders/" + serviceOrderId + "/budget"))
+                .andExpect(jsonPath("$.status").value("APPROVED"));
     }
 
     @Test
