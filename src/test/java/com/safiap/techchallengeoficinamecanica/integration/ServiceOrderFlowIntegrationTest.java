@@ -146,6 +146,18 @@ class ServiceOrderFlowIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DELIVERED"));
 
+        // Exclusao logica: entregue sai da fila de trabalho, mas continua consultavel por id
+        // e pelo filtro explicito de status.
+        mockMvc.perform(authGet("/service-orders", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.serviceOrderId == '" + serviceOrderId + "')]").doesNotExist());
+        mockMvc.perform(authGet("/service-orders?status=DELIVERED", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.serviceOrderId == '" + serviceOrderId + "')]").exists());
+        mockMvc.perform(authGet("/service-orders/" + serviceOrderId, token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DELIVERED"));
+
         MvcResult metricsResult = mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/metrics/average-execution-time", token))
                 .andExpect(status().isOk())
                 .andReturn();
