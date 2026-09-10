@@ -28,22 +28,19 @@ public class BudgetController {
     private final GetBudgetUseCase getBudgetUseCase;
     private final FinalizeBudgetUseCase finalizeBudgetUseCase;
     private final CompleteServiceItemUseCase completeServiceItemUseCase;
-    private final ApproveBudgetUseCase approveBudgetUseCase;
 
     public BudgetController(AddItemsToBudgetUseCase addItemsToBudgetUseCase,
                             AddPartToBudgetUseCase addPartToBudgetUseCase,
                             AddServiceToBudgetUseCase addServiceToBudgetUseCase,
                             GetBudgetUseCase getBudgetUseCase,
                             FinalizeBudgetUseCase finalizeBudgetUseCase,
-                            CompleteServiceItemUseCase completeServiceItemUseCase,
-                            ApproveBudgetUseCase approveBudgetUseCase) {
+                            CompleteServiceItemUseCase completeServiceItemUseCase) {
         this.addItemsToBudgetUseCase = addItemsToBudgetUseCase;
         this.addPartToBudgetUseCase = addPartToBudgetUseCase;
         this.addServiceToBudgetUseCase = addServiceToBudgetUseCase;
         this.getBudgetUseCase = getBudgetUseCase;
         this.finalizeBudgetUseCase = finalizeBudgetUseCase;
         this.completeServiceItemUseCase = completeServiceItemUseCase;
-        this.approveBudgetUseCase = approveBudgetUseCase;
     }
 
     @PreAuthorize("permitAll()")
@@ -86,7 +83,4 @@ public class BudgetController {
             @PathVariable UUID serviceOrderId, @PathVariable UUID budgetItemId) {
         return ResponseEntity.ok(completeServiceItemUseCase.execute(serviceOrderId, budgetItemId));
     }
-
-
-
 }

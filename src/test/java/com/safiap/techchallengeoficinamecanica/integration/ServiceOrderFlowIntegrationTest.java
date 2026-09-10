@@ -124,8 +124,8 @@ class ServiceOrderFlowIntegrationTest {
                 .andExpect(jsonPath("$.diagnosis").value(expectedDiagnosis));
 
         // O cliente precisa aprovar o orcamento antes: sem isso o /execute responde 409.
-        // O link do e-mail devolve a pagina de confirmacao, nao JSON.
-        mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/budget/approve", token))
+        // A aprovacao e um POST e devolve a pagina de confirmacao, nao JSON.
+        mockMvc.perform(post("/service-orders/" + serviceOrderId + "/budget/approve"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(content().string(containsString("Orçamento aprovado")));
@@ -209,8 +209,8 @@ class ServiceOrderFlowIntegrationTest {
         assertThat(serviceBudgetItemId).isNotNull();
 
         // O cliente precisa aprovar o orcamento antes: sem isso o /execute responde 409.
-        // O link do e-mail devolve a pagina de confirmacao, nao JSON.
-        mockMvc.perform(authGet("/service-orders/" + serviceOrderId + "/budget/approve", token))
+        // A aprovacao e um POST e devolve a pagina de confirmacao, nao JSON.
+        mockMvc.perform(post("/service-orders/" + serviceOrderId + "/budget/approve"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(content().string(containsString("Orçamento aprovado")));
