@@ -441,13 +441,27 @@ O passo a passo de criação do cluster e dos secrets do GitHub está em
 
 ### Escalabilidade automática (HPA)
 
-A API escala de **2 a 5 réplicas** com alvo de **70% de CPU**, com janela de estabilização de 30s
-na subida e política de até 100% de aumento a cada 15s — sobe rápido sob carga e desce devagar.
-O HPA depende do addon `metrics-server`, provisionado nas duas stacks.
+A API escala de **2 a 5 réplicas** com alvo de **70% de CPU e 80% de memória**, janela de
+estabilização de 30s na subida e política de até 100% de aumento a cada 15s — sobe rápido sob carga
+e desce devagar.
+
+As duas métricas são calculadas sobre as `resources.requests` do Deployment (250m de CPU e 348Mi de
+memória): sem `requests` declaradas o HPA não tem base para calcular utilização. E ambas dependem
+do `metrics-server`, provisionado nas duas stacks:
+
+| Stack | Como o `metrics-server` entra |
+|---|---|
+| `infra/prod` (EKS) | `aws_eks_addon.metrics_server` em [`infra/prod/cluster.tf`](infra/prod/cluster.tf) |
+| `infra/dev` (minikube) | addon `metrics-server` na variável `addons` de [`infra/dev/variables.tf`](infra/dev/variables.tf) |
+
+Para conferir que as métricas estão realmente chegando:
 
 ```bash
-kubectl get hpa api-hpa -n prod -w     # acompanha réplicas e uso de CPU
+kubectl top pods -n prod               # falha se o metrics-server não estiver de pé
+kubectl get hpa api-hpa -n prod -w     # TARGETS deve mostrar percentuais, nunca <unknown>/70%
 ```
+
+`<unknown>` em TARGETS significa HPA sem métrica: ele não escala, mesmo configurado.
 
 ### CI/CD
 
