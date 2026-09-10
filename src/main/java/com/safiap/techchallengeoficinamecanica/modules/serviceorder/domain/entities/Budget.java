@@ -109,7 +109,8 @@ public class Budget {
         return this.status == BudgetStatus.APPROVED || this.status == BudgetStatus.DECLINED;
     }
 
-    public void isBudgetApproved () {
+    /** Guarda: interrompe a operacao se o cliente ainda nao aprovou o orcamento. */
+    public void ensureApproved() {
         if (this.status != BudgetStatus.APPROVED)
             throw new ConflictException("Budget must be approved by customer");
     }

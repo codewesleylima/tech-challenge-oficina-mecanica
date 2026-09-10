@@ -228,14 +228,14 @@ class BudgetTest {
     }
 
     @Test
-    @DisplayName("isBudgetApproved only lets an APPROVED budget through")
+    @DisplayName("ensureApproved only lets an APPROVED budget through")
     void ensureApprovedGuard() {
         Budget approved = finalized();
         approved.approve();
-        assertThatCode(approved::isBudgetApproved).doesNotThrowAnyException();
+        assertThatCode(approved::ensureApproved).doesNotThrowAnyException();
 
-        assertThatThrownBy(finalized()::isBudgetApproved).isInstanceOf(ConflictException.class);
-        assertThatThrownBy(draft()::isBudgetApproved).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(finalized()::ensureApproved).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(draft()::ensureApproved).isInstanceOf(ConflictException.class);
     }
 
 }
