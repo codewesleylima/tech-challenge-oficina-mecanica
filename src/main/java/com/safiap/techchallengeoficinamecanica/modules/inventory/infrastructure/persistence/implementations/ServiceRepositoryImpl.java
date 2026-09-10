@@ -12,11 +12,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class ServiceRepositoryImp implements ServiceRepository {
+public class ServiceRepositoryImpl implements ServiceRepository {
 
     private final JpaServiceRepository jpaServiceRepository;
 
-    public ServiceRepositoryImp(JpaServiceRepository jpaServiceRepository) {
+    public ServiceRepositoryImpl(JpaServiceRepository jpaServiceRepository) {
         this.jpaServiceRepository = jpaServiceRepository;
     }
 

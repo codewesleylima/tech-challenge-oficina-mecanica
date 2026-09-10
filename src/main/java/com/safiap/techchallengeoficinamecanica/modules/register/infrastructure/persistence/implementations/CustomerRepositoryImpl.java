@@ -13,11 +13,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class CustomerRepositoryImp implements CustomerRepository {
+public class CustomerRepositoryImpl implements CustomerRepository {
 
     private final JPACustomerRepository jpacustomerRepository;
 
-    public CustomerRepositoryImp(JPACustomerRepository jpacustomerRepository) {
+    public CustomerRepositoryImpl(JPACustomerRepository jpacustomerRepository) {
         this.jpacustomerRepository = jpacustomerRepository;
     }
 

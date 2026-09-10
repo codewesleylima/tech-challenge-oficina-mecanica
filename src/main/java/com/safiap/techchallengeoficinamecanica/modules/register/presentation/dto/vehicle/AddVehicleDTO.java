@@ -1,4 +1,4 @@
-package com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.vehicle;
+package com.safiap.techchallengeoficinamecanica.modules.register.presentation.dto.vehicle;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

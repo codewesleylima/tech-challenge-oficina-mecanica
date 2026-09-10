@@ -2,7 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.application
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.AverageServiceTimeResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.ServiceDurationDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto.ServiceDurationDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

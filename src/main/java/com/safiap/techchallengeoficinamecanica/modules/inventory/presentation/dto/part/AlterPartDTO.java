@@ -1,4 +1,4 @@
-package com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.service;
+package com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.dto.part;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 
-public record AlterServiceDTO(
+public record AlterPartDTO(
         @NotBlank(message = "name is required")
         String name,
 

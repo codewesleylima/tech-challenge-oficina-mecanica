@@ -1,7 +1,7 @@
 package com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories;
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.ServiceDurationDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto.ServiceDurationDTO;
 
 import java.util.List;
 import java.util.Optional;

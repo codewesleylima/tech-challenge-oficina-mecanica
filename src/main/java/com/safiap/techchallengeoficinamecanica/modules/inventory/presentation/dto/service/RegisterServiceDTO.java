@@ -1,4 +1,4 @@
-package com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.service;
+package com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.dto.service;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

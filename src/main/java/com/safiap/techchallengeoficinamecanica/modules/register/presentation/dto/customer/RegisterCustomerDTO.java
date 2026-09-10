@@ -1,8 +1,8 @@
-package com.safiap.techchallengeoficinamecanica.modules.register.presentation.DTO.customer;
+package com.safiap.techchallengeoficinamecanica.modules.register.presentation.dto.customer;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record AlterCustomerDTO(
+public record RegisterCustomerDTO(
         @NotBlank(message = "name is required")
         String name,
 

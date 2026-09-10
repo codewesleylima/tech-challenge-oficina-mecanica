@@ -1,4 +1,4 @@
-package com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.DTO.part;
+package com.safiap.techchallengeoficinamecanica.modules.inventory.presentation.dto.part;
 
 import jakarta.validation.constraints.Positive;
 

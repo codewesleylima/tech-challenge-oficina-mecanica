@@ -2,7 +2,7 @@ package com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastruct
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.entities.Budget;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.repositories.BudgetRepository;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.ServiceDurationDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto.ServiceDurationDTO;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.domain.value_objects.BudgetItemType;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.mappers.BudgetMapper;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.infrastructure.persistence.repositories.JPABudgetItemRepository;

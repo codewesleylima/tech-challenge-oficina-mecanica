@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 @Repository
-public class UserRepositoryImp implements UserRepository {
+public class UserRepositoryImpl implements UserRepository {
 
 
     private final JpaUserRepository jpaUserRepository;
 
-    public UserRepositoryImp(JpaUserRepository jpaUserRepository) {
+    public UserRepositoryImpl(JpaUserRepository jpaUserRepository) {
         this.jpaUserRepository = jpaUserRepository;
     }
 

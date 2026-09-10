@@ -5,10 +5,10 @@ import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.AddServiceCommand;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.responses.BudgetResponse;
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.use_cases.*;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddBudgetItemsDTO;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddPartDTO;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.AddServiceDTO;
-import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO.BudgetItemMapper;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto.AddBudgetItemsDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto.AddPartDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto.AddServiceDTO;
+import com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto.BudgetItemMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

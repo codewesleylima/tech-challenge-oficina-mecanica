@@ -12,11 +12,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class VehicleRepositoryImp implements VehicleRepository {
+public class VehicleRepositoryImpl implements VehicleRepository {
 
     private final JPAVehicleRepository jpaVehicleRepository;
 
-    public VehicleRepositoryImp(JPAVehicleRepository jpaVehicleRepository) {
+    public VehicleRepositoryImpl(JPAVehicleRepository jpaVehicleRepository) {
         this.jpaVehicleRepository = jpaVehicleRepository;
     }
 

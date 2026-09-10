@@ -1,4 +1,4 @@
-package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.DTO;
+package com.safiap.techchallengeoficinamecanica.modules.serviceorder.presentation.dto;
 
 import com.safiap.techchallengeoficinamecanica.modules.serviceorder.application.commands.BudgetItemInput;
 

@@ -12,11 +12,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class PartRepositoryImp implements PartRepository {
+public class PartRepositoryImpl implements PartRepository {
 
     private final JpaPartRepository jpaPartRepository;
 
-    public PartRepositoryImp(JpaPartRepository jpaPartRepository) {
+    public PartRepositoryImpl(JpaPartRepository jpaPartRepository) {
         this.jpaPartRepository = jpaPartRepository;
     }
 
