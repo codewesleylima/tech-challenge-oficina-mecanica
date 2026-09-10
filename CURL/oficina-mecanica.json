@@ -606,6 +606,24 @@
               "response": []
             },
             {
+              "name": "Listar OS (fila de trabalho)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/service-orders",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "service-orders"
+                  ]
+                },
+                "description": "Fila de trabalho da oficina. Aplica a exclusão lógica — OS FINALIZED e DELIVERED ficam fora da listagem, sem serem apagadas — e ordena por status (Em execução > Aguardando aprovação > Diagnóstico > Recebida) e, dentro de cada status, da mais antiga para a mais nova.\n\nPara ver as encerradas, use 'Listar OS por Status' com status=DELIVERED, ou consulte a OS pelo id."
+              },
+              "response": []
+            },
+            {
               "name": "Listar OS por Status",
               "request": {
                 "method": "GET",
