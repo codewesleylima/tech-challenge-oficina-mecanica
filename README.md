@@ -300,10 +300,24 @@ Os endpoints são RESTful e, exceto `POST /auth/register` e `POST /auth/login`, 
 | Veículos | `POST /vehicles/register` |
 | Peças (estoque) | `POST/GET/PUT/DELETE /part`, `PATCH /part/{id}/stock/{increase\|decrease}` |
 | Serviços | `POST/GET/PUT/DELETE /service` |
-| Ordem de Serviço | `POST /service-orders`, `GET /service-orders/{id}`, `GET /service-orders?status=`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `PATCH .../finalize`, `PATCH .../deliver` |
+| Ordem de Serviço | `POST /service-orders`, `GET /service-orders` (fila de trabalho), `GET /service-orders?status=`, `GET /service-orders/{id}`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `PATCH .../finalize`, `PATCH .../deliver` |
 | Orçamento | `GET /service-orders/{id}/budget`, `POST .../budget/items` (peças e serviços em lote), `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize`, `PATCH .../budget/items/{itemId}/complete` |
 | Decisão do orçamento (pública, sem token) | `GET .../budget/decision` (só exibe), `POST .../budget/approve`, `POST .../budget/reject` |
 | Métricas | `GET /service-orders/{id}/metrics/average-execution-time` (tempo médio de execução por tipo de serviço na OS) |
+
+### Listagem de ordens de serviço
+
+`GET /service-orders` devolve a **fila de trabalho** da oficina:
+
+- **exclusão lógica** — OS `FINALIZED` e `DELIVERED` ficam de fora da listagem. Nada é apagado:
+  o registro continua no banco, acessível por `GET /service-orders/{id}` e por
+  `GET /service-orders?status=DELIVERED`;
+- **ordenação por status** — Em execução > Aguardando aprovação > Diagnóstico > Recebida;
+- **antiguidade** — dentro de cada status, da mais antiga para a mais nova.
+
+A regra vive no SQL de `JPAServiceOrderRepository.getAllServiceOrdersFiltered()` e é coberta por
+`ServiceOrderListingIntegrationTest`, que roda contra o banco — testar o caso de uso com o
+repositório mockado não provaria nada sobre ela.
 
 ### Aprovação e recusa do orçamento (idempotência)
 
