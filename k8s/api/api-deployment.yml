@@ -26,6 +26,7 @@ spec:
         - secretRef:
             name: api-secret
         resources:
+          # Base do calculo do HPA: "70% de CPU" significa 70% destas requests.
           requests:
-            cpu: "250m"      # 100 millicores (0.1 CPU)
-            memory: "348Mi"  # 256 Megabytes
+            cpu: "250m"      # 0,25 vCPU
+            memory: "348Mi"

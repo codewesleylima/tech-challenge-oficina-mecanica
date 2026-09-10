@@ -54,11 +54,12 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
         resources:
+          # Base do calculo do HPA: "70% de CPU" significa 70% destas requests.
           requests:
-            cpu: "250m"      # 100 millicores (0.1 CPU)
-            memory: "348Mi"  # 256 Megabytes
+            cpu: "250m"      # 0,25 vCPU
+            memory: "348Mi"
           limits:
-              cpu: "500m"      # Máximo de 0.5 vCPU
-              memory: "512Mi"  # Máximo de 512 MB
+            cpu: "500m"      # teto de 0,5 vCPU
+            memory: "512Mi"
 YAML
 }
