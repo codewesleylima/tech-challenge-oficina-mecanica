@@ -154,7 +154,7 @@ class BudgetDecisionPublicAccessIntegrationTest {
         String serviceOrderId = givenOrderAwaitingApproval("protegido");
 
         mockMvc.perform(get("/service-orders/" + serviceOrderId)).andExpect(status().isUnauthorized());
-        mockMvc.perform(get("/service-orders/all-orders")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/service-orders")).andExpect(status().isUnauthorized());
         mockMvc.perform(get("/service-orders/status/" + serviceOrderId)).andExpect(status().isUnauthorized());
         mockMvc.perform(patch("/service-orders/" + serviceOrderId + "/execute")).andExpect(status().isUnauthorized());
         mockMvc.perform(patch("/service-orders/" + serviceOrderId + "/budget/finalize")).andExpect(status().isUnauthorized());

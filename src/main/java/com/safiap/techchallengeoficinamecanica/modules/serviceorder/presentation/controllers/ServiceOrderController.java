@@ -105,9 +105,19 @@ public class ServiceOrderController {
         return ResponseEntity.ok(listServiceOrdersByCustomerUseCase.execute(customerId));
     }
 
+    /**
+     * Listagem da oficina. Sem filtro devolve a fila de trabalho: OS finalizadas e entregues
+     * ficam de fora (exclusão lógica — o registro continua no banco e acessível por id), e o
+     * resto vem ordenado por status (Em execução > Aguardando aprovação > Diagnóstico >
+     * Recebida) e, dentro de cada status, da mais antiga para a mais nova.
+     * Com {@code ?status=} devolve todas as OS daquele status, inclusive as já encerradas.
+     */
     @GetMapping
-    public ResponseEntity<List<ServiceOrderResponse>> listAllByStatus(@RequestParam ServiceOrderStatus status) {
-        return ResponseEntity.ok(listServiceOrdersByStatusUseCase.execute(status));
+    public ResponseEntity<List<ServiceOrderResponse>> listServiceOrders(
+            @RequestParam(required = false) ServiceOrderStatus status) {
+        return ResponseEntity.ok(status == null
+                ? getAllServiceOrdersUseCase.execute()
+                : listServiceOrdersByStatusUseCase.execute(status));
     }
 
     @GetMapping("/status/{serviceOrderId}")
@@ -181,11 +191,6 @@ public class ServiceOrderController {
             throw new AuthException("Authenticated user is not linked to a customer");
         }
         return ResponseEntity.ok(listServiceOrdersByCustomerUseCase.execute(UUID.fromString(customerId)));
-    }
-
-    @GetMapping("/all-orders")
-    public ResponseEntity<List<ServiceOrderResponse>> getAllServiceOrders() {
-        return ResponseEntity.ok(getAllServiceOrdersUseCase.execute());
     }
 
     @PostMapping("/with-budget")
