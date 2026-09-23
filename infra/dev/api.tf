@@ -164,6 +164,8 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "api" {
     min_replicas = var.api_hpa_min_replicas
     max_replicas = var.api_hpa_max_replicas
 
+    # CPU e memoria, como pede o enunciado. As duas dependem do metrics-server,
+    # habilitado como addon do minikube na variavel "addons".
     metric {
       type = "Resource"
 
@@ -173,6 +175,19 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "api" {
         target {
           type                = "Utilization"
           average_utilization = var.api_hpa_cpu_target
+        }
+      }
+    }
+
+    metric {
+      type = "Resource"
+
+      resource {
+        name = "memory"
+
+        target {
+          type                = "Utilization"
+          average_utilization = var.api_hpa_memory_target
         }
       }
     }

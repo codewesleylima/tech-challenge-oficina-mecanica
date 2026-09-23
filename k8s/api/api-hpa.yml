@@ -9,6 +9,8 @@ spec:
     name: api-deployment        
   minReplicas: 1                
   maxReplicas: 5                
+  # CPU e memoria dependem do metrics-server; sem ele o HPA fica em <unknown>/70%
+  # e nao escala. Ele e provisionado como addon do minikube em infra/dev.
   metrics:
   - type: Resource
     resource:
@@ -16,6 +18,12 @@ spec:
       target:
         type: Utilization
         averageUtilization: 70 
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 30 

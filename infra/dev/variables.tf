@@ -86,6 +86,12 @@ variable "api_hpa_cpu_target" {
   description = "Utilização média de CPU (%) que dispara o scale do HPA"
 }
 
+variable "api_hpa_memory_target" {
+  type        = number
+  default     = 80
+  description = "Uso medio de memoria (%) que dispara o autoescalonamento"
+}
+
 variable "jwt_secret" {
   type        = string
   default     = "chave-dev-minimo-256-bits-dev-dev-dev-dev-dev-dev-dev"

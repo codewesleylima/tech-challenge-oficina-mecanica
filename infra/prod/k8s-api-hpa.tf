@@ -1,5 +1,7 @@
 resource "kubectl_manifest" "api-hpa" {
-  depends_on = [aws_eks_cluster.main, kubectl_manifest.api-deployment]
+  # O addon entra no depends_on igual aos deployments: um HPA criado antes do
+  # metrics-server sobe sem fonte de metrica e fica em <unknown>.
+  depends_on = [aws_eks_cluster.main, aws_eks_addon.metrics_server, kubectl_manifest.api-deployment]
   yaml_body  = <<YAML
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -13,6 +15,8 @@ spec:
     name: api                  
   minReplicas: 2                
   maxReplicas: 5                
+  # CPU e memoria dependem do metrics-server (aws_eks_addon.metrics_server, em cluster.tf);
+  # sem ele o HPA fica em <unknown>/70% e nao escala.
   metrics:
   - type: Resource
     resource:
@@ -20,6 +24,12 @@ spec:
       target:
         type: Utilization
         averageUtilization: 70 
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 30 
