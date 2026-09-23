@@ -300,9 +300,46 @@ Os endpoints são RESTful e, exceto `POST /auth/register` e `POST /auth/login`, 
 | Veículos | `POST /vehicles/register` |
 | Peças (estoque) | `POST/GET/PUT/DELETE /part`, `PATCH /part/{id}/stock/{increase\|decrease}` |
 | Serviços | `POST/GET/PUT/DELETE /service` |
-| Ordem de Serviço | `POST /service-orders`, `GET /service-orders/{id}`, `GET /service-orders?status=`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `PATCH .../finalize`, `PATCH .../deliver` |
+| Ordem de Serviço | `POST /service-orders`, `GET /service-orders` (fila de trabalho), `GET /service-orders?status=`, `GET /service-orders/{id}`, `GET /service-orders/customer/{id}`, `GET /service-orders/pullNext`, `PATCH .../priority/{increase\|decrease}`, `PATCH .../start-diagnosis`, `PATCH .../finalize-diagnosis`, `PATCH .../execute`, `PATCH .../reject-budget`, `PATCH .../finalize`, `PATCH .../deliver` |
 | Orçamento | `GET /service-orders/{id}/budget`, `POST .../budget/items` (peças e serviços em lote), `POST .../budget/parts`, `POST .../budget/services`, `PATCH .../budget/finalize`, `PATCH .../budget/items/{itemId}/complete` |
+| Decisão do orçamento (pública, sem token) | `GET .../budget/decision` (só exibe), `POST .../budget/approve`, `POST .../budget/reject` |
 | Métricas | `GET /service-orders/{id}/metrics/average-execution-time` (tempo médio de execução por tipo de serviço na OS) |
+
+### Listagem de ordens de serviço
+
+`GET /service-orders` devolve a **fila de trabalho** da oficina:
+
+- **exclusão lógica** — OS `FINALIZED` e `DELIVERED` ficam de fora da listagem. Nada é apagado:
+  o registro continua no banco, acessível por `GET /service-orders/{id}` e por
+  `GET /service-orders?status=DELIVERED`;
+- **ordenação por status** — Em execução > Aguardando aprovação > Diagnóstico > Recebida;
+- **antiguidade** — dentro de cada status, da mais antiga para a mais nova.
+
+A regra vive no SQL de `JPAServiceOrderRepository.getAllServiceOrdersFiltered()` e é coberta por
+`ServiceOrderListingIntegrationTest`, que roda contra o banco — testar o caso de uso com o
+repositório mockado não provaria nada sobre ela.
+
+### Aprovação e recusa do orçamento (idempotência)
+
+O cliente recebe por e-mail um link para `GET /service-orders/{id}/budget/decision`. Esse GET é
+**seguro**: apenas mostra o orçamento com dois botões. A decisão sai dali por `POST`, porque muda
+estado — um GET que decidisse seria disparado sozinho por qualquer pré-carregamento de webmail ou
+antivírus de e-mail.
+
+Os dois POST são **idempotentes**:
+
+| Situação | Resposta |
+|---|---|
+| 1ª aprovação (orçamento `FINALIZED`) | `200` + página de confirmação, orçamento vai a `APPROVED` |
+| Aprovar de novo um orçamento já `APPROVED` | `200` + mesma página, **nenhuma** mudança de estado |
+| Recusar de novo uma OS já cancelada | `200` + mesma página, sem novo evento e sem novo e-mail |
+| Decisão **contrária** à já registrada | `409` + página de aviso, a primeira decisão permanece |
+| Orçamento ainda em `DRAFT` | `409` — só orçamento fechado pode ser decidido |
+
+Ou seja: repetir a mesma decisão é sempre seguro (clique duplo, refresh, reenvio do formulário),
+e uma decisão nunca é sobrescrita em silêncio. O contrato está travado em
+`BudgetTest`, `ApproveBudgetUseCaseTest`, `RejectBudgetUseCaseTest` e
+`BudgetDecisionPublicAccessIntegrationTest`.
 
 A descrição completa, com corpo de cada requisição e a ordem de execução do fluxo, está em
 [`CURL/oficina-mecanica.json`](CURL/oficina-mecanica.json). As instruções da collection
